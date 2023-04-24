@@ -1,5 +1,5 @@
-tensorflow==
-numpy==
-pandas==
-scikitlearn==
-sanic==
+numpy==1.24.3
+pandas==2.0.1
+sanic==23.3.0
+opencv-python==4.7.0.72
+pytesseract==0.3.10
