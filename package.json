@@ -1,0 +1,44 @@
+{
+  "name": "bad-project-",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/micsum/BAD-Project-.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/micsum/BAD-Project-/issues"
+  },
+  "homepage": "https://github.com/micsum/BAD-Project-#readme",
+  "devDependencies": {
+    "@types/express": "^4.17.17",
+    "@types/express-session": "^1.17.7",
+    "@types/formidable": "^2.0.5",
+    "@types/node": "^18.15.5",
+    "@types/pg": "^8.6.6",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.2"
+  },
+  "dependencies": {
+    "@types/bcryptjs": "^2.4.2",
+    "@types/jsonfile": "^6.1.1",
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.0.3",
+    "express": "^4.18.2",
+    "express-session": "^1.17.3",
+    "formidable": "^2.1.1",
+    "http": "^0.0.1-security",
+    "jsonfile": "^6.1.0",
+    "listening-on": "^2.0.9",
+    "pg": "^8.10.0",
+    "socket.io": "^4.6.1",
+    "sweetalert2": "^11.7.3"
+  }
+}
