@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+  <body>
+    <h1>The Element Object</h1>
+    <h2>The addEventListener() Method</h2>
+
+    <p>
+      This example uses the addEventListener() method to add many events on the
+      same button.
+    </p>
+
+    <button id="rotateBtn">Start</button>
+
+    <p id="demo"></p>
+
+    <script>
+      let count = 0;
+      let rotate = false;
+      const element = document.getElementById("rotateBtn");
+      element.addEventListener("click", async function () {
+        rotate = !rotate;
+        element.innerText = rotate ? "Stop" : "Start";
+        await changeText();
+      });
+
+      function sleep() {
+        return new Promise((resolve) => {
+          setTimeout(resolve, 200);
+        });
+      }
+
+      async function changeText() {
+        count += 0.5;
+        document.getElementById("demo").innerHTML = count;
+        await sleep();
+        rotate ? await changeText() : null;
+      }
+    </script>
+  </body>
+</html>

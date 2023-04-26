@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crop Test</title>
+    <style>
+      :root {
+        --baseLength: 500px;
+      }
+      img {
+        display: block;
+      }
+      #container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-around;
+      }
+      #inputDiv {
+        overflow: hidden;
+        height: 500px;
+        width: 40%;
+        display: inline-block;
+      }
+      #image {
+        display: block;
+        width: var(--baseLength);
+        max-width: 100%;
+        height: calc(var(--baseLength) * 0.6);
+      }
+      #outputDiv {
+        border: 0.2rem solid black;
+        width: 40%;
+      }
+    </style>
+    <link
+      rel="stylesheet"
+      href="../../node_modules/cropperjs/dist/cropper.min.css"
+    />
+  </head>
+  <body>
+    <div id="container">
+      <div id="inputDiv">
+        <img src="../testPhotos/foodPandaReceipt280.30.jpeg" id="image" />
+      </div>
+      <div id="outputDiv"><img id="output" /></div>
+    </div>
+    <button id="crop">Crop</button>
+    <button id="rotate">Rotate</button>
+  </body>
+  <script src="../../node_modules/cropperjs/dist/cropper.min.js"></script>
+  <script src="./crop.js"></script>
+</html>
