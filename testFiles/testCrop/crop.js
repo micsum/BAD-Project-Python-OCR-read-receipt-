@@ -1,11 +1,14 @@
 let image = document.getElementById("image");
 let outputButton = document.getElementById("crop");
 let rotateButton = document.getElementById("rotate");
+let angleSlider = document.getElementById("angleSlider");
+
 let rotate = false;
 
 const cropper = new Cropper(image, {
   aspectRatio: 0,
-  viewMode: 0,
+  viewMode: 1,
+  autoCropArea: 0,
 });
 function sleep(ms) {
   return new Promise((resolve) => {
@@ -32,3 +35,33 @@ rotateButton.addEventListener("click", async function () {
   rotateButton.innerText = rotate ? "Stop" : "Rotate";
   await rotatePhoto();
 });
+
+function rotateImageWithAngle(angle) {
+  image.style.transform = cropper.rotate(angle);
+}
+
+function startAnimation() {
+  interval = setInterval(function () {
+    angle = angleSlider.value;
+    rotateImageWithAngle(angle);
+  }, 150);
+}
+
+function stopAnimation() {
+  clearInterval(interval);
+}
+
+let angle = 0;
+
+angleSlider.addEventListener("input", function () {
+  cropper.rotate(angleSlider.value - angle);
+  angle = angleSlider.value;
+  //rotateImageWithAngle(angle);
+  //startAnimation;
+});
+//angleSlider.addEventListener("mousedown", function () {
+//  startAnimation();
+//});
+//angleSlider.addEventListener("mouseup", function () {
+//  stopAnimation();
+//});
