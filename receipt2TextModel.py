@@ -34,7 +34,7 @@ def findValidString(globalIndex, localIndex, list):
         item = ""
     elif checkDollarSignExistence(defaultItem):
         item = ""
-    elif defaultItem.isascii():
+    elif str(defaultItem).isascii():
         localIndex += 1
         item = findValidString(globalIndex, localIndex, list)
     else:
@@ -92,7 +92,7 @@ def receiptToTextContent(imagePath):
             secondaryIndex = 0
             while(findNonPriceTagString(index+secondaryIndex+2, ocrResultList)):
                 stringInCheck = ocrResultList[index+secondaryIndex+1]
-                if not (stringInCheck.replace(" ", "").isascii and checkDollarSignExistence(stringInCheck)) and stringInCheck.rfind("餐具") == -1 and stringInCheck.rfind("飲管") == -1:
+                if not (str(stringInCheck).isascii() or checkDollarSignExistence(stringInCheck)) and stringInCheck.rfind("餐具") == -1 and stringInCheck.rfind("飲管") == -1:
                     itemInfo[0].append(stringInCheck)
                 else:
                     break
@@ -100,5 +100,5 @@ def receiptToTextContent(imagePath):
             resultArray.append(itemInfo)
     return resultArray
 
-finalArray = receiptToTextContent("./testFiles/testPhotos/cropped08.png")
+finalArray = receiptToTextContent("./testFiles/testPhotos/cropped03.png")
 print(finalArray)
