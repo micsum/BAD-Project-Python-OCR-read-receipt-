@@ -6,11 +6,15 @@ import socketIO from "socket.io";
 import http from "http";
 
 const app = express();
+let server = http.createServer(app);
+export let io = new socketIO.Server(server);
 
 app.use(express.json());
 app.use(express.urlencoded());
 
 app.use(cors());
+
+app.use(express.static("public"));
 
 app.use((req, res) => {
   res.status(404);
@@ -18,6 +22,6 @@ app.use((req, res) => {
 });
 
 let port = 8105;
-app.listen(port, () => {
+server.listen(port, () => {
   print(port);
 });

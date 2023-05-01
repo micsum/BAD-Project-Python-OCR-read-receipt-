@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Receipt Display Page</title>
+  </head>
+  <body>
+    <div class="title" id="unclaimed">Receipt Items</div>
+    <div id="receipt" class="displayDiv"></div>
+    <br />
+    <div class="title" id="claimed">Claimed Items</div>
+    <div id="claimedItems" class="displayDiv"></div>
+    <button id="confirmClaim">Confirm Claim</button>
+
+    <template id="receiptItem">
+      <div class="receiptItemDiv">
+        <div class="quantitiyDiv">
+          <div id="quantity"></div>
+        </div>
+        <div class="priceDiv">
+          <div id="price"></div>
+        </div>
+        <div class="itemDiv">
+          <div id="itemName"></div>
+        </div>
+        <div class="controlsDiv">
+          <button class="claimButton"></button>
+        </div>
+      </div>
+    </template>
+  </body>
+  <!--<script src="/socket.io/socket.io.js"></script>-->
+  <script src="./js/createReceiptItem.js"></script>
+  <script src="./js/receiptDisplay.js"></script>
+</html>
