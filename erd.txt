@@ -8,7 +8,7 @@ payment boolean
 information varchar(255) NULL
 
 
-receipt_recipients
+receipt_recipient
 ------------------
 id integer PK
 receipt_id integer FK >- receipt.id
@@ -48,21 +48,30 @@ receipt_type varchar(255)
 transaction_date date NULL
 
 
-receipt_items
+receipt_item
 -------------
 id integer PK
 item_name varchar(255)
 price numeric
 quantity varchar(255)
-payer integer NULL FK >- user.id
 receipt_id integer FK >- receipt.id
 payment_date date NULL
 item_id varchar(255)
 
 
-# notification (0, 0)
-# receipt_recipients (61, 377)
-# user (564, 252)
+item_payer
+----------
+id integer PK
+user_id integer FK >- user.id
+item_id integer FK >- receipt_item.id
+
+
+
+
+# notification (322, 36)
+# user (711, 290)
 # group_member (1216, 101)
-# receipt (507, 615)
-# receipt_items (1215, 472)
+# receipt (708, 748)
+# receipt_item (142, 690)
+# receipt_recipient (1361, 597)
+# item_payer (142, 340)
