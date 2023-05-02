@@ -1,6 +1,6 @@
 import { Request, Response, Router } from "express";
 import { Server as socketIO } from "socket.io";
-import { claimReceiptService } from "./claimReceiptservice";
+import { claimReceiptService } from "./claimReceiptService",
 import { wrapControllerMethod } from "./createAPI";
 
 export class claimReceiptController {
