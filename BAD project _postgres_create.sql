@@ -35,8 +35,8 @@ CREATE TABLE "receipt" (
 	"confirm_selection" BOOLEAN NOT NULL DEFAULT '0',
 	"confirm_paid" BOOLEAN NOT NULL DEFAULT '0',
 	"receipt_type" varchar(255) NOT NULL DEFAULT 'food',
-	"transaction_date" DATE,
-	"created_at" DATE,
+	"transaction_date" DATE NOT NULL,
+	"created_at" DATE NOT NULL,
 	CONSTRAINT "receipt_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
@@ -44,12 +44,11 @@ CREATE TABLE "receipt" (
 
 
 
-CREATE TABLE "receipt_items" (
+CREATE TABLE "receipt_item" (
 	"id" serial NOT NULL,
 	"item_name" varchar(255) NOT NULL,
 	"price" DECIMAL NOT NULL,
 	"quantity" varchar(255) NOT NULL DEFAULT '1',
-	"payer" integer,
 	"receipt_id" integer NOT NULL,
 	"payment_date" DATE,
 	"item_id" varchar(255) NOT NULL,
@@ -74,7 +73,7 @@ CREATE TABLE "notification" (
 
 
 
-CREATE TABLE "receipt_recipients" (
+CREATE TABLE "receipt_recipient" (
 	"id" serial NOT NULL,
 	"receipt_id" integer NOT NULL,
 	"to_individual" integer NOT NULL,
@@ -83,6 +82,13 @@ CREATE TABLE "receipt_recipients" (
   OIDS=FALSE
 );
 
+CREATE TABLE "item_payer" (
+	"id" serial NOT NULL,
+	"user_id" integer NOT NULL,
+	"item_id" integer NOT NULL
+) WITH (
+  OIDS=FALSE
+);
 
 
 
@@ -90,15 +96,16 @@ ALTER TABLE "group_member" ADD CONSTRAINT "group_member_fk0" FOREIGN KEY ("membe
 
 ALTER TABLE "receipt" ADD CONSTRAINT "receipt_fk0" FOREIGN KEY ("from") REFERENCES "user"("id");
 
-ALTER TABLE "receipt_items" ADD CONSTRAINT "receipt_items_fk0" FOREIGN KEY ("payer") REFERENCES "user"("id");
-ALTER TABLE "receipt_items" ADD CONSTRAINT "receipt_items_fk1" FOREIGN KEY ("receipt_id") REFERENCES "receipt"("id");
+ALTER TABLE "receipt_item" ADD CONSTRAINT "receipt_item_fk0" FOREIGN KEY ("receipt_id") REFERENCES "receipt"("id");
 
 ALTER TABLE "notification" ADD CONSTRAINT "notification_fk0" FOREIGN KEY ("from") REFERENCES "user"("id");
 ALTER TABLE "notification" ADD CONSTRAINT "notification_fk1" FOREIGN KEY ("to") REFERENCES "user"("id");
 
-ALTER TABLE "receipt_recipients" ADD CONSTRAINT "receipt_recipients_fk0" FOREIGN KEY ("receipt_id") REFERENCES "receipt"("id");
-ALTER TABLE "receipt_recipients" ADD CONSTRAINT "receipt_recipients_fk1" FOREIGN KEY ("to_individual") REFERENCES "user"("id");
+ALTER TABLE "receipt_recipient" ADD CONSTRAINT "receipt_recipient_fk0" FOREIGN KEY ("receipt_id") REFERENCES "receipt"("id");
+ALTER TABLE "receipt_recipient" ADD CONSTRAINT "receipt_recipient_fk1" FOREIGN KEY ("to_individual") REFERENCES "user"("id");
 
+ALTER TABLE "item_payer" ADD CONSTRAINT "item_payer_fk0" FOREIGN KEY ("user_id") REFERENCES "user"("id");
+ALTER TABLE "item_payer" ADD CONSTRAINT "item_payer_fk1" FOREIGN KEY ("item_id") REFERENCES "receipt_item"("id");
 
 
 
