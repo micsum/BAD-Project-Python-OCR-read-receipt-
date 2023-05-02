@@ -5,8 +5,8 @@ export class claimReceiptService {
 
   async getReceiptItems(receiptID: string) {
     let result = await this.knex
-      .from("receipt_items")
-      .select("item_name", "price", "quantity", "payer");
+      .from("receipt_item")
+      .select("id", "item_name", "price", "quantity");
 
     let itemClaimerList = {};
     for (let item of result) {
