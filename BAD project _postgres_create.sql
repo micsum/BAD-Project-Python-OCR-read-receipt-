@@ -48,9 +48,8 @@ CREATE TABLE "receipt_item" (
 	"id" serial NOT NULL,
 	"item_name" varchar(255) NOT NULL,
 	"price" DECIMAL NOT NULL,
-	"quantity" varchar(255) NOT NULL DEFAULT '1',
+	"quantity" integer NOT NULL DEFAULT '1',
 	"receipt_id" integer NOT NULL,
-	"payment_date" DATE,
 	"item_id" varchar(255) NOT NULL,
 	CONSTRAINT "receipt_items_pk" PRIMARY KEY ("id")
 ) WITH (
@@ -85,7 +84,8 @@ CREATE TABLE "receipt_recipient" (
 CREATE TABLE "item_payer" (
 	"id" serial NOT NULL,
 	"user_id" integer NOT NULL,
-	"item_id" integer NOT NULL
+	"item_id" integer NOT NULL,	
+	"payment_date" DATE
 ) WITH (
   OIDS=FALSE
 );
