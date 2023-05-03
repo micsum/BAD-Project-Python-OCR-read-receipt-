@@ -19,4 +19,4 @@ for (let claimer of receiptItemClaimers) {
 }
 
 console.log(itemClaimerMap);
-console.log(itemClaimerMap.get(3));
+console.log(itemClaimerMap.get(4));

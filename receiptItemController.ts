@@ -1,29 +1,29 @@
 import { Request, Response, Router } from "express";
 import { Server as socketIO } from "socket.io";
 import { receiptItemService } from "./receiptItemService";
-import { ObjectAny, ItemInfo } from "./helper";
+import { ItemInfo, ClaimItemsInfo } from "./helper";
 
-export class receiptItemController implements ObjectAny {
+export class receiptItemController {
   router = Router();
   constructor(
     private receiptItemService: receiptItemService,
     private io: socketIO
   ) {
     this.router.get("/getReceiptItems/:receiptID", this.getReceiptItems);
-    this.router.get("/insertReceiptItems/:receiptID", this.insertReceiptItems);
+    this.router.post("/insertReceiptItems/:receiptID", this.insertReceiptItems);
+    this.router.post("/claimReceiptItems/:receiptID", this.claimReceiptItem);
+    this.router.delete(
+      "/resetReceiptItemClaim/:receiptID",
+      this.resetReceiptItemClaim
+    );
   }
 
-  /* type itemInfoList {
-    id: integer,
-    item_name: string, 
-    price: decimal,
-    quantity: number,
-    item_id: string,
-    claimerList?: string
-  } */
-
   getReceiptItems = async (req: Request, res: Response) => {
-    if (req.session === undefined || req.session.userID === undefined) {
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined
+    ) {
       res.status(401).json({ error: "User Not Found" });
       return;
     }
@@ -34,9 +34,10 @@ export class receiptItemController implements ObjectAny {
 
     let receiptID = req.params.receiptID;
     try {
-      let itemInfoList = await this.receiptItemService.getReceiptItems(
+      let itemInfoListResult = await this.receiptItemService.getReceiptItems(
         receiptID
       );
+      let itemInfoList = itemInfoListResult.rows;
       res.json({ itemInfoList });
       return;
     } catch (error) {
@@ -47,14 +48,18 @@ export class receiptItemController implements ObjectAny {
 
   // Redirected from create receipt route
   insertReceiptItems = async (req: Request, res: Response) => {
-    if (req.session === undefined || req.session.userID === undefined) {
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined
+    ) {
       res.status(401).json({ error: "User Not Found" });
       return;
     }
     if (
       req.body === undefined ||
       req.body.receiptID === undefined ||
-      req.body.itemList === undefined
+      req.body.itemInfoList === undefined
     ) {
       res.status(401).json({ error: "Items Not Inserted" });
       return;
@@ -79,7 +84,11 @@ export class receiptItemController implements ObjectAny {
   };
 
   claimReceiptItem = async (req: Request, res: Response) => {
-    if (req.session === undefined || req.session.userID === undefined) {
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined
+    ) {
       res.status(401).json({ error: "User Not Found" });
       return;
     }
@@ -87,19 +96,20 @@ export class receiptItemController implements ObjectAny {
     if (
       req.body === undefined ||
       req.body.receiptID === undefined ||
-      req.body.itemList === undefined
+      req.body.itemInfoList === undefined
     ) {
       res.status(401).json({ error: "Items Not Claimed" });
       return;
     }
 
-    let userID = req.session.userID;
+    let userID = req.session.user.userID;
     let receiptID = req.params.receiptID;
     let claimItems = req.body.itemList;
     try {
-      let receiptItems = await this.receiptItemService.getReceiptItems(
+      let receiptItemsResult = await this.receiptItemService.getReceiptItems(
         receiptID
       );
+      let receiptItems = receiptItemsResult.rows;
       const itemQuantityMap = new Map();
       for (let item of receiptItems) {
         let itemID = item.item_id;
@@ -126,14 +136,69 @@ export class receiptItemController implements ObjectAny {
           return;
         }
       }
+
+      let receiptHostResult = await this.receiptItemService.getReceiptSender(
+        receiptID
+      );
+      let receiptHost = receiptHostResult.rows[0];
+      let claimItemsInfo: ClaimItemsInfo[] = [];
       for (let item of claimItems) {
-        let itemID = itemQuantityMap.get(item.itemName);
-        await this.receiptItemService.claimReceiptItems({
+        let itemID: number = itemQuantityMap.get(item.itemName);
+        claimItemsInfo.push({
           user_id: userID,
           item_id: itemID,
         });
-        this.io.to(receiptID).emit("claimItem", { itemID, userID });
       }
+      await this.receiptItemService.claimReceiptItems(
+        claimItemsInfo,
+        req.params.receiptID,
+        receiptHost,
+        req.session.user.userID,
+        req.session.user.userName
+      );
+
+      this.io.to(receiptHost.toString()).emit("claimNotification", {
+        userName: req.session.user.userName,
+      });
+      this.io.to(receiptID).emit("claimItem", claimItemsInfo);
+      res.json({});
+      return;
+    } catch (error) {
+      console.log(error);
+      res.json({ error });
+    }
+  };
+
+  resetReceiptItemClaim = async (req: Request, res: Response) => {
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined
+    ) {
+      res.status(401).json({ error: "User Not Found" });
+      return;
+    }
+
+    if (
+      req.body === undefined ||
+      req.body.receiptID === undefined ||
+      req.body.item === undefined
+    ) {
+      res.status(401).json({ error: "Receipt Items Not Found" });
+      return;
+    }
+    try {
+      let receiptID = req.params.receiptID;
+      let receiptHost: number = await this.receiptItemService.getReceiptSender(
+        receiptID
+      ).rows[0];
+
+      if (receiptHost !== req.session.user.userID) {
+        res.status(401).json({ error: "Not the sender of the receipt" });
+        return;
+      }
+
+      await this.receiptItemService.removeItemClaims(req.body.item);
       res.json({});
       return;
     } catch (error) {

@@ -1,7 +1,7 @@
 import { Knex } from "knex";
-import { ObjectAny, ItemInfo } from "./helper";
+import { ItemInfo, ClaimItemsInfo } from "./helper";
 
-export class receiptItemService implements ObjectAny {
+export class receiptItemService {
   constructor(private knex: Knex) {}
 
   async getReceiptItems(receiptID: string) {
@@ -40,15 +40,65 @@ export class receiptItemService implements ObjectAny {
       }
       item["claimerList"] = claimerList;
     }
-
     return receiptItems;
   }
 
   async insertReceiptItems(itemList: ItemInfo[]) {
-    this.knex("receipt_item").insert(itemList);
+    await this.knex("receipt_item").insert(itemList);
   }
 
-  async claimReceiptItems(claimItemInfo: { user_id: number; item_id: string }) {
-    this.knex("item_payer").insert(claimItemInfo);
+  async claimReceiptItems(
+    claimItemsInfo: ClaimItemsInfo[],
+    receiptStringID: string,
+    receiptHost: number,
+    receiptPayer: number,
+    payerUsername: string
+  ) {
+    let itemArray: number[] = [];
+    for (let item of claimItemsInfo) {
+      itemArray.push(item.item_id);
+    }
+
+    await this.knex("item_payer").insert(claimItemsInfo);
+    let receiptItemResult = await this.knex("receipt")
+      .where("receipt_id", receiptStringID)
+      .join("receipt_item", function () {
+        this.onExists(function () {
+          this.select(
+            "receipt_item.receipt_id as receiptID",
+            "receipt_item.item_name as itemName",
+            "receipt_item.price as itemPrice"
+          ).where("id", itemArray);
+        });
+      });
+
+    let receiptItemList = receiptItemResult.rows;
+    let receiptID: number = -1;
+    let itemList: string = "";
+    let itemTotalPrice: number = 0;
+    for (let item of receiptItemList) {
+      itemList =
+        itemList.length === 0 ? item.itemName : itemList + ", " + item.itemName;
+      itemTotalPrice += item.itemPrice;
+      receiptID = item.receiptID;
+    }
+
+    await this.knex("notification").insert({
+      from: receiptPayer,
+      to: receiptHost,
+      receipt_id: receiptID,
+      payment: false,
+      information: `${payerUsername} has claimed ${itemList} with a total of ${itemTotalPrice}.`,
+    });
+  }
+
+  async getReceiptSender(receiptID: string) {
+    return await this.knex("receipt")
+      .select("from")
+      .where({ receipt_id: receiptID });
+  }
+
+  async removeItemClaims(item: number) {
+    await this.knex("item_payer").where({ item_id: item }).del();
   }
 }

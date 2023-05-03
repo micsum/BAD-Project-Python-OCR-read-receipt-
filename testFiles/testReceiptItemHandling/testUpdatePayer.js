@@ -20,7 +20,7 @@ let receiptItems = [
     item_name: "butter",
     price: 8.5,
     quantity: 3,
-    item_id: "thisIsBread",
+    item_id: "thisIsButter",
     claimerList: "3, 4",
   },
 ];
@@ -51,7 +51,7 @@ for (let userClaim of claimItems) {
     });
   } else {
     console.log(
-      `Successfully claimed ${userClaim.quantity}${userClaim.item_name}`
+      `Successfully claimed ${userClaim.quantity} ${userClaim.item_name}`
     );
   }
 }
