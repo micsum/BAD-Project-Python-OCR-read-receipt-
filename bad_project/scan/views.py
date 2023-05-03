@@ -6,4 +6,4 @@ from django.shortcuts import render
 
 
 def index(request):
-    return render('/Users/mic/Desktop/Tecky/BAD/BAD-Project/testFiles/testCrop/crop.html')
+    return render(request,'/Users/mic/Desktop/Tecky/BAD/BAD-Project/testFiles/testCrop/crop.html')

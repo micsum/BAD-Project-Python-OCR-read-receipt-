@@ -6,3 +6,4 @@ pytesseract==0.3.10
 matplotlib==3.7.1
 scikit-image==0.20.0
 easyocr==1.6.2
+django==4.2 
