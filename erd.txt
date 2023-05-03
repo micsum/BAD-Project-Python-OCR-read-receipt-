@@ -3,9 +3,9 @@ notification
 id integer PK
 from integer FK >- user.id
 to integer FK >- user.id
-status varchar(255)
 payment boolean
 information varchar(255) NULL
+receipt_id FK >- receipt.id
 
 
 receipt_recipient
@@ -63,7 +63,7 @@ item_payer
 id integer PK
 user_id integer FK >- user.id
 item_id integer FK >- receipt_item.id
-payment_date date
+payment_date date NULL
 
 
 

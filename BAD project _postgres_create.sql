@@ -62,7 +62,6 @@ CREATE TABLE "notification" (
 	"id" serial NOT NULL,
 	"from" integer NOT NULL,
 	"to" integer NOT NULL,
-	"status" varchar(255) NOT NULL,
 	"payment" BOOLEAN NOT NULL,
 	"information" varchar(255),
 	CONSTRAINT "notification_pk" PRIMARY KEY ("id")
