@@ -1,6 +1,9 @@
 // Buffer Line
 import session from "express-session";
 import { Response, Request, NextFunction } from "express";
+import fs from "fs";
+import path from "path";
+import formidable from "formidable";
 
 declare module "express-session" {
   interface SessionData {
@@ -44,3 +47,12 @@ export type ClaimItemsInfo = {
     item_id: string,
     claimerList?: string
   } */
+
+export let uploadDir = path.join("uploads", "attachment");
+fs.mkdirSync(path.join(__dirname, uploadDir), { recursive: true });
+export let form = formidable({
+  uploadDir,
+  keepExtensions: true,
+  maxFileSize: 5 * 1024 * 1024,
+  filter: (part) => part.mimetype?.startsWith("image/") || false,
+});

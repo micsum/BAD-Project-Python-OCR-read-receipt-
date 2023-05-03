@@ -4,17 +4,24 @@ import { print } from "listening-on";
 import path from "path";
 import socketIO from "socket.io";
 import http from "http";
-import { Knex } from 'knex'
+import { Knex } from "knex";
 import { sessionMiddleware } from "./helper";
+import { ReceiptController } from "./receiptController";
+import { ReceiptService } from "./receiptService";
+import { uploadDir, form } from "./helper";
 
+const receiptService = new ReceiptService();
+const receiptController = new ReceiptController(receiptService, form);
 const app = express();
 let server = http.createServer(app);
 export let io = new socketIO.Server(server);
 
+app.use(express.static(uploadDir));
 app.use(express.json());
 app.use(express.urlencoded());
-app.use(sessionMiddleware);
 
+app.use(sessionMiddleware);
+app.use(receiptController.router);
 app.use(express.static("public"));
 
 app.use((req, res) => {

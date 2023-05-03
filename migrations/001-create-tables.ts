@@ -8,8 +8,8 @@ export async function up(knex: Knex): Promise<void> {
       table.string("name", 255).notNullable().unique();
       table.string("phone_number", 255).notNullable().unique();
       table.string("email", 255).notNullable().unique();
-      table.string("fps_id", 255).notNullable().unique();
-      table.string("payme_link", 255).notNullable().unique();
+      table.string("fps_id", 255).unique();
+      table.string("payme_link", 255).unique();
       table.decimal("credit").notNullable();
       table.timestamps(false, true);
     });

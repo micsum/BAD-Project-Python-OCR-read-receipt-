@@ -4,8 +4,8 @@ CREATE TABLE "user" (
 	"name" varchar(255) NOT NULL UNIQUE,
 	"phone_number" varchar(255) NOT NULL UNIQUE,
 	"email" varchar(255) NOT NULL UNIQUE,
-	"fps_id" varchar(255) NOT NULL UNIQUE,
-	"payme_link" varchar(255) NOT NULL UNIQUE,
+	"fps_id" varchar(255) UNIQUE,
+	"payme_link" varchar(255) UNIQUE,
 	"credit" DECIMAL NOT NULL,
 	CONSTRAINT "user_pk" PRIMARY KEY ("id")
 ) WITH (
