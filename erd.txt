@@ -53,9 +53,8 @@ receipt_item
 id integer PK
 item_name varchar(255)
 price numeric
-quantity varchar(255)
+quantity integer
 receipt_id integer FK >- receipt.id
-payment_date date NULL
 item_id varchar(255)
 
 
@@ -64,6 +63,7 @@ item_payer
 id integer PK
 user_id integer FK >- user.id
 item_id integer FK >- receipt_item.id
+payment_date date
 
 
 
