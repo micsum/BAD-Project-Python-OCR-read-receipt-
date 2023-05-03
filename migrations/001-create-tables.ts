@@ -52,8 +52,8 @@ export async function up(knex: Knex): Promise<void> {
     })
   }
 
-  if (!(await knex.schema.hasTable('receipt_recipients'))) {
-    await knex.schema.createTable('receipt_recipients', table => {
+  if (!(await knex.schema.hasTable('receipt_recipient'))) {
+    await knex.schema.createTable('receipt_recipient', table => {
       table.increments('id')
       table.integer('receipt_id').unsigned().notNullable().references('receipt.id')
       table.integer('to_individual').unsigned().notNullable().references('user.id')
@@ -61,24 +61,33 @@ export async function up(knex: Knex): Promise<void> {
     })
   }
 
-  if (!(await knex.schema.hasTable('receipt_items'))) {
-    await knex.schema.createTable('receipt_items', table => {
+  if (!(await knex.schema.hasTable('receipt_item'))) {
+    await knex.schema.createTable('receipt_item', table => {
       table.increments('id')
       table.string('item_name', 255).notNullable()
       table.decimal('price').notNullable()
       table.string('quantity', 255).notNullable()
-      table.integer('payer').unsigned().nullable().references('user.id')
       table.integer('receipt_id').unsigned().notNullable().references('receipt.id')
       table.date('payment_date').nullable()
       table.string('item_id', 255).notNullable()
       table.timestamps(false, true)
     })
   }
+
+  if (!(await knex.schema.hasTable('item_payer'))) {
+    await knex.schema.createTable('item_payer', table => {
+      table.increments('id')
+      table.integer('user_id').unsigned().notNullable().references('user.id')
+      table.integer('item_id').unsigned().notNullable().references('receipt_item.id')
+      table.timestamps(false, true)
+    })
+  }
 }
 
 export async function down(knex: Knex): Promise<void> {
-  await knex.schema.dropTableIfExists('receipt_items')
-  await knex.schema.dropTableIfExists('receipt_recipients')
+  await knex.schema.dropTableIfExists('item_payer')
+  await knex.schema.dropTableIfExists('receipt_item')
+  await knex.schema.dropTableIfExists('receipt_recipient')
   await knex.schema.dropTableIfExists('group_member')
   await knex.schema.dropTableIfExists('notification')
   await knex.schema.dropTableIfExists('receipt')
