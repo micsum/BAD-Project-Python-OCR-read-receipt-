@@ -1,7 +1,7 @@
 import { Knex } from "knex";
 import { ItemInfo, ClaimItemsInfo } from "./helper";
 
-export class receiptItemService {
+export class ReceiptItemService {
   constructor(private knex: Knex) {}
 
   async getReceiptItems(receiptID: string) {

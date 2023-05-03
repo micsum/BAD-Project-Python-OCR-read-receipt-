@@ -10,6 +10,7 @@ declare module "express-session" {
     user: {
       userName: string;
       userID: number;
+      isLogin: Boolean;
     };
     receiptID: string;
   }
