@@ -3,7 +3,7 @@ import { Server as socketIO } from "socket.io";
 import { receiptItemService } from "./receiptItemService";
 import { ItemInfo, ClaimItemsInfo } from "./helper";
 
-export class receiptItemController {
+export class ReceiptItemController {
   router = Router();
   constructor(
     private receiptItemService: receiptItemService,
@@ -25,11 +25,9 @@ export class receiptItemController {
       req.session.user.userID === undefined
     ) {
       res.status(401).json({ error: "User Not Found" });
-      return;
     }
     if (req.body === undefined || req.body !== req.params.receiptID) {
       res.status(401).json({ error: "Receipt Not Found" });
-      return;
     }
 
     let receiptID = req.params.receiptID;
@@ -39,7 +37,6 @@ export class receiptItemController {
       );
       let itemInfoList = itemInfoListResult.rows;
       res.json({ itemInfoList });
-      return;
     } catch (error) {
       console.log(error);
       res.json({ error });
@@ -54,7 +51,6 @@ export class receiptItemController {
       req.session.user.userID === undefined
     ) {
       res.status(401).json({ error: "User Not Found" });
-      return;
     }
     if (
       req.body === undefined ||
@@ -62,7 +58,6 @@ export class receiptItemController {
       req.body.itemInfoList === undefined
     ) {
       res.status(401).json({ error: "Items Not Inserted" });
-      return;
     }
 
     let newItemList: ItemInfo[] = [];
@@ -76,7 +71,6 @@ export class receiptItemController {
     try {
       await this.receiptItemService.insertReceiptItems(newItemList);
       res.json({});
-      return;
     } catch (error) {
       console.log(error);
       res.json({ error });
@@ -99,7 +93,6 @@ export class receiptItemController {
       req.body.itemInfoList === undefined
     ) {
       res.status(401).json({ error: "Items Not Claimed" });
-      return;
     }
 
     let userID = req.session.user.userID;
@@ -120,12 +113,10 @@ export class receiptItemController {
       for (let userClaim of claimItems) {
         if (itemQuantityMap.get(userClaim.item_name) === undefined) {
           res.json({ error: `${userClaim.item_name} is not in this receipt` });
-          return;
         } else if (userClaim.quantity <= 0) {
           res.json({
             error: `Please claim a positive number of ${userClaim.item_name}`,
           });
-          return;
         } else if (
           userClaim.quantity >
           itemQuantityMap.get(userClaim.item_name).claimableQuantity
@@ -133,7 +124,6 @@ export class receiptItemController {
           res.json({
             error: `User may not claim more ${userClaim.item_name} than there is remaining`,
           });
-          return;
         }
       }
 
@@ -195,7 +185,6 @@ export class receiptItemController {
 
       if (receiptHost !== req.session.user.userID) {
         res.status(401).json({ error: "Not the sender of the receipt" });
-        return;
       }
 
       await this.receiptItemService.removeItemClaims(req.body.item);
