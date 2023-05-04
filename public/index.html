@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"
+      integrity="sha512-6lplKUSl86rUVprDIjiW8DuOniNX8UDoRATqZSds/7t6zCQZfaCe3e5zcGaQwxa8Kpn5RTM9Fvl3X2lLV4grPQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+      integrity="sha512-cyzxRvewl+FOKTtpBzYjW6x6IAYUCZy3sGP40hn+DQkqeluGRCax7qztK2ImL64SA+C7kVWdLI6wvdlStawhyw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <title>Crop Test</title>
+    <style>
+      :root {
+        --baseLength: 500px;
+      }
+      img {
+        display: block;
+        max-width: 100%;
+      }
+      #container {
+        justify-content: space-around;
+        margin: 1em auto;
+        max-width: 768px;
+        display: flex;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        height: 100%;
+      }
+      #inputDiv {
+        overflow: hidden;
+        display: inline-block;
+        width: calc(100% / 2-1em);
+        padding: 0.5rem;
+      }
+      #preview {
+        display: block;
+        transform-origin: center;
+      }
+
+      #outputDiv {
+        border: 0.2rem solid black;
+        width: 40%;
+      }
+
+      #angleSlider {
+        width: 200px;
+        margin-top: 10px;
+      }
+    </style>
+    <!--<link
+      rel="stylesheet"
+      href="../../node_modules/cropperjs/dist/cropper.min.css"
+    />-->
+  </head>
+  <body>
+    <form
+      action="/uploadReceipt"
+      method="POST"
+      id="attach"
+      enctype="multipart/form-data"
+    >
+      <div id="container">
+        <div id="inputDiv">
+          <input
+            type="file"
+            id="attachment"
+            name="attachment"
+            accept="image/*,capture=camera"
+          />
+          <div class="previewClass">
+            <div id="preview"></div>
+          </div>
+        </div>
+      </div>
+      <button id="crop">Crop</button>
+      <input id="angleSlider" type="range" min="-90" max="90" value="0" />
+      <button id="return" hidden="true">Return</button>
+      <input type="submit" value="Submit" id="submit" />
+    </form>
+  </body>
+  <!--<script src="../../node_modules/cropperjs/dist/cropper.min.js"></script>-->
+  <script>
+    let attachInput = document.querySelector("#attachment");
+    attachInput.addEventListener("change", preview);
+    function preview() {
+      let fileObject = this.files[0];
+      let fileReader = new FileReader();
+      //console.log(fileReader);
+      fileReader.readAsDataURL(fileObject);
+      let files = [];
+      fileReader.onload = function () {
+        let preview = document.querySelector("#preview");
+        let result = fileReader.result;
+        let previewImage = document.createElement("img");
+        previewImage.setAttribute("src", result);
+        preview.innerHTML = "";
+        preview.appendChild(previewImage);
+        cropper = new Cropper(previewImage);
+        let crop = document.querySelector("#crop");
+
+        crop.addEventListener("click", function (event) {
+          //console.log(image.getAttribute("src"));
+
+          //console.log("cropped");
+          event.preventDefault();
+          const imageData = cropper.getImageData();
+          let croppedImgSrc = cropper
+            .getCroppedCanvas({
+              maxWidth: imageData.naturalHeight,
+              maxHeight: imageData.naturalWidth,
+              imageSmoothingQuality: "high",
+            })
+            .toDataURL();
+          //console.log("croppedSrc", croppedImgSrc);
+          let croppedImg = document.createElement("img");
+          croppedImg.setAttribute("src", croppedImgSrc);
+          preview.innerHTML = "";
+          preview.appendChild(croppedImg);
+          crop.setAttribute("hidden", true);
+          angleSlider.setAttribute("hidden", true);
+          return_btn.hidden = false;
+          attachInput.setAttribute("hidden", true);
+        });
+      };
+    }
+    let return_btn = document.querySelector("#return");
+    return_btn.addEventListener("click", function (event) {
+      event.preventDefault();
+      history.back();
+    });
+
+    let angleSlider = document.getElementById("angleSlider");
+    let angle = 0;
+
+    angleSlider.addEventListener("input", function () {
+      cropper.rotate(angleSlider.value - angle);
+      angle = angleSlider.value;
+    });
+
+    let submit = document.querySelector("#submit");
+    let attach = document.querySelector("#attach");
+    attach.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const attachment = event.target;
+      const attachData = new FormData(attachment);
+      console.log("hihi");
+
+      const res = await fetch("/uploadReceipt", {
+        method: "POST",
+        body: attachData,
+      });
+      const result = await res.json();
+    });
+  </script>
+</html>

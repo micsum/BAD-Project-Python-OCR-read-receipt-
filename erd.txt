@@ -1,0 +1,78 @@
+notification
+------------
+id integer PK
+from integer FK >- user.id
+to integer FK >- user.id
+payment boolean
+receipt_id integer FK >- receipt.id
+information varchar(255) NULL
+receipt_id FK >- receipt.id
+
+
+receipt_recipient
+------------------
+id integer PK
+receipt_id integer FK >- receipt.id
+to_individual integer FK >- user.id
+
+
+user
+----
+id integer PK
+password varchar(255)
+name varchar(255) unique
+phone_number varchar(255) unique
+email varchar(255) unique
+fps_id varchar(255) unique
+payme_link varchar(255) unique
+credit numeric
+
+
+group_member
+------------
+id integer PK
+member_userid integer unique FK >- user.id
+ingroup_credit varchar(255)
+group_name varchar(255)
+
+
+receipt
+-------
+id integer PK
+receipt_id varchar(255) unique
+file_name varchar(255)
+from integer FK >- user.id
+to_group varchar(255) NULL
+confirm_selection boolean
+confirm_paid boolean
+receipt_type varchar(255)
+transaction_date date NULL
+
+
+receipt_item
+-------------
+id integer PK
+item_name varchar(255)
+price numeric
+quantity integer
+receipt_id integer FK >- receipt.id
+item_id varchar(255)
+
+
+item_payer
+----------
+id integer PK
+user_id integer FK >- user.id
+item_id integer FK >- receipt_item.id
+payment_date date
+
+
+
+
+# notification (322, 36)
+# user (711, 290)
+# group_member (1216, 101)
+# receipt (708, 748)
+# receipt_item (142, 690)
+# receipt_recipient (1361, 597)
+# item_payer (142, 340)

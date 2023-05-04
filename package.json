@@ -38,8 +38,10 @@
     "formidable": "^2.1.1",
     "http": "^0.0.1-security",
     "jsonfile": "^6.1.0",
+    "knex": "^2.4.2",
     "listening-on": "^2.0.9",
     "pg": "^8.10.0",
+    "quick-erd": "^4.6.0",
     "socket.io": "^4.6.1",
     "sweetalert2": "^11.7.3"
   }

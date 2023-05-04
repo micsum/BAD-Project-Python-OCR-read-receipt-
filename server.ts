@@ -1,19 +1,27 @@
+// Buffer Line
 import express, { Response, Request, NextFunction } from "express";
 import { print } from "listening-on";
 import path from "path";
-import cors from "cors";
 import socketIO from "socket.io";
 import http from "http";
+import { Knex } from "knex";
+import { sessionMiddleware } from "./helper";
+import { ReceiptController } from "./receiptController";
+import { ReceiptService } from "./receiptService";
+import { uploadDir } from "./helper";
 
+const receiptService = new ReceiptService();
+const receiptController = new ReceiptController(receiptService);
 const app = express();
 let server = http.createServer(app);
 export let io = new socketIO.Server(server);
 
+app.use(express.static(uploadDir));
 app.use(express.json());
 app.use(express.urlencoded());
 
-app.use(cors());
-
+app.use(sessionMiddleware);
+app.use(receiptController.router);
 app.use(express.static("public"));
 
 app.use((req, res) => {
