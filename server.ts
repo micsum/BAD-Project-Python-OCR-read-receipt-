@@ -5,10 +5,10 @@ import path from "path";
 import socketIO from "socket.io";
 import http from "http";
 import { Knex } from "knex";
-import { sessionMiddleware } from "./helper";
-import { ReceiptController } from "./receiptController";
-import { ReceiptService } from "./receiptService";
-import { uploadDir, form } from "./helper";
+import { sessionMiddleware } from "./public/routes/helper";
+import { ReceiptController } from "./public/controller/receiptController";
+import { ReceiptService } from "./public/service/receiptService";
+import { uploadDir, form } from "./public/routes/helper";
 
 const receiptService = new ReceiptService();
 const receiptController = new ReceiptController(receiptService, form);

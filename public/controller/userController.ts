@@ -1,12 +1,18 @@
 import { Request, Response, Router } from "express";
-import { UserService } from "./userService";
-import { ObjectAny } from "./helper";
+import * as bcrypt from "bcryptjs";
+import { UserService } from "../service/userService";
+import { ObjectAny } from "../routes/helper";
 
 export class UserController implements ObjectAny {
   router = Router();
   constructor(private userService: UserService) {
     this.router.post("/login", this.userLogin);
     this.router.post("/register", this.userRegister);
+  }
+
+  private async hashPassword(plainPassword: string) {
+    const hash: string = await bcrypt.hash(plainPassword, 10);
+    return hash;
   }
 
   private checkReqBody(req: Request, fields: string[]) {
@@ -75,20 +81,39 @@ export class UserController implements ObjectAny {
     if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(userEmail)) {
       res.json({ error: "Please Input an Appropriate Email" });
     }
-
+    fields = ["name", "phone_number", "email"];
     let formObject: ObjectAny = {};
     formObject["name"] = userName;
     formObject["phone_number"] = userPhoneNumber;
     formObject["email"] = userEmail;
-    let checkUnique = await this.userService.checkUnique(formObject);
-    if (checkUnique.error) {
-      res.json(checkUnique.error);
+
+    if (req.body.fpsLink !== undefined) {
+      formObject["fps_id"] = req.body.fpsLink;
+      fields.push("fps_id");
+    } else {
+      formObject["fps_id"] = "";
     }
 
-    formObject["password"] = userPassword;
-    formObject["fps_id"] =
-      req.body.fpsLink === undefined ? "" : req.body.fpsLink;
-    formObject["payme_link"] =
-      req.body.payMeLink === undefined ? "" : req.body.payMeLink;
+    if (req.body.payMeLink !== undefined) {
+      formObject["payme_link"] = req.body.payMeLink;
+      fields.push("payme_link");
+    } else {
+      formObject["payme_link"] = "";
+    }
+    try {
+      let checkUnique = await this.userService.checkUserInfoUniqueness(
+        fields,
+        formObject
+      );
+      if (checkUnique.error) {
+        res.json(checkUnique.error);
+      }
+      userPassword = await this.hashPassword(userPassword);
+      formObject["password"] = userPassword;
+      await this.userService.registerNewUser(formObject);
+    } catch (error) {
+      console.log(error);
+      res.json({ error });
+    }
   };
 }

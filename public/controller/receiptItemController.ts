@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { Server as socketIO } from "socket.io";
-import { ReceiptItemService } from "./receiptItemService";
-import { ItemInfo, ClaimItemsInfo } from "./helper";
+import { ReceiptItemService } from "../service/receiptItemService";
+import { ItemInfo, ClaimItemsInfo } from "../routes/helper";
 
 export class ReceiptItemController {
   router = Router();
@@ -32,10 +32,9 @@ export class ReceiptItemController {
 
     let receiptID = req.params.receiptID;
     try {
-      let itemInfoListResult = await this.receiptItemService.getReceiptItems(
+      let itemInfoList = await this.receiptItemService.getReceiptItems(
         receiptID
       );
-      let itemInfoList = itemInfoListResult.rows;
       res.json({ itemInfoList });
     } catch (error) {
       console.log(error);
@@ -99,10 +98,9 @@ export class ReceiptItemController {
     let receiptID = req.params.receiptID;
     let claimItems = req.body.itemList;
     try {
-      let receiptItemsResult = await this.receiptItemService.getReceiptItems(
+      let receiptItems = await this.receiptItemService.getReceiptItems(
         receiptID
       );
-      let receiptItems = receiptItemsResult.rows;
       const itemQuantityMap = new Map();
       for (let item of receiptItems) {
         let itemID = item.item_id;
@@ -130,7 +128,7 @@ export class ReceiptItemController {
       let receiptHostResult = await this.receiptItemService.getReceiptSender(
         receiptID
       );
-      let receiptHost = receiptHostResult.rows[0];
+      let receiptHost = receiptHostResult[0];
       let claimItemsInfo: ClaimItemsInfo[] = [];
       for (let item of claimItems) {
         let itemID: number = itemQuantityMap.get(item.itemName);
@@ -179,11 +177,11 @@ export class ReceiptItemController {
     }
     try {
       let receiptID = req.params.receiptID;
-      let receiptHost: number = await this.receiptItemService.getReceiptSender(
+      let [{ from }] = await this.receiptItemService.getReceiptSender(
         receiptID
-      ).rows[0];
+      );
 
-      if (receiptHost !== req.session.user.userID) {
+      if (from !== req.session.user.userID) {
         res.status(401).json({ error: "Not the sender of the receipt" });
       }
 
