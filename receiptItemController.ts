@@ -1,12 +1,12 @@
 import { Request, Response, Router } from "express";
 import { Server as socketIO } from "socket.io";
-import { receiptItemService } from "./receiptItemService";
+import { ReceiptItemService } from "./receiptItemService";
 import { ItemInfo, ClaimItemsInfo } from "./helper";
 
 export class ReceiptItemController {
   router = Router();
   constructor(
-    private receiptItemService: receiptItemService,
+    private receiptItemService: ReceiptItemService,
     private io: socketIO
   ) {
     this.router.get("/getReceiptItems/:receiptID", this.getReceiptItems);
