@@ -12,15 +12,9 @@ export class ReceiptItemService {
 
     let receiptItemClaimers = await this.knex("receipt_item")
       .where({ receipt_id: receiptID })
-      .join("item_payer", function () {
-        this.on("item.id", "=", "item_payer.item_id").onExists(function () {
-          this.join("user", function () {
-            this.on("item_payer.user_id", "=", "user.id").onExists(function () {
-              this.select("item.id as item_id", "user.name as user_name");
-            });
-          });
-        });
-      });
+      .innerJoin("item_payer", "item.id", "=", "item_payer.item_id")
+      .innerJoin("user", "item_payer.user_id", "=", "user.id")
+      .select("item.id as item_id", "user.name as user_name");
 
     const itemClaimerMap = new Map();
     for (let claimer of receiptItemClaimers) {
@@ -60,19 +54,15 @@ export class ReceiptItemService {
     }
 
     await this.knex("item_payer").insert(claimItemsInfo);
-    let receiptItemResult = await this.knex("receipt")
-      .where("receipt_id", receiptStringID)
-      .join("receipt_item", function () {
-        this.onExists(function () {
-          this.select(
-            "receipt_item.receipt_id as receiptID",
-            "receipt_item.item_name as itemName",
-            "receipt_item.price as itemPrice"
-          ).where("id", itemArray);
-        });
-      });
+    let receiptItemList = await this.knex("receipt")
+      .innerJoin("receipt_item", "receipt_id", "=", receiptStringID)
+      .select(
+        "receipt_item.receipt_id as receiptID",
+        "receipt_item.item_name as itemName",
+        "receipt_item.price as itemPrice"
+      )
+      .where("id", itemArray);
 
-    let receiptItemList = receiptItemResult.rows;
     let receiptID: number = -1;
     let itemList: string = "";
     let itemTotalPrice: number = 0;
