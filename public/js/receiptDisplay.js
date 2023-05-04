@@ -4,4 +4,4 @@ const claimedItems = document.getElementById("claimedItems");
 const receiptItemTemplate = document.getElementById("receiptItem");
 
 let userID = ""; //number
-//const socket = io.connect();
+const socket = io.connect();

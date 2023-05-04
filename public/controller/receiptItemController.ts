@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { Server as socketIO } from "socket.io";
-import { ReceiptItemService } from "./receiptItemService";
-import { ItemInfo, ClaimItemsInfo } from "./helper";
+import { ReceiptItemService } from "../service/receiptItemService";
+import { ItemInfo, ClaimItemsInfo } from "../../helper";
 
 export class ReceiptItemController {
   router = Router();
