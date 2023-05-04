@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import * as bcrypt from "bcryptjs";
 import { UserService } from "../service/userService";
-import { ObjectAny } from "../../helper";
+import { ObjectAny } from "../routes/helper";
 
 export class UserController implements ObjectAny {
   router = Router();
