@@ -1,22 +1,12 @@
 //Buffer Line
-
-/*
-type itemInfo = {
-    quantity: number,
-    itemName: string,
-    itemID: string,
-    price: decimal,
+function getAvailableQuantity(quantity, claimedUserName) {
+  let claimerList = claimedUserName.split(",");
+  let claimedQuantity = claimerList.length;
+  if (claimedQuantity == 1) {
+    claimedQuantity = claimerList[0].length == 0 ? 0 : 1;
+  }
+  return quantity - claimedQuantity;
 }
-
-htmlDiv: {
-  intendedLocation: current position to add the item
-  newLocation: new Location to add the item
-}
-
-template: html template
-claimedUserName: string
-claim : Boolean for whether the function is for claiming or removing
-*/
 
 function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
   let { quantity, itemName, itemID, price } = itemInfo;
@@ -41,22 +31,53 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
     node.querySelector(".itemDiv").appendChild(claimUserDiv);
   }
 
-  if (!claim && quantity > 1) {
+  if (!claim) {
+    let availableQuantity = getAvailableQuantity(quantity, claimedUserName);
+    if (availableQuantity === 0) {
+      return;
+    }
     let quantitySelector = document.createElement("select");
-    for (let i = 0; i < quantity; i++) {
+    for (let i = 0; i < availableQuantity; i++) {
       let option = document.createElement("option");
       option.setAttribute("value", i);
       option.textContent = (i + 1).toString() + "x";
       quantitySelector.appendChild(option);
     }
+    quantitySelector.addEventListener("select", function () {});
+
     quantityDisplay.innerHTML = "";
     quantityDisplay.appendChild(quantitySelector);
   }
 
   claimButton.textContent = claim ? "Claim" : "Unclaim";
-  claimButton.addEventListener("click", function () {
-    document.getElementById(`item${itemID}`).remove();
+  claimButton.addEventListener("click", async function (event) {
+    event.preventDefault();
     if (claim) {
+      let claimedUserName = document.getElementById(
+        `claimedUser${itemID}`
+      ).textContent;
+      if (getAvailableQuantity(quantity, claimedUserName) === 0) {
+        Swal.fire({
+          icon: "error",
+          title: "Item Over Claimed",
+          text: "This item has already been claimed in full",
+        });
+        return;
+      }
+      /*
+        let res = await fetch("/addTempClaim", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            itemStringID: itemID,
+            quantity: 1,
+            user_id: userID,
+          }),
+        });
+        */
+      document.getElementById(`item${itemID}`).remove();
       createItem(
         itemInfo,
         {
@@ -68,6 +89,7 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
         false
       );
     } else {
+      document.getElementById(`item${itemID}`).remove();
       createItem(
         itemInfo,
         {
@@ -82,3 +104,21 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
   });
   locationDiv.appendChild(node);
 }
+
+/*
+type itemInfo = {
+    quantity: number,
+    itemName: string,
+    itemID: string,
+    price: decimal,
+}
+
+htmlDiv: {
+  intendedLocation: current position to add the item
+  newLocation: new Location to add the item
+}
+
+template: html template
+claimedUserName: string
+claim : Boolean for whether the function is for claiming or removing
+*/

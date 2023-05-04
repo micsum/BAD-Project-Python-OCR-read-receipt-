@@ -25,6 +25,7 @@ export class ReceiptItemController {
       req.session.user.userID === undefined
     ) {
       res.status(401).json({ error: "User Not Found" });
+      return;
     }
     if (req.body === undefined || req.body !== req.params.receiptID) {
       res.status(401).json({ error: "Receipt Not Found" });
@@ -61,7 +62,7 @@ export class ReceiptItemController {
 
     let newItemList: ItemInfo[] = [];
     for (let item of req.body.itemList) {
-      let itemID = Math.random().toString(36).slice(2).substring(0, 5);
+      let itemID = Math.random().toString(36).slice(2).substring(0, 6);
       item["receipt_id"] = req.body.receiptID;
       item["item_ID"] = itemID;
       newItemList.push(item);
@@ -86,18 +87,19 @@ export class ReceiptItemController {
       return;
     }
 
-    if (
-      req.body === undefined ||
-      req.body.receiptID === undefined ||
-      req.body.itemInfoList === undefined
-    ) {
-      res.status(401).json({ error: "Items Not Claimed" });
+    if (req.body === undefined || req.body.itemInfoList === undefined) {
+      res.status(401).json({ error: "ItemList Not Received" });
     }
 
     let userID = req.session.user.userID;
     let receiptID = req.params.receiptID;
     let claimItems = req.body.itemList;
     try {
+      if (
+        await this.receiptItemService.checkUserClaimHistory(userID, receiptID)
+      ) {
+        res.json({ error: "User Already Claimed Items" });
+      }
       let receiptItems = await this.receiptItemService.getReceiptItems(
         receiptID
       );
