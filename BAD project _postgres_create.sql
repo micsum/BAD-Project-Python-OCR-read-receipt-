@@ -35,8 +35,8 @@ CREATE TABLE "receipt" (
 	"confirm_selection" BOOLEAN NOT NULL DEFAULT '0',
 	"confirm_paid" BOOLEAN NOT NULL DEFAULT '0',
 	"receipt_type" varchar(255) NOT NULL DEFAULT 'food',
-	"transaction_date" DATE NOT NULL,
-	"created_at" DATE NOT NULL,
+	"transaction_date" DATE NULL,
+	"created_at" DATE NULL,
 	CONSTRAINT "receipt_pk" PRIMARY KEY ("id")
 ) WITH (
   OIDS=FALSE
