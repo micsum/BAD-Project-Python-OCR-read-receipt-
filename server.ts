@@ -8,10 +8,10 @@ import { Knex } from "knex";
 import { sessionMiddleware } from "./helper";
 import { ReceiptController } from "./receiptController";
 import { ReceiptService } from "./receiptService";
-import { uploadDir } from "./helper";
+import { uploadDir, form } from "./helper";
 
 const receiptService = new ReceiptService();
-const receiptController = new ReceiptController(receiptService);
+const receiptController = new ReceiptController(receiptService, form);
 const app = express();
 let server = http.createServer(app);
 export let io = new socketIO.Server(server);

@@ -81,56 +81,72 @@
           </div>
         </div>
       </div>
-      <button id="crop">Crop</button>
-      <input id="angleSlider" type="range" min="-90" max="90" value="0" />
+      <button id="crop" hidden="true">Crop</button>
+      <input
+        id="angleSlider"
+        type="range"
+        min="-90"
+        max="90"
+        value="0"
+        hidden="true"
+      />
       <button id="return" hidden="true">Return</button>
-      <input type="submit" value="Submit" id="submit" />
+      <input type="submit" value="Submit" id="submit" hidden="false" />
     </form>
   </body>
   <!--<script src="../../node_modules/cropperjs/dist/cropper.min.js"></script>-->
   <script>
     let attachInput = document.querySelector("#attachment");
+    let submit = document.querySelector("#submit");
+    let angleSlider = document.getElementById("angleSlider");
+    let croppedImgSrc;
     attachInput.addEventListener("change", preview);
     function preview() {
-      let fileObject = this.files[0];
-      let fileReader = new FileReader();
-      //console.log(fileReader);
-      fileReader.readAsDataURL(fileObject);
-      let files = [];
-      fileReader.onload = function () {
-        let preview = document.querySelector("#preview");
-        let result = fileReader.result;
-        let previewImage = document.createElement("img");
-        previewImage.setAttribute("src", result);
-        preview.innerHTML = "";
-        preview.appendChild(previewImage);
-        cropper = new Cropper(previewImage);
-        let crop = document.querySelector("#crop");
-
-        crop.addEventListener("click", function (event) {
-          //console.log(image.getAttribute("src"));
-
-          //console.log("cropped");
-          event.preventDefault();
-          const imageData = cropper.getImageData();
-          let croppedImgSrc = cropper
-            .getCroppedCanvas({
-              maxWidth: imageData.naturalHeight,
-              maxHeight: imageData.naturalWidth,
-              imageSmoothingQuality: "high",
-            })
-            .toDataURL();
-          //console.log("croppedSrc", croppedImgSrc);
-          let croppedImg = document.createElement("img");
-          croppedImg.setAttribute("src", croppedImgSrc);
+      let crop = document.querySelector("#crop");
+      let fileObject = this.files;
+      if (fileObject.length > 0) {
+        angleSlider.hidden = false;
+        crop.hidden = false;
+        fileObject = this.files[0];
+        let fileReader = new FileReader();
+        fileReader.readAsDataURL(fileObject);
+        let files = [];
+        fileReader.onload = function () {
+          let preview = document.querySelector("#preview");
+          let result = fileReader.result;
+          let previewImage = document.createElement("img");
+          previewImage.setAttribute("src", result);
           preview.innerHTML = "";
-          preview.appendChild(croppedImg);
-          crop.setAttribute("hidden", true);
-          angleSlider.setAttribute("hidden", true);
-          return_btn.hidden = false;
-          attachInput.setAttribute("hidden", true);
-        });
-      };
+          preview.appendChild(previewImage);
+          cropper = new Cropper(previewImage);
+
+          crop.addEventListener("click", function (event) {
+            //console.log(image.getAttribute("src"));
+
+            //console.log("cropped");
+            event.preventDefault();
+            const imageData = cropper.getImageData();
+            croppedImgSrc = cropper
+              .getCroppedCanvas({
+                maxWidth: imageData.naturalHeight,
+                maxHeight: imageData.naturalWidth,
+                imageSmoothingQuality: "high",
+              })
+              .toDataURL();
+
+            console.log("croppedSrc", croppedImgSrc);
+            let croppedImg = document.createElement("img");
+            croppedImg.setAttribute("src", croppedImgSrc);
+            preview.innerHTML = "";
+            preview.appendChild(croppedImg);
+            crop.setAttribute("hidden", true);
+            angleSlider.setAttribute("hidden", true);
+            return_btn.hidden = false;
+            attachInput.setAttribute("hidden", true);
+            submit.hidden = false;
+          });
+        };
+      }
     }
     let return_btn = document.querySelector("#return");
     return_btn.addEventListener("click", function (event) {
@@ -138,7 +154,6 @@
       history.back();
     });
 
-    let angleSlider = document.getElementById("angleSlider");
     let angle = 0;
 
     angleSlider.addEventListener("input", function () {
@@ -146,14 +161,17 @@
       angle = angleSlider.value;
     });
 
-    let submit = document.querySelector("#submit");
     let attach = document.querySelector("#attach");
     attach.addEventListener("submit", async (event) => {
       event.preventDefault();
       const attachment = event.target;
-      const attachData = new FormData(attachment);
-      console.log("hihi");
+      console.log(attachment);
 
+      const attachData = new FormData(attachment);
+
+      //attachData.append("image", attachment, "image.png");
+      //console.log("frontend upload");
+      console.log("2", attachData);
       const res = await fetch("/uploadReceipt", {
         method: "POST",
         body: attachData,
