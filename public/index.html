@@ -132,9 +132,9 @@
                 maxHeight: imageData.naturalWidth,
                 imageSmoothingQuality: "high",
               })
-              .toDataURL();
+              .toDataURL("image/jpeg", 0.5);
 
-            console.log("croppedSrc", croppedImgSrc);
+            //console.log("croppedSrc", croppedImgSrc);
             let croppedImg = document.createElement("img");
             croppedImg.setAttribute("src", croppedImgSrc);
             preview.innerHTML = "";
@@ -161,17 +161,34 @@
       angle = angleSlider.value;
     });
 
+    // change dataUrl to Blob{
+    function dataURLtoBlob(dataUrl) {
+      let byteString;
+      if (dataUrl.split(",")[0].indexOf("base64") >= 0) {
+        byteString = atob(dataUrl.split(",")[1]);
+      } else {
+        byteString = unescape(dataUrl.split(",")[1]);
+      }
+
+      let mimeString = dataUrl.split(",")[0].split(":")[1].split(";")[0];
+
+      let ia = new Uint8Array(byteString.length);
+      for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+      }
+      return new Blob([ia], { type: mimeString });
+    }
+
     let attach = document.querySelector("#attach");
     attach.addEventListener("submit", async (event) => {
       event.preventDefault();
-      const attachment = event.target;
-      console.log(attachment);
-
-      const attachData = new FormData(attachment);
-
+      //const attachment = event.target;
+      let blob = dataURLtoBlob(croppedImgSrc);
+      const attachData = new FormData();
+      attachData.append("croppedImage", blob, "cropped.jpeg");
       //attachData.append("image", attachment, "image.png");
       //console.log("frontend upload");
-      console.log("2", attachData);
+      //console.log("2", attachData);
       const res = await fetch("/uploadReceipt", {
         method: "POST",
         body: attachData,

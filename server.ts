@@ -4,13 +4,13 @@ import { print } from "listening-on";
 import path from "path";
 import socketIO from "socket.io";
 import http from "http";
-import { Knex } from "knex";
+import { knex } from "./db";
 import { sessionMiddleware } from "./public/routes/helper";
 import { ReceiptController } from "./public/controller/receiptController";
 import { ReceiptService } from "./public/service/receiptService";
 import { uploadDir, form } from "./public/routes/helper";
 
-const receiptService = new ReceiptService();
+const receiptService = new ReceiptService(knex);
 const receiptController = new ReceiptController(receiptService, form);
 const app = express();
 let server = http.createServer(app);
