@@ -10,7 +10,6 @@ export class ReceiptItemController {
     private io: socketIO
   ) {
     this.router.get("/getReceiptItems/:receiptID", this.getReceiptItems);
-    this.router.post("/insertReceiptItems/:receiptID", this.insertReceiptItems);
     this.router.post("/claimReceiptItems/:receiptID", this.claimReceiptItem);
     this.router.delete(
       "/resetReceiptItemClaim/:receiptID",
@@ -37,40 +36,6 @@ export class ReceiptItemController {
         receiptID
       );
       res.json({ itemInfoList });
-    } catch (error) {
-      console.log(error);
-      res.json({ error });
-    }
-  };
-
-  // Redirected from create receipt route
-  insertReceiptItems = async (req: Request, res: Response) => {
-    if (
-      req.session === undefined ||
-      req.session.user === undefined ||
-      req.session.user.userID === undefined
-    ) {
-      res.status(401).json({ error: "User Not Found" });
-    }
-    if (
-      req.body === undefined ||
-      req.body.receiptID === undefined ||
-      req.body.itemInfoList === undefined
-    ) {
-      res.status(401).json({ error: "Items Not Inserted" });
-    }
-
-    let newItemList: ItemInfo[] = [];
-    for (let item of req.body.itemList) {
-      let itemID = Math.random().toString(36).slice(2).substring(0, 6);
-      item["receipt_id"] = req.body.receiptID;
-      item["item_ID"] = itemID;
-      newItemList.push(item);
-    }
-
-    try {
-      await this.receiptItemService.insertReceiptItems(newItemList);
-      res.json({});
     } catch (error) {
       console.log(error);
       res.json({ error });

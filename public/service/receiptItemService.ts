@@ -37,10 +37,6 @@ export class ReceiptItemService {
     return receiptItems;
   }
 
-  async insertReceiptItems(itemList: ItemInfo[]) {
-    await this.knex("receipt_item").insert(itemList);
-  }
-
   async checkUserClaimHistory(userID: number, receiptStringID: string) {
     let receiptID = await this.knex("receipt").select({
       receipt_id: receiptStringID,
