@@ -3,7 +3,6 @@ import { ReceiptService } from "../service/receiptService";
 import IncomingForm from "formidable/Formidable";
 import path from "path";
 import { uploadDir } from "../routes/helper";
-import cors from "cors";
 
 export class ReceiptController {
   router = Router();
@@ -11,7 +10,7 @@ export class ReceiptController {
     private receiptService: ReceiptService,
     private form: IncomingForm
   ) {
-    this.router.post("/uploadReceipt", cors(), this.uploadReadReceipt);
+    this.router.post("/uploadReceipt", this.uploadReadReceipt);
   }
 
   uploadReadReceipt = async (req: Request, res: Response) => {
@@ -38,15 +37,23 @@ export class ReceiptController {
         ? imageMaybeArray[0]
         : imageMaybeArray;
       let filename = image?.newFilename;
+      let filepath = path.join(uploadDir + "/" + filename);
+      let toPython = await fetch("http://127.0.0.1:8100/readReceipt/", {
+        method: "POST",
+        credentials: "omit",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ filepath: filepath }),
+      });
+      let response = await toPython.json();
+      //console.log(response.data); fetch data from python easyocr
 
       //console.log("filename", filename);
-      res.json({
-        filepath: path.join(uploadDir + "/" + filename),
-        success: true,
-      });
+
       //console.log(path.join(uploadDir + "/" + filename)); test path name and send to python server
       //this.receiptService.createReceipt(filename, req.session.user.userID); update DB immediately after scan?
     });
-    //res.json({ success: true });
+    res.json({ success: true });
   };
 }

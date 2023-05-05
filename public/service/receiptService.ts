@@ -17,5 +17,6 @@ export class ReceiptService {
       })
       .into("receipt")
       .returning("id");
+    return receipt;
   }
 }
