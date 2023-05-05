@@ -8,6 +8,30 @@ function getAvailableQuantity(quantity, claimedUserName) {
   return quantity - claimedQuantity;
 }
 
+async function tempClaim(path, method) {
+  let res = await fetch(path, {
+    method: method,
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      itemStringID: itemID,
+      quantity: quantity,
+      user_id: userID,
+    }),
+  });
+  let result = await res.json();
+  if (result.error) {
+    Swal.fire({
+      icon: "error",
+      title: "An Error Occurred",
+      text: result.error,
+    });
+    return true;
+  }
+  return false;
+}
+
 function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
   let { quantity, itemName, itemID, price } = itemInfo;
 
@@ -37,14 +61,21 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
       return;
     }
     let quantitySelector = document.createElement("select");
-    for (let i = 0; i < availableQuantity; i++) {
+    quantitySelector.setAttribute("id", `setQuantity${itemID}`);
+    for (let i = 1; i <= availableQuantity; i++) {
       let option = document.createElement("option");
       option.setAttribute("value", i);
-      option.textContent = (i + 1).toString() + "x";
+      option.textContent = i.toString() + "x";
       quantitySelector.appendChild(option);
     }
-    quantitySelector.addEventListener("select", function () {});
-
+    quantitySelector.addEventListener("select", async function (event) {
+      /*
+      event.preventDefault();
+      if(await tempClaim("/addTempClaim", "POST")){
+        return
+      }
+      */
+    });
     quantityDisplay.innerHTML = "";
     quantityDisplay.appendChild(quantitySelector);
   }
@@ -64,19 +95,7 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
         });
         return;
       }
-      /*
-        let res = await fetch("/addTempClaim", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            itemStringID: itemID,
-            quantity: 1,
-            user_id: userID,
-          }),
-        });
-        */
+      // if(await tempClaim("/updateTempClaim", "PUT")){return}
       document.getElementById(`item${itemID}`).remove();
       createItem(
         itemInfo,
@@ -89,6 +108,7 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
         false
       );
     } else {
+      // if(await tempClaim("/removeTempClaim", "DELETE")){return}
       document.getElementById(`item${itemID}`).remove();
       createItem(
         itemInfo,

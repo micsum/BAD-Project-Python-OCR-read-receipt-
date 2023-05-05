@@ -19,14 +19,6 @@ export class ReceiptItemController {
   }
 
   getReceiptItems = async (req: Request, res: Response) => {
-    if (
-      req.session === undefined ||
-      req.session.user === undefined ||
-      req.session.user.userID === undefined
-    ) {
-      res.status(401).json({ error: "User Not Found" });
-      return;
-    }
     if (req.body === undefined || req.body !== req.params.receiptID) {
       res.status(401).json({ error: "Receipt Not Found" });
     }

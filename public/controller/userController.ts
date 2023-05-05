@@ -1,9 +1,9 @@
 import { Request, Response, Router } from "express";
 import * as bcrypt from "bcryptjs";
 import { UserService } from "../service/userService";
-import { CheckReqBody, ObjectAny } from "../routes/helper";
+import { CheckReq, ObjectAny } from "../routes/helper";
 
-export class UserController extends CheckReqBody implements ObjectAny {
+export class UserController extends CheckReq implements ObjectAny {
   router = Router();
   constructor(private userService: UserService) {
     super();
