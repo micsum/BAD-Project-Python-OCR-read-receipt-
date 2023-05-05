@@ -1,5 +1,5 @@
 import { Knex } from "knex";
-
+import { ItemInfo } from "../routes/helper";
 export class ReceiptService {
   constructor(private knex: Knex) {}
 
@@ -17,5 +17,10 @@ export class ReceiptService {
       })
       .into("receipt")
       .returning("id");
+    return receipt[0].id;
+  }
+
+  async insertReceiptItems(itemList: ItemInfo[]) {
+    await this.knex("receipt_item").insert(itemList);
   }
 }

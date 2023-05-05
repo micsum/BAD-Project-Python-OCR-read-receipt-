@@ -109,5 +109,6 @@ def receiptToTextContent(imagePath):
     return resultArray
 
 
-# finalArray = receiptToTextContent("./testFiles/testPhotos/cropped03.png")
+# finalArray = receiptToTextContent(
+#    "../../uploads/attachment/e818689023faa69604481c504.jpeg")
 # print(finalArray)
