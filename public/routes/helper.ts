@@ -32,6 +32,34 @@ export let form = formidable({
   filter: (part) => part.mimetype?.startsWith("image/") || false,
 });
 
+export let getUserID = async (req: Request, res: Response) => {
+  if (
+    req.session === undefined ||
+    req.session.user === undefined ||
+    req.session.user.userID ||
+    req.session.user.isLogin === false
+  ) {
+    res.json({ error: "Please Login" });
+    return;
+  }
+  return req.session.user.userID;
+};
+
+export class CheckReqBody {
+  constructor() {}
+  checkReqBody(req: Request, fields: string[]) {
+    if (req.body === undefined) {
+      return "Information";
+    }
+    for (let entry in fields) {
+      if (req.body[entry] === undefined) {
+        return entry;
+      }
+    }
+    return "";
+  }
+}
+
 export interface ObjectAny {
   [key: string]: any;
 }
@@ -47,6 +75,12 @@ export type ItemInfo = {
 export type ClaimItemsInfo = {
   user_id: number;
   item_id: number;
+};
+
+export type TemporaryClaimSelection = {
+  user_id: number;
+  itemStringID: string;
+  quantity: number;
 };
 
 /* type itemInfoList {

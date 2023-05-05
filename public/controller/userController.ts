@@ -1,11 +1,12 @@
 import { Request, Response, Router } from "express";
 import * as bcrypt from "bcryptjs";
 import { UserService } from "../service/userService";
-import { ObjectAny } from "../routes/helper";
+import { CheckReqBody, ObjectAny } from "../routes/helper";
 
-export class UserController implements ObjectAny {
+export class UserController extends CheckReqBody implements ObjectAny {
   router = Router();
   constructor(private userService: UserService) {
+    super();
     this.router.post("/login", this.userLogin);
     this.router.post("/register", this.userRegister);
   }
@@ -15,25 +16,14 @@ export class UserController implements ObjectAny {
     return hash;
   }
 
-  private checkReqBody(req: Request, fields: string[]) {
-    for (let entry in fields) {
-      if (req.body[entry] === undefined) {
-        return entry;
-      }
-    }
-    return "";
-  }
-
   userLogin = async (req: Request, res: Response) => {
     let fields = ["email", "password"];
-    if (req.body === undefined) {
-      res.json({ error: "Missing Information" });
-    } else {
-      let field = this.checkReqBody(req, fields);
-      if (field !== "") {
-        res.json({ error: `Missing ${field}` });
-      }
+
+    let field = this.checkReqBody(req, fields);
+    if (field !== "") {
+      res.json({ error: `Missing ${field}` });
     }
+
     let { email, password } = req.body;
     let userInfo = await this.userService.checkLogin(email, password);
     if (userInfo.valid) {

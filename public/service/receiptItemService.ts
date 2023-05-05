@@ -41,6 +41,23 @@ export class ReceiptItemService {
     await this.knex("receipt_item").insert(itemList);
   }
 
+  async checkUserClaimHistory(userID: number, receiptStringID: string) {
+    let receiptID = await this.knex("receipt").select({
+      receipt_id: receiptStringID,
+    });
+    let receiptHistory = await this.knex("receipt_item")
+      .where({ receipt_id: receiptID })
+      .innerJoin("item_payer", "receipt_item.id", "=", "item_payer.item_id")
+      .select("item_payer.user_id as userID");
+
+    for (let payerUserID of receiptHistory) {
+      if (payerUserID === userID) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   async claimReceiptItems(
     claimItemsInfo: ClaimItemsInfo[],
     receiptStringID: string,
