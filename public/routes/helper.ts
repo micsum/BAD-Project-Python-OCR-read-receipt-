@@ -68,7 +68,7 @@ export type ItemInfo = {
   item_name: string;
   price: number;
   quantity: number;
-  receipt_id: string;
+  receipt_id: number;
   item_id: string;
 };
 
