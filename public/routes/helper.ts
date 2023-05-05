@@ -12,7 +12,6 @@ declare module "express-session" {
       userID: number;
       isLogin: Boolean;
     };
-    receiptID: string;
   }
 }
 
@@ -32,20 +31,7 @@ export let form = formidable({
   filter: (part) => part.mimetype?.startsWith("image/") || false,
 });
 
-export let getUserID = async (req: Request, res: Response) => {
-  if (
-    req.session === undefined ||
-    req.session.user === undefined ||
-    req.session.user.userID ||
-    req.session.user.isLogin === false
-  ) {
-    res.json({ error: "Please Login" });
-    return;
-  }
-  return req.session.user.userID;
-};
-
-export class CheckReqBody {
+export class CheckReq {
   constructor() {}
   checkReqBody(req: Request, fields: string[]) {
     if (req.body === undefined) {
