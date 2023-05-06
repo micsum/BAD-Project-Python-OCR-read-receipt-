@@ -71,7 +71,7 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
     quantitySelector.addEventListener("select", async function (event) {
       /*
       event.preventDefault();
-      if(await tempClaim("/addTempClaim", "POST")){
+      if(await tempClaim("/updateTempClaim", "PUT").error){
         return
       }
       */
@@ -95,7 +95,7 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
         });
         return;
       }
-      // if(await tempClaim("/updateTempClaim", "PUT")){return}
+      // if(await tempClaim("/addTempClaim", "POST").error){return}
       document.getElementById(`item${itemID}`).remove();
       createItem(
         itemInfo,

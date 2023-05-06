@@ -25,7 +25,7 @@ itemDisplayRouter.get("/getUserID", async (req: Request, res: Response) => {
   };
 });
 
-itemDisplayRouter.get("/getTempClaim", async (req: Request, res: Response) => {
+itemDisplayRouter.post("/getTempClaim", async (req: Request, res: Response) => {
   if (
     req.session === undefined ||
     req.session.user === undefined ||

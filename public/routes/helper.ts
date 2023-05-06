@@ -75,5 +75,5 @@ export type TemporaryClaimSelection = {
     price: decimal,
     quantity: number,
     item_id: string,
-    claimerList?: string
+    claimerList: string
   } */
