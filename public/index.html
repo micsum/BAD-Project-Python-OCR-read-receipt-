@@ -10,6 +10,8 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     ></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.all.js" integrity="sha512-AINSNy+d2WG9ts1uJvi8LZS42S8DT52ceWey5shLQ9ArCmIFVi84nXNrvWyJ6bJ+qIb1MnXR46+A4ic/AUcizQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.css" integrity="sha512-yqCpLPABHnpDe3/QgEm1OO4Ohq0BBlBtJGMh5JbhdYEb6nahIm7sbtjilfSFyzUhxdXHS/cm8+FYfNstfpxcrg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
@@ -179,21 +181,53 @@
       return new Blob([ia], { type: mimeString });
     }
 
+
     let attach = document.querySelector("#attach");
     attach.addEventListener("submit", async (event) => {
-      event.preventDefault();
-      //const attachment = event.target;
-      let blob = dataURLtoBlob(croppedImgSrc);
-      const attachData = new FormData();
-      attachData.append("croppedImage", blob, "cropped.jpeg");
-      //attachData.append("image", attachment, "image.png");
-      //console.log("frontend upload");
-      //console.log("2", attachData);
-      const res = await fetch("/uploadReceipt", {
-        method: "POST",
-        body: attachData,
-      });
-      const result = await res.json();
+  event.preventDefault();
+  
+  let blob = dataURLtoBlob(croppedImgSrc);
+  const attachData = new FormData();
+  attachData.append("croppedImage", blob, "cropped.jpeg");
+
+  try {
+    const res = await fetch("/uploadReceipt", {
+      method: "POST",
+      body: attachData,
     });
+
+    const result = await res.json();
+    const itemData = result.data
+
+    Swal.fire({
+      title: 'Reading Receipt Content.\nPlease wait.\u{1F64C}',
+      allowOutsideClick: false,
+      showConfirmButton: false,
+      didOpen: () => 
+        !Swal.showLoading()
+    }).then(() => {
+      if(itemData)
+      localStorage.setItem('iteamData', JSON.stringify(itemData));
+      console.log("newItemData",itemData);
+
+      Swal.fire({
+        title: 'Receipt Content is ready to edit.',
+        allowOutsideClick: false,
+        icon: 'success',
+        confirmButtonText:'Edit',
+        preConfirm:()=>{
+          window.location.href = "./createReceipt.html"
+        }
+      });
+    });
+  } catch (error) {
+    Swal.fire({
+      title:'Error',
+      text:'Failed to read the receipt content',
+      icon:'error',
+      confirmButtonText:'OK'
+    });
+  }
+});
   </script>
 </html>
