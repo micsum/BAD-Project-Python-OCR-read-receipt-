@@ -25,7 +25,7 @@ itemDisplayRouter.get("/getUserID", async (req: Request, res: Response) => {
   };
 });
 
-itemDisplayRouter.get("/getTempClaim", async (req: Request, res: Response) => {
+itemDisplayRouter.post("/getTempClaim", async (req: Request, res: Response) => {
   if (
     req.session === undefined ||
     req.session.user === undefined ||
@@ -150,14 +150,13 @@ itemDisplayRouter.delete(
 
     let missingField = checkReqBody.checkReqBody(req, [
       "itemStringID",
-      "quantity",
       "user_id",
     ]);
     if (missingField !== "") {
       res.json({ error: `Missing ${missingField}` });
     }
 
-    let { itemStringID, quantity, user_id } = req.body;
+    let { itemStringID, user_id } = req.body;
 
     let deleted = false;
     for (let tempClaim of temporarySelections) {
@@ -177,7 +176,6 @@ itemDisplayRouter.delete(
 
     io.to(req.session.user.userID.toString()).emit("removeClaim", {
       itemStringID,
-      quantity,
       user_id,
     });
     res.json({});

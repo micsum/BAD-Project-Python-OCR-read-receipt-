@@ -71,7 +71,7 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
     quantitySelector.addEventListener("select", async function (event) {
       /*
       event.preventDefault();
-      if(await tempClaim("/addTempClaim", "POST")){
+      if(await tempClaim("/updateTempClaim", "PUT").error){
         return
       }
       */
@@ -95,7 +95,15 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
         });
         return;
       }
-      // if(await tempClaim("/updateTempClaim", "PUT")){return}
+      let res = await tempClaim("/addTempClaim", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: { itemStringID: itemID, quantity: 1, user_id: userID },
+      });
+      let result = res.json();
+      if (result.error) {
+        return;
+      }
       document.getElementById(`item${itemID}`).remove();
       createItem(
         itemInfo,
@@ -108,7 +116,17 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
         false
       );
     } else {
-      // if(await tempClaim("/removeTempClaim", "DELETE")){return}
+      let res = await tempClaim("/removeTempClaim", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: { itemStringID: itemID, user_id: userID },
+      });
+      let result = res.json();
+      if (result.error) {
+        return;
+      }
       document.getElementById(`item${itemID}`).remove();
       createItem(
         itemInfo,

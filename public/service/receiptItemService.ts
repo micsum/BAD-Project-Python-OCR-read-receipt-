@@ -1,5 +1,5 @@
 import { Knex } from "knex";
-import { ItemInfo, ClaimItemsInfo } from "../routes/helper";
+import { ClaimItemsInfo } from "../routes/helper";
 
 export class ReceiptItemService {
   constructor(private knex: Knex) {}
@@ -12,17 +12,17 @@ export class ReceiptItemService {
 
     let receiptItemClaimers = await this.knex("receipt_item")
       .where({ receipt_id: receiptID })
-      .innerJoin("item_payer", "item.id", "=", "item_payer.item_id")
+      .innerJoin("item_payer", "receipt_item.id", "=", "item_payer.item_id")
       .innerJoin("user", "item_payer.user_id", "=", "user.id")
-      .select("item.id as item_id", "user.name as user_name");
+      .select("receipt_item.id as item_id", "user.name as user_name");
 
     const itemClaimerMap = new Map();
     for (let claimer of receiptItemClaimers) {
       if (itemClaimerMap.get(claimer.item_id) === undefined) {
-        itemClaimerMap.set(claimer.item_id, claimer.user_id.toString());
+        itemClaimerMap.set(claimer.item_id, claimer.user_name);
       } else {
         let claimerList = itemClaimerMap.get(claimer.item_id);
-        claimerList += ", " + claimer.user_id.toString();
+        claimerList += ", " + claimer.user_name;
         itemClaimerMap.set(claimer.item_id, claimerList);
       }
     }
