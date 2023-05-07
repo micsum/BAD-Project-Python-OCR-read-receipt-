@@ -1,4 +1,6 @@
 //Buffer Line
+const socket = io.connect();
+
 const receipt = document.getElementById("receipt");
 const claimedItems = document.getElementById("claimedItems");
 const receiptItemTemplate = document.getElementById("receiptItem");
@@ -6,17 +8,31 @@ const receiptItemTemplate = document.getElementById("receiptItem");
 let userID, userName;
 let searchParams = new URLSearchParams(location.search);
 let receiptID = searchParams.get("receiptID");
-const socket = io.connect();
 
 let receiptItemsInfo;
 let claimedItemMap = new Map();
 
 window.addEventListener("load", async function (event) {
   event.preventDefault();
-  ({ userID, userName } = await fetch("/getID"));
-
-  let res = await fetch(`/getReceiptItems/${receiptID}`);
+  let res = await fetch("/getID", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: { receiptID },
+  });
   let result = await res.json();
+  if (result.error) {
+    Swal.fire({
+      icon: "error",
+      title: "An error occurred",
+      text: result.error,
+    });
+    return;
+  }
+
+  res = await fetch(`/getReceiptItems/${receiptID}`);
+  result = await res.json();
   if (result.error) {
     Swal.fire({
       icon: "error",
@@ -81,3 +97,11 @@ window.addEventListener("load", async function (event) {
     }
   }
 });
+
+/*
+socket.on("claimItem", ({ claimItemsInfo }) => {
+  let claimUserID = claimItemsInfo[0].user_id;
+
+  for(let )
+});
+*/

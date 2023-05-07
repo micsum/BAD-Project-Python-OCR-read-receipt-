@@ -62,10 +62,13 @@ export class ReceiptItemController {
       );
       const itemQuantityMap = new Map();
       for (let item of receiptItems) {
-        let itemID = item.item_id;
+        let itemStringID = item.item_id;
         let claimableQuantity: number =
           item.quantity - item.claimerList.split(",").length;
-        itemQuantityMap.set(item.item_name, { claimableQuantity, itemID });
+        itemQuantityMap.set(item.item_name, {
+          claimableQuantity,
+          itemStringID,
+        });
       }
       for (let userClaim of claimItems) {
         if (itemQuantityMap.get(userClaim.item_name) === undefined) {
@@ -90,10 +93,10 @@ export class ReceiptItemController {
       let receiptHost = receiptHostResult[0];
       let claimItemsInfo: ClaimItemsInfo[] = [];
       for (let item of claimItems) {
-        let itemID: number = itemQuantityMap.get(item.itemName);
+        let itemStringID: string = itemQuantityMap.get(item.itemName);
         claimItemsInfo.push({
           user_id: userID,
-          item_id: itemID,
+          item_id: itemStringID,
         });
       }
       await this.receiptItemService.claimReceiptItems(
@@ -107,7 +110,9 @@ export class ReceiptItemController {
       this.io.to(receiptHost.toString()).emit("claimNotification", {
         userName: req.session.user.userName,
       });
-      this.io.to(receiptID).emit("claimItem", claimItemsInfo);
+      this.io
+        .to(receiptID)
+        .emit("claimItem", { claimItemInfo: claimItemsInfo });
       res.json({});
       return;
     } catch (error) {
