@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Sweet Alert</title>
+  </head>
+  <body>
+    <h1>Press Button to test Sweet Alert</h1>
+    <button id="test">Press and Wait</button>
+  </body>
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
+  <script>
+    let testButton = document.getElementById("test");
+    testButton.addEventListener("click", async (event) => {
+      event.preventDefault();
+      Swal.fire({
+        icon: "info",
+        title: "<strong>Waiting</strong>",
+        html: "Await Receipt Scanning",
+        didOpen: async () => {
+          Swal.showLoading(), console.log("waiting");
+          let res = await fetch("/test", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ success: true }),
+          });
+          let result = await res.json();
+          console.log(result);
+          if (result.error) {
+            Swal.fire({
+              icon: "error",
+              title: "An Error Occurred",
+              text: result.error,
+            });
+          } else {
+            window.location.href = "./testSweetAlert/testSuccess.html";
+          }
+        },
+      });
+    });
+  </script>
+</html>
