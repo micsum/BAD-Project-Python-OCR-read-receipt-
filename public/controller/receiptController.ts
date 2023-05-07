@@ -14,20 +14,22 @@ export class ReceiptController {
   ) {
     this.receiptMap = new Map();
     this.router.post("/uploadReceipt", this.uploadReadReceipt);
-    this.router.post("/insertReceiptItems", this.insertReceiptItems);
+    //this.router.post("/insertReceiptItems", this.insertReceiptItems);
   }
 
   uploadReadReceipt = async (req: Request, res: Response) => {
     //console.log("test upload");
 
-    // if (
-    //   req.session === undefined ||
-    //   req.session.user === undefined ||
-    //   req.session.user.userID === undefined
-    // ) {
-    //   res.status(401).json({ error: "User Not Found" });
-    //   return;
-    // }
+     //if (
+     //  req.session === undefined ||
+     //  req.session.user === undefined ||
+     //  req.session.user.userID === undefined
+     //) {
+     //  res.status(401).json({ error: "User Not Found" });
+     //  return;
+     //}
+     //let userID = req.session.user.userID;
+     let responseData;
     this.form.parse(req, async (err, fields, files) => {
       if (err) {
         console.error(err);
@@ -52,20 +54,22 @@ export class ReceiptController {
       });
       let response = await toPython.json();
 
-      let userID = req.session.user.userID;
-      let id = await this.receiptService.createReceipt(filename, userID);
-
-      this.receiptMap.set(userID, { id: id, data: response });
-      console.log(this.receiptMap);
-      //console.log(response.data); fetch data from python easyocr
-
+      //let id = await this.receiptService.createReceipt(filename, userID);
+//
+      //this.receiptMap.set(userID, { id: id, data: response });
+      //console.log(this.receiptMap);
+      responseData=response.data
+      console.log(response.data); //fetch data from python easyocr
       //console.log("filename", filename);
 
       //console.log(path.join(uploadDir + "/" + filename)); test path name and send to python server
       //this.receiptService.createReceipt(filename, req.session.user.userID); update DB immediately after scan?
     });
-    res.json({ success: true });
+    if(typeof responseData != "undefined"){
+      res.json({success: true, data:responseData});
+    }else{res.json({ success: true, data:"receipt content fail to load" })
   };
+};
 
   insertReceiptItems = async (req: Request, res: Response) => {
     if (

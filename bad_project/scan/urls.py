@@ -17,7 +17,7 @@ def readReceipt(request: HttpRequest):
         filepath = data.get("filepath")
         # print("filepath", filepath)
         itemText = receiptToTextContent("../"+filepath)
-        # print("itemText",itemText)
+        #print("itemText",itemText)
         response_data = {"data": itemText}
     return JsonResponse(response_data, status=200)
 
