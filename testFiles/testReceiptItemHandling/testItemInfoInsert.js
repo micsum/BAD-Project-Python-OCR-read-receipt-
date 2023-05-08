@@ -1,3 +1,4 @@
+// Buffer Line
 itemList = [
   { item_name: "bread", price: 5.5, quantity: 3 },
   { item_name: "milk", price: 16.5, quantity: 2 },

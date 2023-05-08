@@ -2,6 +2,7 @@
 import { Request, Response, Router } from "express";
 import { io } from "../../server";
 import { TemporaryClaimSelection, CheckReq } from "./helper";
+import { knex } from "./../../db";
 
 export let itemDisplayRouter = Router();
 let checkReqBody = new CheckReq();
@@ -19,13 +20,44 @@ itemDisplayRouter.get("/getUserID", async (req: Request, res: Response) => {
     res.json({ error: "Please Login" });
     return;
   }
-  return {
-    userID: req.session.user.userID,
-    userName: req.session.user.userName,
-  };
+
+  if (req.body === undefined || req.body.receiptID === undefined) {
+    res.json({ error: "Insufficient Information Submitted" });
+  }
+  try {
+    let receiptRecipients = await knex("receipt")
+      .where({ receipt_id: req.body.receiptID })
+      .innerJoin(
+        "receipt_recipient",
+        "receipt_recipient.receipt_id",
+        "=",
+        "receipt.id"
+      )
+      .select("to_individual");
+    let userFound = false;
+    for (let recipient of receiptRecipients) {
+      if (recipient.to_individual === req.session.user.userID) {
+        userFound = !userFound;
+        break;
+      }
+    }
+    if (userFound) {
+      res.json({
+        userID: req.session.user.userID,
+        userName: req.session.user.userName,
+      });
+    } else {
+      res.json({
+        error: "User was not Invited to Claim Items in this Receipt",
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.json({ error });
+  }
 });
 
-itemDisplayRouter.get("/getTempClaim", async (req: Request, res: Response) => {
+itemDisplayRouter.post("/getTempClaim", async (req: Request, res: Response) => {
   if (
     req.session === undefined ||
     req.session.user === undefined ||
@@ -150,14 +182,13 @@ itemDisplayRouter.delete(
 
     let missingField = checkReqBody.checkReqBody(req, [
       "itemStringID",
-      "quantity",
       "user_id",
     ]);
     if (missingField !== "") {
       res.json({ error: `Missing ${missingField}` });
     }
 
-    let { itemStringID, quantity, user_id } = req.body;
+    let { itemStringID, user_id } = req.body;
 
     let deleted = false;
     for (let tempClaim of temporarySelections) {
@@ -177,7 +208,6 @@ itemDisplayRouter.delete(
 
     io.to(req.session.user.userID.toString()).emit("removeClaim", {
       itemStringID,
-      quantity,
       user_id,
     });
     res.json({});

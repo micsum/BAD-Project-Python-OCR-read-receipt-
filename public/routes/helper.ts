@@ -60,7 +60,7 @@ export type ItemInfo = {
 
 export type ClaimItemsInfo = {
   user_id: number;
-  item_id: number;
+  item_id: string;
 };
 
 export type TemporaryClaimSelection = {
@@ -75,5 +75,5 @@ export type TemporaryClaimSelection = {
     price: decimal,
     quantity: number,
     item_id: string,
-    claimerList?: string
+    claimerList: string
   } */

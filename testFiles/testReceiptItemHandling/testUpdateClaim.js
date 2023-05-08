@@ -42,9 +42,9 @@ if (!updated) {
 */
 
 /* Delete Claim */
-deleteClaim = { user_id: 2, itemStringID: "thisIsMilk", quantity: 1 };
+deleteClaim = { user_id: 2, itemStringID: "thisIsMilk" };
 
-let { itemStringID, quantity, user_id } = deleteClaim;
+let { itemStringID, user_id } = deleteClaim;
 
 let deleted = false;
 for (let tempClaim of temporarySelections) {

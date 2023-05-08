@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Receipt</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.all.js" integrity="sha512-AINSNy+d2WG9ts1uJvi8LZS42S8DT52ceWey5shLQ9ArCmIFVi84nXNrvWyJ6bJ+qIb1MnXR46+A4ic/AUcizQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.css" integrity="sha512-yqCpLPABHnpDe3/QgEm1OO4Ohq0BBlBtJGMh5JbhdYEb6nahIm7sbtjilfSFyzUhxdXHS/cm8+FYfNstfpxcrg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script type="text/javascript" src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"></script>
+    <link href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css" rel="stylesheet">
+  </head>
+  <body>
+    <div id="itemList"></div>
+    <div>
+      <label for="attachment">Uploaded Receipt</label>
+    </div>
+    <div id="viewImage"></div>
+  </body>
+  <script>
+
+
+    window.addEventListener("load",async()=>{
+      const searchParams = new URLSearchParams(location.search);
+      const id = searchParams.get()
+      let viewImageDiv = document.querySelector("#viewImage")
+
+      const uploadedImage = await fetch (`/receiptImage/${id}`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"}
+      })
+    
+    const fileInfo = await uploadedImage.json()
+    let filepath = fileInfo.filepath
+    let element;
+    element = document.createElement('img');
+    element.setAttribute("src",filepath);
+    element.addEventListener('click',()=>{
+      Swal.fire({
+        imageUrl:element.src,
+        showCloseButton:true,
+        showConfirmButton:false,
+        imageWidth:500,
+      })
+    })
+    viewImageDiv.appendChild(element)
+    })
+    
+
+    
+const data = [
+  [ [ '麻辣牛肉并' ], [ '$76.00' ] ],
+  [ [ '旦式咖喱煎' ], [ '$93.00' ] ],
+  [ [ '滑蛋汁燒鰻' ], [ '$94.00' ] ],
+  [ [ '1x 七味牛肉#' ], [ '$76.00' ] ],
+  [ [ '小計', '增值稅' ], [ '$585.00' ] ],
+  [ [ '增值稅' ], [ '$5.00' ] ],
+  [ [ '外虱自取盯單' ], [ '-$292.50' ] ],
+  [ [ '總計', '雖扒蛋蓋飯', '魚并' ], [ '$297.50' ] ]
+];
+
+const table = document.createElement('table');
+
+const headerRow = document.createElement('tr');
+const itemNameHeader = document.createElement('th');
+itemNameHeader.textContent = "Item Name";
+headerRow.appendChild(itemNameHeader);
+
+const priceHeader = document.createElement('th');
+priceHeader.textContent = "Price";
+headerRow.appendChild(priceHeader);
+
+const quantityHeader = document.createElement('th');
+quantityHeader.textContent = "Quantity";
+headerRow.appendChild(quantityHeader);
+
+table.appendChild(headerRow);
+
+data.forEach((row) => {
+  const tableRow = document.createElement('tr');
+  const itemNameCell = document.createElement('td');
+  itemNameCell.textContent = row[0][0];
+  tableRow.appendChild(itemNameCell);
+  const priceCell = document.createElement('td');
+  priceCell.textContent = row[1][0];
+  tableRow.appendChild(priceCell);
+  table.appendChild(tableRow);
+});
+
+document.getElementById('itemList').appendChild(table);
+  </script>
+</html>

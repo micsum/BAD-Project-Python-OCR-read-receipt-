@@ -1,3 +1,4 @@
+// Buffer Line
 let receiptItems = [
   {
     id: 1,

@@ -76,6 +76,7 @@ def receiptToTextContent(imagePath):
             for char in string:
                 if elemIsPriceTagElem(char):
                     priceTag += char
+                    
             pytPriceTagList.append(priceTag)
     print(f"pyt Result List : {pytPriceTagList}")
 
