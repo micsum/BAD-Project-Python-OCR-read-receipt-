@@ -1,6 +1,4 @@
 //Buffer Line
-const socket = io.connect();
-
 const receipt = document.getElementById("receipt");
 const claimedItems = document.getElementById("claimedItems");
 const receiptItemTemplate = document.getElementById("receiptItem");
@@ -98,10 +96,14 @@ window.addEventListener("load", async function (event) {
   }
 });
 
-/*
-socket.on("claimItem", ({ claimItemsInfo }) => {
+socket.on("claimItem", ({ claimItemsInfo, claimUserName }) => {
   let claimUserID = claimItemsInfo[0].user_id;
-
-  for(let )
+  if (claimUserID == userID) {
+    window.location.href = ""; //redirect to main page
+  }
+  for (let item of claimItemsInfo) {
+    let itemStringID = item.itemStringID;
+    let claimerList = document.getElementById(`claimedUser${itemStringID}`);
+    claimerList.textContent += ", " + claimUserName + ` x${item.quantity}`;
+  }
 });
-*/

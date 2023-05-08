@@ -2,6 +2,7 @@ import { Request, Response, Router } from "express";
 import { Server as socketIO } from "socket.io";
 import { ReceiptItemService } from "../service/receiptItemService";
 import { ClaimItemsInfo } from "../routes/helper";
+import { removeTempClaim } from "../routes/displayRouter";
 
 export class ReceiptItemController {
   router = Router();
@@ -99,20 +100,28 @@ export class ReceiptItemController {
           item_id: itemStringID,
         });
       }
-      await this.receiptItemService.claimReceiptItems(
-        claimItemsInfo,
-        req.params.receiptID,
-        receiptHost,
-        req.session.user.userID,
-        req.session.user.userName
-      );
+      try {
+        await this.receiptItemService.claimReceiptItems(
+          claimItemsInfo,
+          req.params.receiptID,
+          receiptHost,
+          req.session.user.userID,
+          req.session.user.userName
+        );
+      } catch (error) {
+        console.log(error);
+        res.json(error);
+      }
+
+      removeTempClaim(claimItemsInfo);
 
       this.io.to(receiptHost.toString()).emit("claimNotification", {
         userName: req.session.user.userName,
       });
-      this.io
-        .to(receiptID)
-        .emit("claimItem", { claimItemInfo: claimItemsInfo });
+      this.io.to(receiptID).emit("claimItem", {
+        claimItemInfo: req.body.itemList,
+        claimUserName: req.session.user.userName,
+      });
       res.json({});
       return;
     } catch (error) {
