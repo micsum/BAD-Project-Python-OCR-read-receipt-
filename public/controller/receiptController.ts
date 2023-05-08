@@ -15,6 +15,7 @@ export class ReceiptController {
     this.receiptMap = new Map();
     this.router.post("/uploadReceipt", this.uploadReadReceipt);
     //this.router.post("/insertReceiptItems", this.insertReceiptItems);
+    this.router.post("/receiptImage/:id",this.viewReceipt)
   }
 
   uploadReadReceipt = async (req: Request, res: Response) => {
@@ -29,7 +30,7 @@ export class ReceiptController {
      //  return;
      //}
      //let userID = req.session.user.userID;
-     let responseData;
+    
     this.form.parse(req, async (err, fields, files) => {
       if (err) {
         console.error(err);
@@ -58,18 +59,23 @@ export class ReceiptController {
 //
       //this.receiptMap.set(userID, { id: id, data: response });
       //console.log(this.receiptMap);
-      responseData=response.data
+      let responseData=response.data
       console.log(response.data); //fetch data from python easyocr
       //console.log("filename", filename);
-
+      if(responseData === "undefined"){
+      res.json({success: true, error:"receipt content fail to load"});
+    }else{res.json({ success: true, data:responseData})
+  };
       //console.log(path.join(uploadDir + "/" + filename)); test path name and send to python server
       //this.receiptService.createReceipt(filename, req.session.user.userID); update DB immediately after scan?
-    });
-    if(typeof responseData != "undefined"){
-      res.json({success: true, data:responseData});
-    }else{res.json({ success: true, data:"receipt content fail to load" })
-  };
+    });  
 };
+
+  viewReceipt = async(req:Request, res:Response)=>{
+    
+  }
+
+
 
   insertReceiptItems = async (req: Request, res: Response) => {
     if (

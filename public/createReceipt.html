@@ -12,8 +12,42 @@
   </head>
   <body>
     <div id="itemList"></div>
+    <div>
+      <label for="attachment">Uploaded Receipt</label>
+    </div>
+    <div id="viewImage"></div>
   </body>
   <script>
+
+
+    window.addEventListener("load",async()=>{
+      const searchParams = new URLSearchParams(location.search);
+      const id = searchParams.get()
+      let viewImageDiv = document.querySelector("#viewImage")
+
+      const uploadedImage = await fetch (`/receiptImage/${id}`,{
+        method:"POST",
+        headers:{"Content-Type":"application/json"}
+      })
+    
+    const fileInfo = await uploadedImage.json()
+    let filepath = fileInfo.filepath
+    let element;
+    element = document.createElement('img');
+    element.setAttribute("src",filepath);
+    element.addEventListener('click',()=>{
+      Swal.fire({
+        imageUrl:element.src,
+        showCloseButton:true,
+        showConfirmButton:false,
+        imageWidth:500,
+      })
+    })
+    viewImageDiv.appendChild(element)
+    })
+    
+
+    
 const data = [
   [ [ '麻辣牛肉并' ], [ '$76.00' ] ],
   [ [ '旦式咖喱煎' ], [ '$93.00' ] ],
