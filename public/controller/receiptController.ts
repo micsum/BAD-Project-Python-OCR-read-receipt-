@@ -20,14 +20,15 @@ export class ReceiptController {
   uploadReadReceipt = async (req: Request, res: Response) => {
     //console.log("test upload");
 
-    // if (
-    //   req.session === undefined ||
-    //   req.session.user === undefined ||
-    //   req.session.user.userID === undefined
-    // ) {
-    //   res.status(401).json({ error: "User Not Found" });
-    //   return;
-    // }
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined
+    ) {
+      res.status(401).json({ error: "User Not Found" });
+      return;
+    }
+    let userID = req.session.user.userID;
     this.form.parse(req, async (err, fields, files) => {
       if (err) {
         console.error(err);
@@ -52,7 +53,6 @@ export class ReceiptController {
       });
       let response = await toPython.json();
 
-      let userID = req.session.user.userID;
       let id = await this.receiptService.createReceipt(filename, userID);
 
       this.receiptMap.set(userID, { id: id, data: response });
@@ -67,6 +67,7 @@ export class ReceiptController {
     res.json({ success: true });
   };
 
+  // todo
   insertReceiptItems = async (req: Request, res: Response) => {
     if (
       req.session === undefined ||

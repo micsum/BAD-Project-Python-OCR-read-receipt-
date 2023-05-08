@@ -1,5 +1,6 @@
 import { Knex } from "knex";
 import { ItemInfo } from "../routes/helper";
+
 export class ReceiptService {
   constructor(private knex: Knex) {}
 
