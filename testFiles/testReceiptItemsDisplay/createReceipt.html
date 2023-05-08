@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Receipt</title>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.all.js"
+      integrity="sha512-AINSNy+d2WG9ts1uJvi8LZS42S8DT52ceWey5shLQ9ArCmIFVi84nXNrvWyJ6bJ+qIb1MnXR46+A4ic/AUcizQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.css"
+      integrity="sha512-yqCpLPABHnpDe3/QgEm1OO4Ohq0BBlBtJGMh5JbhdYEb6nahIm7sbtjilfSFyzUhxdXHS/cm8+FYfNstfpxcrg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      type="text/javascript"
+      src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"
+    ></script>
+    <link
+      href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div>
+      <label for="attachment">Uploaded Receipt</label>
+    </div>
+
+    <div id="templateList"></div>
+    <div id="viewImage"></div>
+
+    <div class="itemNameHeader">Items</div>
+    <div class="quantityHeader">Quantity</div>
+    <div class="priceHeader">Price</div>
+    <div class="deleteHeader">Delete</div>
+    <template id="itemList">
+      <div class="itemDiv">
+        <input type="text" class="itemName" />
+        <input type="text" class="quantity" />
+        <input type="text" class="price" />
+        <input type="button" value="Delete" class="deleteBtn" />
+      </div>
+    </template>
+  </body>
+  <script>
+    // window.addEventListener("load", async () => {
+    //   const searchParams = new URLSearchParams(location.search);
+    //   const id = searchParams.get();
+    //   let viewImageDiv = document.querySelector("#viewImage");
+    //
+    //   const uploadedImage = await fetch(`/receiptImage/${id}`, {
+    //     method: "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //   });
+    //
+    //   const fileInfo = await uploadedImage.json();
+    //   let filepath = fileInfo.filepath;
+    //   let element;
+    //   element = document.createElement("img");
+    //   element.setAttribute("src", filepath);
+    //   element.addEventListener("click", () => {
+    //     Swal.fire({
+    //       imageUrl: element.src,
+    //       showCloseButton: true,
+    //       showConfirmButton: false,
+    //       imageWidth: 500,
+    //     });
+    //   });
+    //   viewImageDiv.appendChild(element);
+    // });
+
+    //const data = JSON.parse(localStorage.getItem("itemData")); using localstorage
+
+    //const res = await fetch("/loadReceiptItems",{
+    // method:"GET",
+    // headers:{"Content-Type": "application/json"}
+    //})
+    //
+    //const result = await res.json();
+    //const itemList = result.itemList
+    //const data = itemList
+    const data = [
+      [["麻辣牛肉并"], ["$76.00"]],
+      [["旦式咖喱煎"], ["$93.00"]],
+      [["滑蛋汁燒鰻"], ["$94.00"]],
+      [["1x 七味牛肉#"], ["$76.00"]],
+      [["小計", "增值稅"], ["$585.00"]],
+      [["增值稅"], ["$5.00"]],
+      [["外虱自取盯單"], ["-$292.50"]],
+      [["總計", "雖扒蛋蓋飯", "魚并"], ["$297.50"]],
+    ];
+
+    const itemListTemplate = document.querySelector("#itemList");
+    const templateList = document.querySelector("#templateList");
+    function itemClone(data, id) {
+      let node = itemListTemplate.content.cloneNode(true);
+      const deleteBtn = node.querySelector(".deleteBtn");
+      let itemDiv = node.querySelector(".itemDiv");
+      itemDiv.setAttribute("id", `item${id}`);
+
+      let itemName = data[0].join();
+
+      while (itemName.indexOf(",") != -1) {
+        itemName = itemName.replace(",", " ");
+      }
+      node.querySelector(".itemName").value = itemName;
+
+      node.querySelector(".quantity").value = 1;
+      node.querySelector(".price").value = data[1];
+
+      deleteBtn.addEventListener("click", () => {
+        document.getElementById(`item${id}`).remove();
+      });
+
+      templateList.appendChild(node);
+    }
+
+    for (let i = 0; i < data.length; i++) {
+      itemClone(data[i], i.toString());
+    }
+
+    const table = document.createElement("table");
+    table.setAttribute("id", "table");
+    createdTable = document.querySelector("#table");
+
+    const headerRow = document.createElement("thead");
+    const itemNameHeader = document.createElement("th");
+    itemNameHeader.textContent = "Items";
+    headerRow.appendChild(itemNameHeader);
+
+    const quantityHeader = document.createElement("th");
+    quantityHeader.textContent = "Quantity";
+    headerRow.appendChild(quantityHeader);
+
+    const priceHeader = document.createElement("th");
+    priceHeader.textContent = "Price";
+    headerRow.appendChild(priceHeader);
+
+    const deleteHeader = document.createElement("th");
+    deleteHeader.textContent = "Delete";
+    headerRow.appendChild(deleteHeader);
+
+    const footRow = document.createElement("tfoot");
+    const discountHeader = document.createElement("tr");
+    discountHeader.textContent = "Discount";
+    const discountCell = document.createElement("td");
+    const discountInput = document.createElement("input");
+    discountCell.appendChild(discountInput);
+    discountHeader.appendChild(discountCell);
+
+    const totalHeader = document.createElement("tr");
+    totalHeader.textContent = "Total";
+    const totalCell = document.createElement("td");
+    const totalInput = document.createElement("input");
+    totalCell.appendChild(totalInput);
+    totalHeader.appendChild(totalCell);
+
+    const transactionHeader = document.createElement("tr");
+    transactionHeader.textContent = "Transaction Date";
+    const transactionCell = document.createElement("td");
+    const transactionDate = document.createElement("input");
+    transactionDate.setAttribute("type", "date");
+    transactionCell.appendChild(transactionDate);
+    transactionHeader.appendChild(transactionCell);
+
+    const spaceHeader = document.createElement("td");
+    footRow.appendChild(spaceHeader);
+
+    footRow.appendChild(discountHeader);
+    footRow.appendChild(totalHeader);
+    footRow.appendChild(transactionHeader);
+
+    table.appendChild(headerRow);
+    table.appendChild(footRow);
+
+    const tableBody = document.createElement("tbody");
+    data.forEach((row) => {
+      const tableRow = document.createElement("tr");
+      const itemNameCell = document.createElement("td");
+
+      let itemName = row[0].join();
+      while (itemName.indexOf(",") != -1) {
+        itemName = itemName.replace(",", " ");
+      }
+      const itemNameInput = document.createElement("input");
+      itemNameInput.setAttribute("id", "itemName");
+      itemNameInput.value = itemName;
+      itemNameCell.appendChild(itemNameInput);
+      tableRow.appendChild(itemNameCell);
+
+      const quantityCell = document.createElement("td");
+      const quantityInput = document.createElement("input");
+      quantityInput.setAttribute("id", "quantity");
+      quantityInput.value = 1;
+      quantityCell.appendChild(quantityInput);
+      tableRow.appendChild(quantityCell);
+
+      const priceCell = document.createElement("td");
+      const priceInput = document.createElement("input");
+      priceInput.setAttribute("id", "priceInput");
+      priceInput.value = row[1][0];
+      priceCell.appendChild(priceInput);
+      tableRow.appendChild(priceCell);
+
+      const deleteCell = document.createElement("td");
+      deleteCell.innerHTML = `<button id="editButton">Delete</button>`;
+      tableRow.appendChild(deleteCell);
+
+      tableBody.appendChild(tableRow);
+      table.appendChild(tableBody);
+    });
+
+    let itemName = document.querySelectorAll("#itemName");
+    itemName.forEach((element) => {
+      element.addEventListener("input", () => {
+        const itemName = localStorage.setItem("itemName", element.value);
+      });
+    });
+
+    let priceInput = document.querySelectorAll("#priceInput");
+    priceInput.forEach((element) => {
+      element.addEventListener("input", () => {
+        const priceInput = localStorage.setItem("priceInput", element.value);
+      });
+    });
+
+    let quantity = document.querySelectorAll("#quantity");
+    quantity.forEach((element) => {
+      element.addEventListener("input", () => {
+        const quantity = localStorage.setItem("quantity", element.value);
+      });
+    });
+
+    document.getElementById("itemList").appendChild(table);
+  </script>
+</html>
