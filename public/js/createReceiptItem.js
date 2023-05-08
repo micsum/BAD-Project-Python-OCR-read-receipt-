@@ -8,6 +8,29 @@ function getAvailableQuantity(quantity, claimedUserName) {
   return quantity - claimedQuantity;
 }
 
+function formatClaimedUserNameList(claimedUserName) {
+  let nameList = claimedUserName.split(",");
+  let previousName = "";
+  let finalString = "";
+  let nameCount = 0;
+
+  for (let userName of nameList) {
+    if (userName.trim() == previousName.trim()) {
+      nameCount++;
+    } else {
+      if (previousName != "") {
+        finalString += `${previousName} x${nameCount + 1}, `;
+        nameCount = 0;
+      }
+    }
+    previousName = userName;
+  }
+  if (previousName != "") {
+    finalString += `${previousName} x${nameCount + 1} `;
+  }
+  return finalString;
+}
+
 function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
   let { quantity, itemName, itemID, price } = itemInfo;
 
@@ -24,6 +47,7 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
   if (claim) {
     let claimUserText = document.createElement("span");
     let claimUserDiv = document.createElement("div");
+    claimedUserName = formatClaimedUserNameList(claimedUserName);
     claimUserText.textContent = claimedUserName;
     claimUserText.setAttribute("id", `claimedUser${itemID}`);
     claimUserDiv.textContent = "Claimed by : ";

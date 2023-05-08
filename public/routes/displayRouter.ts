@@ -1,13 +1,19 @@
 // Buffer Line
 import { Request, Response, Router } from "express";
-import { io } from "../../server";
-import { TemporaryClaimSelection, CheckReq } from "./helper";
-import { knex } from "./../../db";
+import { TemporaryClaimSelection, ClaimItemsInfo, CheckReq } from "./helper";
+import { knex } from "../../db";
 
 export let itemDisplayRouter = Router();
 let checkReqBody = new CheckReq();
 
 let temporarySelections: TemporaryClaimSelection[] = [];
+export function removeTempClaim(itemList: ClaimItemsInfo[]) {
+  for (let item of itemList) {
+    temporarySelections = temporarySelections.filter(function (elem) {
+      return elem.itemStringID != item.item_id && elem.user_id != item.user_id;
+    });
+  }
+}
 
 itemDisplayRouter.get("/getUserID", async (req: Request, res: Response) => {
   if (
@@ -113,11 +119,6 @@ itemDisplayRouter.post("/addTempClaim", async (req: Request, res: Response) => {
   }
 
   temporarySelections.push(req.body);
-  io.to(req.session.user.userID.toString()).emit("addClaim", {
-    itemStringID,
-    quantity,
-    user_id,
-  });
   res.json({});
 });
 
@@ -159,11 +160,6 @@ itemDisplayRouter.put(
       res.json({ error: "Claim Record Not Found" });
     }
 
-    io.to(req.session.user.userID.toString()).emit("updateClaim", {
-      itemStringID,
-      quantity,
-      user_id,
-    });
     res.json({});
   }
 );
@@ -205,11 +201,66 @@ itemDisplayRouter.delete(
     if (!deleted) {
       res.json({ error: "Claim Record Not Found" });
     }
-
-    io.to(req.session.user.userID.toString()).emit("removeClaim", {
-      itemStringID,
-      user_id,
-    });
     res.json({});
+  }
+);
+
+itemDisplayRouter.get(
+  "getNotifications",
+  async (req: Request, res: Response) => {
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined ||
+      req.session.user.isLogin === false
+    ) {
+      res.json({ error: "Please Login" });
+      return;
+    }
+
+    let userID = req.session.user.userID;
+    try {
+      let notificationResult = await knex("notification")
+        .where({ from: userID })
+        .orWhere({ to: userID })
+        .innerJoin("receipt", { "notification.receipt_id": "receipt.id" })
+        .select(
+          "notification.from",
+          "notification.to",
+          "notification.payment",
+          "receipt.id as receipt_id",
+          "notification.information"
+        )
+        .limit(30)
+        .offset(6)
+        .orderBy("id", "desc");
+
+      let secondParty: number[] = [];
+      for (let notification of notificationResult) {
+        if (secondParty.indexOf(notification.from) == -1) {
+          secondParty.push(notification.from);
+        } else if (secondParty.indexOf(notification.to) == -1) {
+          secondParty.push(notification.to);
+        }
+      }
+      let userNameResult = await knex("user")
+        .select("id", "name")
+        .where("id", secondParty);
+
+      const userIDNameMap = new Map();
+      for (let userName of userNameResult) {
+        userIDNameMap.set(userName.id, userName.name);
+      }
+
+      for (let notification of notificationResult) {
+        notification.from = userIDNameMap.get(notification.from);
+        notification.to = userIDNameMap.get(notification.to);
+      }
+
+      res.json({ notifications: notificationResult });
+    } catch (error) {
+      console.log(error);
+      res.json(error);
+    }
   }
 );
