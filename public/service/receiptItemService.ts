@@ -61,7 +61,7 @@ export class ReceiptItemService {
     receiptPayer: number,
     payerUsername: string
   ) {
-    let itemArray: number[] = [];
+    let itemArray: string[] = [];
     for (let item of claimItemsInfo) {
       itemArray.push(item.item_id);
     }
@@ -74,7 +74,7 @@ export class ReceiptItemService {
         "receipt_item.item_name as itemName",
         "receipt_item.price as itemPrice"
       )
-      .where("id", itemArray);
+      .where("receipt_item.item_id", itemArray);
 
     let receiptID: number = -1;
     let itemList: string = "";

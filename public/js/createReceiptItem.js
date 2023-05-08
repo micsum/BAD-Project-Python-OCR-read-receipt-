@@ -8,30 +8,6 @@ function getAvailableQuantity(quantity, claimedUserName) {
   return quantity - claimedQuantity;
 }
 
-async function tempClaim(path, method) {
-  let res = await fetch(path, {
-    method: method,
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      itemStringID: itemID,
-      quantity: quantity,
-      user_id: userID,
-    }),
-  });
-  let result = await res.json();
-  if (result.error) {
-    Swal.fire({
-      icon: "error",
-      title: "An Error Occurred",
-      text: result.error,
-    });
-    return true;
-  }
-  return false;
-}
-
 function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
   let { quantity, itemName, itemID, price } = itemInfo;
 
@@ -69,12 +45,15 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
       quantitySelector.appendChild(option);
     }
     quantitySelector.addEventListener("select", async function (event) {
-      /*
       event.preventDefault();
-      if(await tempClaim("/updateTempClaim", "PUT").error){
-        return
+      let res = await fetch("/updateTempClaim", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+      });
+      let result = await res.json();
+      if (result.error) {
+        return;
       }
-      */
     });
     quantityDisplay.innerHTML = "";
     quantityDisplay.appendChild(quantitySelector);
@@ -95,7 +74,7 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
         });
         return;
       }
-      let res = await tempClaim("/addTempClaim", {
+      let res = await fetch("/addTempClaim", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: { itemStringID: itemID, quantity: 1, user_id: userID },
@@ -116,7 +95,7 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
         false
       );
     } else {
-      let res = await tempClaim("/removeTempClaim", {
+      let res = await fetch("/removeTempClaim", {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
