@@ -53,10 +53,8 @@ export class ReceiptItemController {
     let receiptID = req.params.receiptID;
     let claimItems = req.body.itemList;
     try {
-      if (
-        await this.receiptItemService.checkUserClaimHistory(userID, receiptID)
-      ) {
-        res.json({ error: "User Already Claimed Items" });
+      if (await this.receiptItemService.checkReceiptClaimStatus(receiptID)) {
+        res.json({ error: "This Receipt is Closed for Selections" });
       }
       let receiptItems = await this.receiptItemService.getReceiptItems(
         receiptID

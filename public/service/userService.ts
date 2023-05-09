@@ -53,4 +53,8 @@ export class UserService implements ObjectAny {
   async registerNewUser(formObject: ObjectAny) {
     await this.knex("user").insert(formObject);
   }
+
+  async checkEmailExistence(email: string) {
+    return await this.knex("user").select("id").where({ email: email });
+  }
 }

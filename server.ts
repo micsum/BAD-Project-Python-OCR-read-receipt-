@@ -6,8 +6,8 @@ import socketIO from "socket.io";
 import http from "http";
 import { knex } from "./db";
 import { sessionMiddleware } from "./public/routes/helper";
-import { ReceiptController } from "./public/controller/receiptController";
-import { ReceiptService } from "./public/service/receiptService";
+import { ReceiptController } from "./public/controller/createReceiptController";
+import { ReceiptService } from "./public/service/createReceiptService";
 import { uploadDir, form } from "./public/routes/helper";
 
 const receiptService = new ReceiptService(knex);

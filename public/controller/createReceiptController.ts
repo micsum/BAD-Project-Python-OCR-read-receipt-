@@ -1,5 +1,5 @@
 import { Request, Response, Router } from "express";
-import { ReceiptService } from "../service/receiptService";
+import { ReceiptService } from "../service/createReceiptService";
 import IncomingForm from "formidable/Formidable";
 import path from "path";
 import { uploadDir } from "../routes/helper";

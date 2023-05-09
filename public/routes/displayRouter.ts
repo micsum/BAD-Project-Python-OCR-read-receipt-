@@ -117,13 +117,19 @@ itemDisplayRouter.post("/addTempClaim", async (req: Request, res: Response) => {
   ) {
     res.json({ error: "Wrong Data Input for Claiming Item" });
   }
+  let claimInfo = {
+    user_id: user_id,
+    itemStringID: itemStringID,
+    quantity: quantity,
+    addition: true,
+  };
 
-  temporarySelections.push(req.body);
+  temporarySelections.push(claimInfo);
   res.json({});
 });
 
 itemDisplayRouter.put(
-  "/updateItemClaim",
+  "/updateItemQuantity",
   async (req: Request, res: Response) => {
     if (
       req.session === undefined ||

@@ -37,21 +37,14 @@ export class ReceiptItemService {
     return receiptItems;
   }
 
-  async checkUserClaimHistory(userID: number, receiptStringID: string) {
-    let receiptID = await this.knex("receipt").select({
-      receipt_id: receiptStringID,
-    });
-    let receiptHistory = await this.knex("receipt_item")
-      .where({ receipt_id: receiptID })
-      .innerJoin("item_payer", "receipt_item.id", "=", "item_payer.item_id")
-      .select("item_payer.user_id as userID");
+  async checkReceiptClaimStatus(receiptStringID: string) {
+    let receiptStatus = await this.knex("receipt")
+      .select("confirm_selection")
+      .where({
+        receipt_id: receiptStringID,
+      });
 
-    for (let payerUserID of receiptHistory) {
-      if (payerUserID === userID) {
-        return true;
-      }
-    }
-    return false;
+    return receiptStatus;
   }
 
   async claimReceiptItems(

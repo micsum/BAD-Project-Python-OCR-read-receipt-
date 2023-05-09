@@ -70,7 +70,7 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
     }
     quantitySelector.addEventListener("select", async function (event) {
       event.preventDefault();
-      let res = await fetch("/updateTempClaim", {
+      let res = await fetch("/updateItemQuantity", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
       });

@@ -1,12 +1,15 @@
 import { Request, Response, Router } from "express";
 import * as bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 import { UserService } from "../service/userService";
 import { CheckReq, ObjectAny } from "../routes/helper";
 
 export class UserController extends CheckReq implements ObjectAny {
   router = Router();
+  JWT_SECRET: string;
   constructor(private userService: UserService) {
     super();
+    this.JWT_SECRET = "fullStackMicIsAmazing";
     this.router.post("/login", this.userLogin);
     this.router.post("/register", this.userRegister);
   }
@@ -101,6 +104,40 @@ export class UserController extends CheckReq implements ObjectAny {
       userPassword = await this.hashPassword(userPassword);
       formObject["password"] = userPassword;
       await this.userService.registerNewUser(formObject);
+    } catch (error) {
+      console.log(error);
+      res.json({ error });
+    }
+  };
+
+  forgotPassword = async (req: Request, res: Response) => {
+    if (
+      req.body === undefined ||
+      req.body.email === undefined ||
+      /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(req.body.email) ===
+        false
+    ) {
+      res.json({
+        error: "Invalid Email Submitted, Please Enter a Valid Email",
+      });
+    }
+
+    let requestedEmail = req.body.email;
+
+    try {
+      let result = await this.userService.checkEmailExistence(requestedEmail);
+      let userID = result[0].id;
+      if (userID === undefined) {
+        res.json({ error: "This User was not Registered" });
+      }
+      const payload = {
+        email: requestedEmail,
+        userID: userID,
+      };
+      const token = jwt.sign(payload, this.JWT_SECRET, { expiresIn: "15m" });
+      const link = `http://localhost:8105/forgotpw/${userID}/${token}`;
+      //TODO
+      res.json({});
     } catch (error) {
       console.log(error);
       res.json({ error });
