@@ -1,8 +1,8 @@
 import { Request, Response, Router } from "express";
 import { Server as socketIO } from "socket.io";
-import { ReceiptItemService } from "../service/receiptItemService";
+import { ReceiptItemService } from "../service/claimReceiptItemService";
 import { ClaimItemsInfo } from "../routes/helper";
-import { removeTempClaim } from "../routes/displayRouter";
+import { temporarySelections, removeTempClaim } from "./displayController";
 
 export class ReceiptItemController {
   router = Router();
@@ -19,15 +19,54 @@ export class ReceiptItemController {
   }
 
   getReceiptItems = async (req: Request, res: Response) => {
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined ||
+      req.session.user.userName === undefined
+    ) {
+      res.json({ error: "Please Login" });
+      return;
+    }
+
     if (req.body === undefined || req.body !== req.params.receiptID) {
       res.status(401).json({ error: "Receipt Not Found" });
     }
 
+    let userID = req.session.user.userID;
+    let userName = req.session.user.userName;
     let receiptID = req.params.receiptID;
     try {
       let itemInfoList = await this.receiptItemService.getReceiptItems(
         receiptID
       );
+
+      const tempClaimMap = new Map();
+      for (let tempClaim of temporarySelections) {
+        if (tempClaim.user_id === userID) {
+          tempClaimMap.set(tempClaim.itemStringID, tempClaim.quantity);
+        }
+      }
+
+      for (let item of itemInfoList) {
+        let itemClaimerList = item.claimerList.split(",");
+        itemClaimerList = itemClaimerList.map((elem: string) => {
+          return elem.trim();
+        });
+        if (itemClaimerList.indexOf(userName) !== -1) {
+          let originalLength = itemClaimerList.length;
+          let filteredList = itemClaimerList.filter((elem: string) => {
+            return elem !== userName;
+          });
+
+          let itemQuantity = originalLength - filteredList.length;
+          temporarySelections.push({
+            user_id: userID,
+            itemStringID: item.item_id,
+            quantity: itemQuantity,
+          });
+        }
+      }
       res.json({ itemInfoList });
     } catch (error) {
       console.log(error);
@@ -93,10 +132,12 @@ export class ReceiptItemController {
       let claimItemsInfo: ClaimItemsInfo[] = [];
       for (let item of claimItems) {
         let itemStringID: string = itemQuantityMap.get(item.itemName);
-        claimItemsInfo.push({
-          user_id: userID,
-          item_id: itemStringID,
-        });
+        for (let i = 0; i < item.quantity; i++) {
+          claimItemsInfo.push({
+            user_id: userID,
+            item_id: itemStringID,
+          });
+        }
       }
       try {
         await this.receiptItemService.claimReceiptItems(

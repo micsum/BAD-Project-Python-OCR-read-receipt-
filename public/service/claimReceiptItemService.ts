@@ -1,8 +1,18 @@
 import { Knex } from "knex";
-import { ClaimItemsInfo } from "../routes/helper";
+import { ClaimItemsInfo, ObjectAny } from "../routes/helper";
 
 export class ReceiptItemService {
   constructor(private knex: Knex) {}
+
+  async checkReceiptClaimStatus(receiptStringID: string) {
+    let receiptStatus = await this.knex("receipt")
+      .select("confirm_selection")
+      .where({
+        receipt_id: receiptStringID,
+      });
+
+    return receiptStatus;
+  }
 
   async getReceiptItems(receiptID: string) {
     let receiptItems = await this.knex
@@ -37,16 +47,6 @@ export class ReceiptItemService {
     return receiptItems;
   }
 
-  async checkReceiptClaimStatus(receiptStringID: string) {
-    let receiptStatus = await this.knex("receipt")
-      .select("confirm_selection")
-      .where({
-        receipt_id: receiptStringID,
-      });
-
-    return receiptStatus;
-  }
-
   async claimReceiptItems(
     claimItemsInfo: ClaimItemsInfo[],
     receiptStringID: string,
@@ -59,7 +59,24 @@ export class ReceiptItemService {
       itemArray.push(item.item_id);
     }
 
-    await this.knex("item_payer").insert(claimItemsInfo);
+    let itemIDList = await this.knex("receipt_item")
+      .select("id")
+      .where("item_id", itemArray);
+
+    let newItemsInfo: ObjectAny[] = [];
+    for (let i = 0; i < claimItemsInfo.length; i++) {
+      let userID = receiptPayer;
+      let itemID = itemIDList[i].id;
+      newItemsInfo.push({ user_id: userID, item_id: itemID });
+    }
+
+    await this.knex("item_payer")
+      .where({ user_id: receiptPayer })
+      .where("item_id", itemIDList)
+      .del();
+
+    await this.knex("item_payer").insert(newItemsInfo);
+
     let receiptItemList = await this.knex("receipt")
       .innerJoin("receipt_item", "receipt_id", "=", receiptStringID)
       .select(
@@ -84,7 +101,7 @@ export class ReceiptItemService {
       to: receiptHost,
       receipt_id: receiptID,
       payment: false,
-      information: `${payerUsername} has claimed ${itemList} with a total of ${itemTotalPrice}.`,
+      information: `Updated Claim : ${"\n"}${payerUsername} has claimed ${itemList} with a total of ${itemTotalPrice}.`,
     });
   }
 
