@@ -14,16 +14,19 @@ function displayNotification(notification, destination) {
     window.location = `./testReceiptDisplay.html?receiptID=${notification.receipt_id}`;
   });
 
+  let icon;
   let receiptSender = notification.from;
   if (receiptSender == userName) {
     receiptSender = "You";
+    icon = payment ? "bank" : "wallet";
+  } else {
+    icon = payment ? "piggy-bank" : "coin";
   }
   node.querySelector(".notificationSender").textContent = receiptSender;
 
   let payment = notification.payment;
-  node.querySelector(".moneyIcon").innerHTML = payment
-    ? `<i class="bi bi-piggy-bank"></i>`
-    : `<i class="bi bi-coin"></i>`;
+
+  node.querySelector(".moneyIcon").innerHTML = `<i class="bi bi-${icon}"></i>`;
 
   node.querySelector(".message").textContent = notification.information;
   destination.appendChild(node);

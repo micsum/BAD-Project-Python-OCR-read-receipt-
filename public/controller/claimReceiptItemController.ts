@@ -1,13 +1,13 @@
 import { Request, Response, Router } from "express";
 import { Server as socketIO } from "socket.io";
-import { ReceiptItemService } from "../service/receiptItemService";
+import { ClaimReceiptItemService } from "../service/claimReceiptItemService";
 import { ClaimItemsInfo } from "../routes/helper";
-import { removeTempClaim } from "../routes/displayRouter";
+import { temporarySelections, removeTempClaim } from "./displayController";
 
-export class ReceiptItemController {
+export class ClaimReceiptItemController {
   router = Router();
   constructor(
-    private receiptItemService: ReceiptItemService,
+    private claimReceiptItemService: ClaimReceiptItemService,
     private io: socketIO
   ) {
     this.router.get("/getReceiptItems/:receiptID", this.getReceiptItems);
@@ -16,18 +16,59 @@ export class ReceiptItemController {
       "/resetReceiptItemClaim/:receiptID",
       this.resetReceiptItemClaim
     );
+    this.router.put("/hostConfirmClaim/:receiptID", this.hostConfirmClaim);
+    this.router.post("/respondPayMessage/:receiptID", this.respondPayMessage);
   }
 
   getReceiptItems = async (req: Request, res: Response) => {
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined ||
+      req.session.user.userName === undefined
+    ) {
+      res.json({ error: "Please Login" });
+      return;
+    }
+
     if (req.body === undefined || req.body !== req.params.receiptID) {
       res.status(401).json({ error: "Receipt Not Found" });
     }
 
+    let userID = req.session.user.userID;
+    let userName = req.session.user.userName;
     let receiptID = req.params.receiptID;
     try {
-      let itemInfoList = await this.receiptItemService.getReceiptItems(
+      let itemInfoList = await this.claimReceiptItemService.getReceiptItems(
         receiptID
       );
+
+      const tempClaimMap = new Map();
+      for (let tempClaim of temporarySelections) {
+        if (tempClaim.user_id === userID) {
+          tempClaimMap.set(tempClaim.itemStringID, tempClaim.quantity);
+        }
+      }
+
+      for (let item of itemInfoList) {
+        let itemClaimerList = item.claimerList.split(",");
+        itemClaimerList = itemClaimerList.map((elem: string) => {
+          return elem.trim();
+        });
+        if (itemClaimerList.indexOf(userName) !== -1) {
+          let originalLength = itemClaimerList.length;
+          let filteredList = itemClaimerList.filter((elem: string) => {
+            return elem !== userName;
+          });
+
+          let itemQuantity = originalLength - filteredList.length;
+          temporarySelections.push({
+            user_id: userID,
+            itemStringID: item.item_id,
+            quantity: itemQuantity,
+          });
+        }
+      }
       res.json({ itemInfoList });
     } catch (error) {
       console.log(error);
@@ -53,10 +94,12 @@ export class ReceiptItemController {
     let receiptID = req.params.receiptID;
     let claimItems = req.body.itemList;
     try {
-      if (await this.receiptItemService.checkReceiptClaimStatus(receiptID)) {
+      if (
+        await this.claimReceiptItemService.checkReceiptClaimStatus(receiptID)
+      ) {
         res.json({ error: "This Receipt is Closed for Selections" });
       }
-      let receiptItems = await this.receiptItemService.getReceiptItems(
+      let receiptItems = await this.claimReceiptItemService.getReceiptItems(
         receiptID
       );
       const itemQuantityMap = new Map();
@@ -86,20 +129,21 @@ export class ReceiptItemController {
         }
       }
 
-      let receiptHostResult = await this.receiptItemService.getReceiptSender(
-        receiptID
-      );
+      let receiptHostResult =
+        await this.claimReceiptItemService.getReceiptSender(receiptID);
       let receiptHost = receiptHostResult[0];
       let claimItemsInfo: ClaimItemsInfo[] = [];
       for (let item of claimItems) {
         let itemStringID: string = itemQuantityMap.get(item.itemName);
-        claimItemsInfo.push({
-          user_id: userID,
-          item_id: itemStringID,
-        });
+        for (let i = 0; i < item.quantity; i++) {
+          claimItemsInfo.push({
+            user_id: userID,
+            item_id: itemStringID,
+          });
+        }
       }
       try {
-        await this.receiptItemService.claimReceiptItems(
+        await this.claimReceiptItemService.claimReceiptItems(
           claimItemsInfo,
           req.params.receiptID,
           receiptHost,
@@ -138,17 +182,13 @@ export class ReceiptItemController {
       return;
     }
 
-    if (
-      req.body === undefined ||
-      req.body.receiptID === undefined ||
-      req.body.item === undefined
-    ) {
+    if (req.body === undefined || req.body.item === undefined) {
       res.status(401).json({ error: "Receipt Items Not Found" });
       return;
     }
     try {
       let receiptID = req.params.receiptID;
-      let [{ from }] = await this.receiptItemService.getReceiptSender(
+      let [{ from }] = await this.claimReceiptItemService.getReceiptSender(
         receiptID
       );
 
@@ -156,9 +196,112 @@ export class ReceiptItemController {
         res.status(401).json({ error: "Not the sender of the receipt" });
       }
 
-      await this.receiptItemService.removeItemClaims(req.body.item);
+      await this.claimReceiptItemService.removeItemClaims(req.body.item);
       res.json({});
       return;
+    } catch (error) {
+      console.log(error);
+      res.json({ error });
+    }
+  };
+
+  hostConfirmClaim = async (req: Request, res: Response) => {
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined
+    ) {
+      res.status(401).json({ error: "User Not Found" });
+      return;
+    }
+
+    try {
+      let receiptStringID = req.params.receiptID;
+      let [{ from }] = await this.claimReceiptItemService.getReceiptSender(
+        receiptStringID
+      );
+
+      if (from !== req.session.user.userID) {
+        res.status(401).json({ error: "Not the sender of the receipt" });
+      }
+
+      let information = `${req.session.user.userName}(host) has confirmed the claims, please pay !`;
+      await this.claimReceiptItemService.broadcastConfirmClaim(
+        req.session.user.userID,
+        information,
+        receiptStringID
+      );
+    } catch (error) {
+      console.log(error);
+      res.json({ error });
+    }
+  };
+
+  respondPayMessage = async (req: Request, res: Response) => {
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined
+    ) {
+      res.status(401).json({ error: "User Not Found" });
+      return;
+    }
+
+    if (req.body === undefined || req.body.creditMode === undefined) {
+      res.json({ error: "Pay Method Not Specified" });
+    }
+
+    try {
+      let receiptStringID = req.params.receiptID;
+      let userID = req.session.user.userID;
+      let creditMode: Boolean = req.body.creditMode;
+
+      let userFound =
+        await this.claimReceiptItemService.retrieveReceiptRecipient(
+          receiptStringID,
+          userID
+        );
+
+      if (!userFound) {
+        res.json({
+          error: "User was not Invited to Claim Items in this Receipt",
+        });
+      }
+
+      let result = await this.claimReceiptItemService.respondPayMessage(
+        userID,
+        receiptStringID,
+        creditMode
+      );
+      res.json(result);
+    } catch (error) {
+      console.log(error);
+      res.json({ error });
+    }
+  };
+
+  hostAcceptAllPayment = async (req: Request, res: Response) => {
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined
+    ) {
+      res.status(401).json({ error: "User Not Found" });
+      return;
+    }
+
+    try {
+      let userID = req.session.user.userID;
+      let receiptStringID = req.params.receiptID;
+
+      let [{ from }] = await this.claimReceiptItemService.getReceiptSender(
+        receiptStringID
+      );
+      if (from !== userID) {
+        res.status(401).json({ error: "Not the sender of the receipt" });
+      }
+
+      await this.claimReceiptItemService.hostAcceptAllPayment(receiptStringID);
     } catch (error) {
       console.log(error);
       res.json({ error });
