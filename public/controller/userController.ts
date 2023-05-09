@@ -3,6 +3,8 @@ import * as bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { UserService } from "../service/userService";
 import { CheckReq, ObjectAny } from "../routes/helper";
+import nodemailer from "nodemailer";
+import Mailgen from "mailgen";
 
 export class UserController extends CheckReq implements ObjectAny {
   router = Router();
@@ -137,6 +139,60 @@ export class UserController extends CheckReq implements ObjectAny {
       const token = jwt.sign(payload, this.JWT_SECRET, { expiresIn: "15m" });
       const link = `http://localhost:8105/forgotpw/${userID}/${token}`;
       //TODO
+
+      let senderEmail = "cpky216@gmail.com";
+
+      let transporter = nodemailer.createTransport({
+        service: "gmail",
+        secure: false,
+        auth: {
+          user: "cpky216@gmail.com",
+          pass: "qlefhklcekgupfif",
+        },
+      });
+
+      async function forgotPwEmail(
+        email: string,
+        userName: string,
+        link: string
+      ) {
+        //send forgot password email to update
+        let mailGenerator = new Mailgen({
+          theme: "default",
+          product: {
+            name: "KEUNG TWO INC.",
+            link: "https://mailgen.js/",
+            copyright: "Copyright © 2023 KEUNG TWO INC. All rights reserved.",
+          },
+        });
+        let emailMessage = {
+          body: {
+            name: `${userName}`,
+            signature: "Sincerely",
+            intro:
+              "You have received this email because a password reset request for your account was received.",
+            action: {
+              instructions: "Click the button below to reset your password:",
+              button: {
+                color: "#DC4D2F",
+                text: "Reset Your Password",
+                link: link,
+              },
+            },
+            outro:
+              "If you did not request a password reset, please contact the admin.",
+          },
+        };
+        let mail = mailGenerator.generate(emailMessage);
+        let message = await transporter.sendMail({
+          from: senderEmail, //from here set the main sender email
+          to: email, //receiver email from body - body email
+          subject: "Password Reset",
+          //text: "testingemail",
+          html: mail, //mail message need refer to formdata info
+        });
+        console.log("reset password message sent:", message.messageId);
+      }
       res.json({});
     } catch (error) {
       console.log(error);

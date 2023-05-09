@@ -24,4 +24,12 @@ export class ReceiptService {
   async insertReceiptItems(itemList: ItemInfo[]) {
     await this.knex("receipt_item").insert(itemList);
   }
+
+  async searchUser(inputValue: string) {
+    return await this.knex("user")
+      .select("name")
+      .where("email", `${inputValue}`)
+      .orWhere("name", `${inputValue}`)
+      .orWhere("phone_number", `${inputValue}`);
+  }
 }

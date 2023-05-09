@@ -18,8 +18,8 @@ export class ReceiptController {
     this.receiptMap = new Map();
     this.router.post("/uploadReceipt", this.uploadReadReceipt);
     this.router.get("/loadReceiptItems", this.loadReceiptItems);
-    //this.router.post("/insertReceiptItems", this.insertReceiptItems);
-    //this.router.post("/receiptImage/:id", this.viewReceipt);
+    this.router.post("/insertReceiptItems", this.insertReceiptItems);
+    this.router.get("/searchUser", this.searchUser);
   }
 
   uploadReadReceipt = async (req: Request, res: Response) => {
@@ -97,10 +97,10 @@ export class ReceiptController {
     let userID = req.session.user.userID;
 
     res.json({
-      itemList: this.receiptMap.get(userID),
+      itemList: this.receiptMap.get(userID)?.data,
     });
   };
-  // todo
+
   insertReceiptItems = async (req: Request, res: Response) => {
     if (
       req.session === undefined ||
@@ -108,20 +108,18 @@ export class ReceiptController {
       req.session.user.userID === undefined
     ) {
       res.status(401).json({ error: "User Not Found" });
+      return;
     }
-    if (
-      req.body === undefined ||
-      req.body.receiptID === undefined ||
-      req.body.itemInfoList === undefined
-    ) {
+    let userID = req.session.user.userID;
+    if (req.body === undefined || req.body.itemInfoList === undefined) {
       res.status(401).json({ error: "Items Not Inserted" });
     }
 
     let newItemList: ItemInfo[] = [];
-    for (let item of req.body.itemList) {
+    for (let item of req.body.itemInfoList) {
       let itemID = Math.random().toString(36).slice(2).substring(0, 6);
-      item["receipt_id"] = req.body.receiptID;
-      item["item_ID"] = itemID;
+      item["receipt_id"] = this.receiptMap.get(userID)?.receipt_id;
+      item["item_id"] = itemID;
       newItemList.push(item);
     }
 
@@ -132,5 +130,14 @@ export class ReceiptController {
       console.log(error);
       res.json({ error });
     }
+  };
+
+  searchUser = async (req: Request, res: Response) => {
+    let searchInput = req.body.searchInput;
+    let [{ name }] = await this.receiptService.searchUser(searchInput);
+    if (name === "" || name === "undefined") {
+      res.json({ error: "Can not find the user" });
+    }
+    res.json({ userResult: name });
   };
 }

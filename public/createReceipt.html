@@ -18,35 +18,128 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <script
+    <!--<script
       type="text/javascript"
       src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"
+    ></script>-->
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"
+      integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
     ></script>
     <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <!--<link
       href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css"
       rel="stylesheet"
-    />
+    />-->
   </head>
+  <style>
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .itemDiv {
+      display: flex;
+      justify-content: space-around;
+    }
+    .quantity {
+      width: 100px;
+    }
+    .subtotal,
+    .unitprice,
+    .total,
+    .discount,
+    .scannedDiscount {
+      width: 100px;
+    }
+    .addItem {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    #receiptBtn {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    :hover.addItem {
+      box-shadow: 0 4px 15px 0 rgba(45, 54, 65, 0.75);
+      box-sizing: unset;
+    }
+    #uploadedImage {
+      width: 150px;
+    }
+    .totalFooter {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  </style>
   <body>
-    <div id="itemList"></div>
+    <div class="header">
+      <div class="itemNameHeader">Items</div>
+      <div class="quantityHeader">Quantity</div>
+      <div class="unitPriceHeader">
+        <i class="fa-solid fa-dollar-sign" style="color: #43add0"></i>Unit Price
+      </div>
+      <div class="subTotalHeader">
+        <i class="fa-solid fa-dollar-sign" style="color: #43add0"></i>Subtotal
+      </div>
+      <div class="deleteHeader">Delete</div>
+    </div>
+    <div id="templateList"></div>
+    <button class="addItem"><i class="fa-solid fa-circle-plus"></i></button>
+    <div class="totalFooter">
+      Discount :<input
+        type="number"
+        class="discount"
+        placeholder="輸入數字計數"
+      /><button class="discountInputBtn">calculate</button>scanned Discount
+      :<input type="text" class="scannedDiscount" disabled /> Total:<input
+        type="text"
+        class="total"
+        disabled
+      />
+      <button id="receiptBtn">
+        <i class="fa-solid fa-receipt fa-2xl" style="color: #14d7b0"></i>
+      </button>
+    </div>
+
+    <br />
     <div>
       <label for="attachment">Uploaded Receipt</label>
     </div>
     <div id="viewImage"></div>
+
+    <template id="itemList">
+      <div class="itemDiv">
+        <input type="text" class="itemName" />
+        <input type="text" class="quantity" />
+        <input type="text" class="unitprice" disabled />
+        <input type="text" class="subtotal" />
+        <input type="button" value="Delete" class="deleteBtn" />
+      </div>
+    </template>
   </body>
   <script>
-    const imagePath = localStorage.getItem("imagepath")
-    const reader = new FileReader()
-    reader.readAsDataURL(imagePath);
-    reader.onload =()=>{
-      const image = reader.result
-    }
+    const imagepath = JSON.parse(localStorage.getItem("imagepath"));
     window.addEventListener("load", async () => {
       let viewImageDiv = document.querySelector("#viewImage");
 
       let element;
       element = document.createElement("img");
-      element.setAttribute("src", image);
+      element.setAttribute("id", "uploadedImage");
+      element.setAttribute("src", imagepath);
       element.addEventListener("click", () => {
         Swal.fire({
           imageUrl: element.src,
@@ -60,55 +153,198 @@
 
     //const data = JSON.parse(localStorage.getItem("itemData")); using localstorage
 
-    // const res = await fetch("/loadReceiptItems",{
-    //  method:"GET",
-    //  headers:{"Content-Type": "application/json"}
-    // })
+    //const res = await fetch("/loadReceiptItems",{
+    // method:"GET",
+    // headers:{"Content-Type": "application/json"}
+    //})
     //
-    // const result = await res.json();
-    // const itemList = result.itemList
-    // const data = itemList
+    //const result = await res.json();
+    //const itemList = result.itemList
+    //const data = itemList
+    const data = [
+      [["香茅瀦頸肉", "撈檬"], ["$52.00"]],
+      [["2x 魚露雞扒撈", "檬"], ["$104.00"]],
+      [["1x 火車頭", "1x揣粉"], ["$70.00"]],
+      [["小計", "增值稅"], ["$226.00"]],
+      [["增值稅"], ["5.00"]],
+      [[""], ["-$56.50"]],
+      [["總計"], ["$174.50"]],
+    ];
 
-    //[
-    //  [ [ '麻辣牛肉并' ], [ '$76.00' ] ],
-    //  [ [ '旦式咖喱煎' ], [ '$93.00' ] ],
-    //  [ [ '滑蛋汁燒鰻' ], [ '$94.00' ] ],
-    //  [ [ '1x 七味牛肉#' ], [ '$76.00' ] ],
-    //  [ [ '小計', '增值稅' ], [ '$585.00' ] ],
-    //  [ [ '增值稅' ], [ '$5.00' ] ],
-    //  [ [ '外虱自取盯單' ], [ '-$292.50' ] ],
-    //  [ [ '總計', '雖扒蛋蓋飯', '魚并' ], [ '$297.50' ] ]
-    //];
-
-    const table = document.createElement("table");
-
-    const headerRow = document.createElement("tr");
-    const itemNameHeader = document.createElement("th");
-    itemNameHeader.textContent = "Items";
-    headerRow.appendChild(itemNameHeader);
-
-    const priceHeader = document.createElement("th");
-    priceHeader.textContent = "Price";
-    headerRow.appendChild(priceHeader);
-
-    const quantityHeader = document.createElement("th");
-    quantityHeader.textContent = "Quantity";
-    headerRow.appendChild(quantityHeader);
-
-    table.appendChild(headerRow);
-
-    data.forEach((row) => {
-      const tableRow = document.createElement("tr");
-      const itemNameCell = document.createElement("td");
-      const itemNameInput = document.createElement("input");
-      itemNameCell.textContent = row[0][0];
-      tableRow.appendChild(itemNameCell);
-      const priceCell = document.createElement("td");
-      priceCell.textContent = row[1][0];
-      tableRow.appendChild(priceCell);
-      table.appendChild(tableRow);
+    let receiptBtn = document.querySelector("#receiptBtn");
+    receiptBtn.addEventListener("click", () => {
+      Swal.fire({
+        title: "Confirm to create receipt?",
+        icon: "question",
+        confirmButtonText: "Confirm",
+        showCancelButton: true,
+        showConfirmButton: true,
+        showCloseButton: true,
+        confirmButtonColor: "#14d7b0",
+        preConfirm: async () => {
+          let itemDiv = document.querySelectorAll(".itemDiv");
+          let itemJson = [];
+          itemDiv.forEach((element) => {
+            let itemName = element.querySelector(".itemName").value;
+            let quantity = element.querySelector(".quantity").value;
+            let unitprice = element.querySelector(".unitprice").value;
+            itemJson.push({
+              item_name: itemName,
+              quantity: quantity,
+              price: unitprice,
+            });
+          });
+          const res = await fetch("/insertReceiptItems", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ itemInfoList: itemJson }),
+          });
+          let result = await res.json();
+          if (result.error) {
+            Swal.fire({
+              icon: "error",
+              title: "Fail to create receipt.",
+            });
+            return;
+          }
+          window.location.href = "./addPeopleList.html";
+          localStorage.removeItem("imagepath");
+        },
+      });
     });
 
-    document.getElementById("itemList").appendChild(table);
+    let discountInput = document.querySelector(".discount");
+    const itemListTemplate = document.querySelector("#itemList");
+    const templateList = document.querySelector("#templateList");
+    function itemClone(data = [[""], ["$0.00"]], id) {
+      let node = itemListTemplate.content.cloneNode(true);
+      const deleteBtn = node.querySelector(".deleteBtn");
+      let itemDiv = node.querySelector(".itemDiv");
+      itemDiv.setAttribute("id", `item${id}`);
+
+      let itemName = data[0].join();
+
+      while (itemName.indexOf(",") != -1) {
+        itemName = itemName.replace(",", " ");
+      }
+      node.querySelector(".itemName").value = itemName;
+
+      let quantityInput = node.querySelector(".quantity");
+      let unitpriceInput = node.querySelector(".unitprice");
+      let subtotalInput = node.querySelector(".subtotal");
+      quantityInput.value = 1;
+
+      subtotalInput.value = data[1][0].replace("$", "");
+
+      unitpriceInput.value = subtotalInput.value / quantityInput.value;
+      unitpriceInput.readOnly = true;
+      quantityInput.addEventListener("input", () => {
+        let quantity = parseFloat(quantityInput.value);
+        let subtotal = parseFloat(subtotalInput.value);
+        let unitprice = quantity === 0 ? 0 : subtotal / quantity;
+        unitpriceInput.value = `${unitprice.toFixed(2)}`;
+        if (unitpriceInput.value === "NaN") {
+          unitpriceInput.value = "";
+        }
+        updateTotal();
+      });
+
+      subtotalInput.addEventListener("input", () => {
+        let quantity = parseFloat(quantityInput.value);
+        let subtotal = parseFloat(subtotalInput.value);
+
+        updateTotal();
+        //let currentDiscount = receiptDiscount;
+        //if (discountInput != "") {
+        //  let [newMax, newMin] = getMaxMinPrice();
+        //  let newDiscount = getDiscountValue(newMax, newMin);
+        //  let normalizedDiscount;
+        //  if (currentDiscount != newDiscount) {
+        //    let subtotalList = querySelectorAll(".subtotal");
+        //    normalizedDiscount = newDiscount / currentDiscount;
+        //    subtotalList.forEach((elem) => {
+        //      elem.value *= normalizedDiscount;
+        //    });
+        //  }
+        //}
+
+        let unitprice = quantity === 0 ? 0 : subtotal / quantity;
+        unitpriceInput.value = `${unitprice.toFixed(2)}`;
+        if (unitpriceInput.value === "NaN") {
+          unitpriceInput.value = "";
+        }
+      });
+
+      deleteBtn.addEventListener("click", () => {
+        document.getElementById(`item${id}`).remove();
+        updateTotal();
+      });
+
+      templateList.appendChild(node);
+    }
+
+    //unit price cant update
+    let discountInputBtn = document.querySelector(".discountInputBtn");
+    discountInputBtn.addEventListener("click", () => {
+      if (discountInput.value != "") {
+        let subtotalList = document.querySelectorAll(".subtotal");
+        subtotalList.forEach((elem) => {
+          elem.value *= discountInput.value / 100;
+        });
+      }
+    });
+
+    function updateTotal() {
+      let subtotalList = document.querySelectorAll(".subtotal");
+      let totalInput = document.querySelector(".total");
+
+      let subtotal = 0;
+
+      for (let i = 0; i < subtotalList.length; i++) {
+        subtotal += parseFloat(subtotalList[i].value);
+      }
+      totalInput.value = `$${subtotal.toFixed(2)}`;
+      if (`${subtotal.toFixed(2)}` === "NaN") {
+        totalInput.value = "";
+      } else {
+        totalInput.value = totalInput.value;
+      }
+    }
+
+    function getMaxMinPrice() {
+      let maxMin = [0, 0];
+      let subtotalList = document.querySelectorAll(".subtotal");
+      subtotalList.forEach((elem) => {
+        if (parseInt(elem.value) > maxMin[0]) {
+          maxMin[0] = parseInt(elem.value);
+        } else if (parseInt(elem.value) < maxMin[1]) {
+          maxMin[1] = parseInt(elem.value);
+        }
+      });
+      return maxMin;
+    }
+
+    let scannedDiscount = document.querySelector(".scannedDiscount");
+    function getDiscountValue(max, min) {
+      return 1 - (-min / max).toFixed(2);
+    }
+
+    let max, min;
+    let receiptDiscount = -1;
+    window.addEventListener("load", () => {
+      for (let i = 0; i < data.length; i++) {
+        itemClone(data[i], i.toString());
+      }
+      if (receiptDiscount == -1) {
+        [max, min] = getMaxMinPrice();
+        scannedDiscount.value = getDiscountValue(max, min) * 100 + "折";
+      }
+      updateTotal();
+    });
+
+    let addItem = document.querySelector(".addItem");
+    addItem.addEventListener("click", () => {
+      itemClone();
+    });
   </script>
 </html>

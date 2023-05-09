@@ -16,7 +16,7 @@ const app = express();
 let server = http.createServer(app);
 export let io = new socketIO.Server(server);
 
-app.use(express.static(uploadDir));
+app.use("/uploads", express.static("uploads"));
 app.use(express.json());
 app.use(express.urlencoded());
 
