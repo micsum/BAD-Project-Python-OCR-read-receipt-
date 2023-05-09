@@ -35,8 +35,12 @@
     <div id="viewImage"></div>
   </body>
   <script>
-    const image = JSON.parse(localStorage.getItem("filepath"));
-
+    const imagePath = localStorage.getItem("imagepath")
+    const reader = new FileReader()
+    reader.readAsDataURL(imagePath);
+    reader.onload =()=>{
+      const image = reader.result
+    }
     window.addEventListener("load", async () => {
       let viewImageDiv = document.querySelector("#viewImage");
 
