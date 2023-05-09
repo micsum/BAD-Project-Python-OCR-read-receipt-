@@ -69,6 +69,14 @@ export type TemporaryClaimSelection = {
   quantity: number;
 };
 
+export type Notification = {
+  from: number;
+  to: number;
+  payment: Boolean;
+  receipt_id: number;
+  information: string;
+};
+
 /* type itemInfoList {
     id: integer,
     item_name: string, 
