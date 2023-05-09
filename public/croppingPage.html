@@ -196,10 +196,11 @@
     attach.addEventListener("submit", async (event) => {
       event.preventDefault();
 
-      let blob = dataURLtoBlob(croppedImgSrc);
+      
+
+      let blob = dataURLtoBlob(croppedImgSrc);      c
       const attachData = new FormData();
       attachData.append("croppedImage", blob, "cropped.jpeg");
-
       // const res = await fetch("/uploadReceipt", {
       //   method: "POST",
       //   body: attachData,
@@ -221,11 +222,7 @@
           const result = await res.json();
           const itemData = result.data;
           //localStorage.setItem("itemData", JSON.stringify(itemData));
-          localStorage.setItem(
-            "filepath",
-            JSON.stringify("../" + result.filepath)
-          );
-
+          //localStorage.setItem("imagepath",result.filepath)
           if (itemData) {
             //console.log("newItemData",itemData);
 

@@ -18,35 +18,81 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    <script
+    <!--<script
       type="text/javascript"
       src="https://unpkg.com/tabulator-tables/dist/js/tabulator.min.js"
-    ></script>
+    ></script>-->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link
       href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css"
       rel="stylesheet"
     />
   </head>
+  <style>
+    .header{
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-around;
+      align-items: center;
+    }
+    .itemDiv{
+      display: flex;
+      justify-content: space-around;
+    }
+    .quantity{
+      width:100px;
+    }
+    .subtotal, .unitprice, .total{
+      width:100px;
+    }
+    .addItem{
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+
+    #receiptBtn{
+      background: transparent;
+      border: none;
+      cursor: pointer;
+    }
+    :hover.addItem{
+      box-shadow: 0 4px 15px 0 rgba(45, 54, 65, 0.75);
+      box-sizing: unset;
+    }
+  </style>
   <body>
+   
+
+    <div class="header">
+      <div class="itemNameHeader">Items</div>
+    <div class="quantityHeader">Quantity</div>
+    <div class="unitPriceHeader">Unit Price</div>
+    <div class="subTotalHeader">Subtotal</div>
+    <div class="deleteHeader">Delete</div>
+    </div>
+    <div id="templateList"></div>
+    <div class="totalFooter">Total<input type="text" class="total" disabled></div>
+    <button class="addItem"><i class="fa-solid fa-circle-plus"></i></button>
+    <button id="receiptBtn"><i class="fa-solid fa-receipt"  style="color: #14d7b0;"></i></button>
+    <br>
     <div>
       <label for="attachment">Uploaded Receipt</label>
     </div>
-
-    <div id="templateList"></div>
     <div id="viewImage"></div>
-
-    <div class="itemNameHeader">Items</div>
-    <div class="quantityHeader">Quantity</div>
-    <div class="priceHeader">Price</div>
-    <div class="deleteHeader">Delete</div>
+    
+    
     <template id="itemList">
       <div class="itemDiv">
         <input type="text" class="itemName" />
         <input type="text" class="quantity" />
-        <input type="text" class="price" />
+        <input type="text" class="unitprice" />
+        <input type="text" class="subtotal" />
         <input type="button" value="Delete" class="deleteBtn" />
       </div>
     </template>
+
   </body>
   <script>
     // window.addEventListener("load", async () => {
@@ -96,9 +142,13 @@
       [["總計", "雖扒蛋蓋飯", "魚并"], ["$297.50"]],
     ];
 
+    let receiptBtn=document.querySelector("#receiptBtn")
+    receiptBtn.addEventListener("click",()=>{
+      window.location.href="./addPeopleList.html"
+    })
     const itemListTemplate = document.querySelector("#itemList");
     const templateList = document.querySelector("#templateList");
-    function itemClone(data, id) {
+    function itemClone(data=[[""],["$0.00"]], id) {
       let node = itemListTemplate.content.cloneNode(true);
       const deleteBtn = node.querySelector(".deleteBtn");
       let itemDiv = node.querySelector(".itemDiv");
@@ -111,19 +161,68 @@
       }
       node.querySelector(".itemName").value = itemName;
 
-      node.querySelector(".quantity").value = 1;
-      node.querySelector(".price").value = data[1];
+      let quantityInput = node.querySelector(".quantity");
+      let unitpriceInput = node.querySelector(".unitprice");
+      let subtotalInput = node.querySelector(".subtotal");
+
+      quantityInput.value = 1;
+      subtotalInput.value = data[1];
+      if(subtotalInput.value.indexOf("$")){
+        subtotalInput.value = subtotalInput.value.slice(1)
+      }
+      unitpriceInput.value = subtotalInput.value.slice(1) / quantityInput.value
+      unitpriceInput.readOnly = true;
+    quantityInput.addEventListener("input", () => {
+    let quantity = parseFloat(quantityInput.value);
+    let subtotal = parseFloat(subtotalInput.value.slice(1));
+    let unitprice = quantity === 0 ? 0 : subtotal / quantity;
+    unitpriceInput.value = `$${unitprice.toFixed(2)}`;
+
+    updateTotal();
+  });
+
+  subtotalInput.addEventListener("input", () => {
+    let quantity = parseFloat(quantityInput.value);
+    let subtotal = parseFloat(subtotalInput.value.slice(1));
+    let unitprice = quantity === 0 ? 0 : subtotal / quantity;
+    unitpriceInput.value = `$${unitprice.toFixed(2)}`;
+
+    updateTotal();
+  });
+
 
       deleteBtn.addEventListener("click", () => {
         document.getElementById(`item${id}`).remove();
+        updateTotal()
       });
 
       templateList.appendChild(node);
+      updateTotal();
     }
 
-    for (let i = 0; i < data.length; i++) {
+  function updateTotal() {
+  let subtotalList = document.querySelectorAll(".subtotal");
+  let totalInput = document.querySelector(".total");
+
+  let subtotal = 0;
+
+  for (let i = 0; i < subtotalList.length; i++) {
+    subtotal += parseFloat(subtotalList[i].value.slice(1));
+  }
+
+  totalInput.value = `$${subtotal.toFixed(2)}`;
+}
+
+    window.addEventListener("load",()=>{
+      for (let i = 0; i < data.length; i++) {
       itemClone(data[i], i.toString());
-    }
+    }})
+    
+    let addItem = document.querySelector(".addItem")
+    addItem.addEventListener("click",()=>{
+      itemClone()
+    })
+
 
     const table = document.createElement("table");
     table.setAttribute("id", "table");
