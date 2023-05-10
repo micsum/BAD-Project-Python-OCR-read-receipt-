@@ -4,18 +4,18 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Add People</title>
+    <title>Add Payer</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              clifford: '#da373d',
-            }
-          }
-        }
-      }
+              clifford: "#da373d",
+            },
+          },
+        },
+      };
     </script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
 
@@ -39,7 +39,6 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
-    
 
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css"
@@ -126,7 +125,7 @@
             id="submit"
             class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 light:bg-blue-600 light:hover:bg-blue-700 light:focus:ring-blue-800"
           >
-            Search
+            Add
           </button>
         </div>
       </form>
@@ -134,21 +133,41 @@
     <div class="container">
       <div class="flex">
         <div class="col-md-8">
-            <ul class="people-list max-w-md divide-y divide-gray-200 light:divide-gray-700"></ul>
+          <ul
+            class="people-list max-w-md divide-y divide-gray-200 light:divide-gray-700"
+          ></ul>
         </div>
       </div>
+    </div>
+    <div class="requestDiv">
+      <button id="requestBtn">Request</button>
     </div>
     <template id="userList">
       <li class="userDiv pb-3 sm:pb-4">
         <div class="flex items-center space-x-4">
-          <div class="nameDiv flex-1 min-w-0">
-            <h5 id="userName" class="text-2xl font-large text-black-900 truncate light:text-black"></h5>
+          <div class="nameDiv flex flex-1 min-w-0">
+            <button disabled>
+              <i
+                class="fa-solid fa-user-check fa-xl"
+                style="color: #5a8add"
+              ></i>
+            </button>
+            <h5
+              class="userName text-cente text-2xl font-large text-black-900 truncate light:text-black"
+            ></h5>
           </div>
-          <div class="inline-flex items-center text-base font-semibold text-black-900 light:text-black">
-            <button id="add" class="btn btn-primary pull-right" >Add</button>
+          <div
+            class="inline-flex items-center text-base font-semibold text-black-900 light:text-black space-x-1"
+          >
+            <button id="delete" class="btn bg-white-400 pull-right">
+              <i
+                class="fa-solid fa-user-xmark fa-xl"
+                style="color: #e67979"
+              ></i>
+            </button>
           </div>
         </div>
-      </div>
+      </li>
     </template>
   </body>
   <script>
@@ -173,44 +192,76 @@
       //  });
       //}
       //userResult = searchList.userResult;
-      userResult = searchInput.value
+      userResult = searchInput.value;
       console.log("userResult", userResult);
-      userClone(userResult)
+      userClone(userResult);
       //todo show in userList
+      searchInput.value = "";
     });
+    let selectedUsers = ["add"];
 
     let addPeopleList = document.querySelector(".people-list");
     let templateList = document.querySelector("#userList");
     function userClone(userName) {
-      let selectedUsers=[];
-
       let node = templateList.content.cloneNode(true);
-      const userNameEl = node.querySelector("#userName");
-      userNameEl.textContent = userName
-      addPeopleList.appendChild(node)
+      let userDiv = node.querySelector(".userDiv");
 
+      let userNameEl = node.querySelector(".userName");
+      userNameEl.textContent = userName;
 
-      const addBtn = node.querySelector("#add");
-      if(selectedUsers.includes(userName)){
-        addBtn.innerHTML = '<i class="fa-solid fa-square-check" style="color: #376ca4;"></i>'
-        addBtn.setAttribute(disabled,true);
-      }else{
-        //addBtn.textContent = "Add";
-        addBtn.setAttribute(disabled,false);
-        addBtn.addEventListener("click",()=>{
-            selectedUsers.push(userName)
-            console.log("selectedUsers",selectedUsers)
-            addBtn.textContent=''
-            addBtn.innerHTML='<i class="fa-solid fa-square-check" style="color: #376ca4;"></i>'
-            addBtn.disabled=true;
+      id = Math.random().toString(36);
+      userDiv.setAttribute("id", `name${id}`);
+      let deleteBtn = node.querySelector("#delete");
 
-            const selectedUsersEl = userClone(userName);
-            const iconEl = selectedUsersEl.querySelector("#add")
-            iconEl.innerHTML = '<i class="fa-solid fa-square-check" style="color: #376ca4;"></i>';
-            iconEl.disabled=true;
-            addPeopleList.appendChild(selectedUsersEl)
-        })
+      if (selectedUsers.includes(userName)) {
+        Swal.fire({
+          icon: "error",
+          title: "Duplicate User found",
+          text: "Please input a new name",
+        });
+      } else {
+        selectedUsers.push(userName);
+        console.log("add", selectedUsers);
+        addPeopleList.appendChild(node);
       }
+
+      deleteBtn.addEventListener("click", () => {
+        userDiv.parentNode.removeChild(userDiv);
+        selectedUsers.pop(userName);
+        console.log("deleted", selectedUsers);
+      });
     }
+
+    let requestBtn = document.querySelector("#requestBtn");
+    requestBtn.addEventListener("click", () => {
+      Swal.fire({
+        icon: "info",
+        title: "Send Request?",
+        showConfirmButton: true,
+        confirmButtonText: "Confirm",
+        showCancelButton: true,
+        showCloseButton: true,
+        preConfirm: async () => {
+          const res = await fetch("/requestPayer", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ payerList: selectedUsers }),
+          });
+          let check = res.json();
+          if (check.error) {
+            Swal.fire({
+              icon: "error",
+              title: check.error,
+            });
+          } else {
+            Swal.fire({
+              icon: "success",
+              title: "Receipt had been sent to payer",
+            });
+            window.location.href = "./main.html";
+          }
+        },
+      });
+    });
   </script>
 </html>

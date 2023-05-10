@@ -1,5 +1,5 @@
 import { Knex } from "knex";
-import { ItemInfo } from "../routes/helper";
+import { ItemInfo, ObjectAny } from "../routes/helper";
 
 export class ReceiptService {
   constructor(private knex: Knex) {}
@@ -31,5 +31,39 @@ export class ReceiptService {
       .where("email", `${inputValue}`)
       .orWhere("name", `${inputValue}`)
       .orWhere("phone_number", `${inputValue}`);
+  }
+
+  async requestPayer(
+    payerList: string[],
+    userID: number,
+    receiptID: number,
+    hostName: string
+  ) {
+    let information = `${hostName} had sent you a receipt. Please claim your item asap`;
+    const comparedDB = await this.knex
+      .select("id")
+      .from("user")
+      .whereIn("name", payerList);
+    if (comparedDB.length != payerList.length) {
+      return { error: "DB record not match" };
+    }
+    let insertNotification = [];
+    let insertRecipient = [];
+    for (let indivID of comparedDB) {
+      insertNotification.push({
+        from: userID,
+        to: indivID.id,
+        receipt_id: receiptID,
+        information: information,
+        payment: false,
+      });
+      insertRecipient.push({
+        receipt_id: receiptID,
+        to_individual: indivID.id,
+      });
+    }
+    await this.knex("notification").insert(insertNotification);
+    await this.knex("receipt_recipient").insert(insertRecipient);
+    return {};
   }
 }

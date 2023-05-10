@@ -1,4 +1,4 @@
-import { Request, Response, Router } from "express";
+import { Request, Response, Router, response } from "express";
 import { ReceiptService } from "../service/createReceiptService";
 import IncomingForm from "formidable/Formidable";
 import path from "path";
@@ -20,6 +20,7 @@ export class ReceiptController {
     this.router.get("/loadReceiptItems", this.loadReceiptItems);
     this.router.post("/insertReceiptItems", this.insertReceiptItems);
     this.router.get("/searchUser", this.searchUser);
+    this.router.post("/requestPayer", this.requestPayer);
   }
 
   uploadReadReceipt = async (req: Request, res: Response) => {
@@ -117,6 +118,11 @@ export class ReceiptController {
 
     let newItemList: ItemInfo[] = [];
     for (let item of req.body.itemInfoList) {
+      if (item.quantity <= 0) {
+        res.json({ error: "quantity cannot be 0" });
+      } else if (item.name === null || item.name === "") {
+        res.json({ error: "item name cannot be empty" });
+      }
       let itemID = Math.random().toString(36).slice(2).substring(0, 6);
       item["receipt_id"] = this.receiptMap.get(userID)?.receipt_id;
       item["item_id"] = itemID;
@@ -130,6 +136,33 @@ export class ReceiptController {
       console.log(error);
       res.json({ error });
     }
+  };
+
+  requestPayer = async (req: Request, res: Response) => {
+    if (req.body.payerList === undefined) {
+      res.json({ error: "No information submitted" });
+    }
+    let payerList = req.body.payerList;
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined
+    ) {
+      res.status(401).json({ error: "User Not Found" });
+      return;
+    }
+    let userID = req.session.user.userID;
+    let hostName = req.session.user.userName;
+    let receiptID = this.receiptMap.get(userID)?.receipt_id;
+    let result = await this.receiptService.requestPayer(
+      payerList,
+      userID,
+      receiptID,
+      hostName
+    );
+
+    console.log("payerlist", payerList);
+    res.json(result);
   };
 
   searchUser = async (req: Request, res: Response) => {

@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Payer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              clifford: "#da373d",
+            },
+          },
+        },
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+
+    <style type="text/tailwindcss">
+      @layer utilities {
+        .content-auto {
+          content-visibility: auto;
+        }
+      }
+    </style>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"
+      integrity="sha512-1/RvZTcCDEUjY/CypiMz+iqqtaoQfAITmNSJY17Myp4Ms5mdxPS5UV7iOfdZoxcGhzFbOm6sntTKJppjvuhg4g=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/css/bootstrap.min.css"
+      integrity="sha512-SbiR/eusphKoMVVXysTKG/7VseWii+Y3FdHrt0EpKgpToZeemhqHeZeLWLhJutz/2ut2Vw1uQEj2MbRF+TVBUA=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
+
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.all.js"
+      integrity="sha512-AINSNy+d2WG9ts1uJvi8LZS42S8DT52ceWey5shLQ9ArCmIFVi84nXNrvWyJ6bJ+qIb1MnXR46+A4ic/AUcizQ=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.css"
+      integrity="sha512-yqCpLPABHnpDe3/QgEm1OO4Ohq0BBlBtJGMh5JbhdYEb6nahIm7sbtjilfSFyzUhxdXHS/cm8+FYfNstfpxcrg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"
+      integrity="sha512-fD9DI5bZwQxOi7MhYWnnNPlvXdp/2Pj3XSTRrFs5FQa4mizyGLnJcN6tuvUS6LbmgN1ut+XGSABKvjN0H6Aoow=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    ></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <style type="text/tailwindcss">
+      @layer utilities {
+        .content-auto {
+          content-visibility: auto;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="search">
+      <form
+        action="/searchUser"
+        id="searchForm"
+        method="GET"
+        enctype="application/x-www-form-urlencoded"
+      >
+        <label
+          for="default-search"
+          class="mb-2 text-sm font-medium text-gray-900 sr-only light:text-white"
+          >Search</label
+        >
+        <div class="relative">
+          <div
+            class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none"
+          >
+            <svg
+              aria-hidden="true"
+              class="w-5 h-5 text-gray-500 light:text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              ></path>
+            </svg>
+          </div>
+          <input
+            type="search"
+            id="default-search"
+            class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 light:bg-gray-700 light:border-gray-600 light:placeholder-gray-400 light:text-white light:focus:ring-blue-500 light:focus:border-blue-500"
+            placeholder="Search Mockups, Logos..."
+            required
+          />
+          <button
+            type="submit"
+            id="submit"
+            class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 light:bg-blue-600 light:hover:bg-blue-700 light:focus:ring-blue-800"
+          >
+            Add
+          </button>
+        </div>
+      </form>
+    </div>
+    <div class="container">
+      <div class="flex">
+        <div class="col-md-8">
+          <ul
+            class="people-list max-w-md divide-y divide-gray-200 light:divide-gray-700"
+          ></ul>
+        </div>
+      </div>
+    </div>
+    <div class="requestDiv">
+      <button id="requestBtn">Request</button>
+    </div>
+    <template id="userList">
+      <li class="userDiv pb-3 sm:pb-4">
+        <div class="flex items-center space-x-4">
+          <div class="nameDiv flex flex-1 min-w-0">
+            <button disabled>
+              <i
+                class="fa-solid fa-user-check fa-xl"
+                style="color: #5a8add"
+              ></i>
+            </button>
+            <h5
+              class="userName text-cente text-2xl font-large text-black-900 truncate light:text-black"
+            ></h5>
+          </div>
+          <div
+            class="inline-flex items-center text-base font-semibold text-black-900 light:text-black space-x-1"
+          >
+            <button id="delete" class="btn bg-white-400 pull-right">
+              <i
+                class="fa-solid fa-user-xmark fa-xl"
+                style="color: #e67979"
+              ></i>
+            </button>
+          </div>
+        </div>
+      </li>
+    </template>
+  </body>
+  <script>
+    let submit = document.querySelector("#search");
+    let searchInput = document.querySelector("#default-search");
+    let searchForm = document.querySelector("#searchForm");
+    let displayList = document.querySelector(".displayList");
+    let userResult;
+    searchForm.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      //let res = await fetch("/searchUser", {
+      //  method: "GET",
+      //  headers: { "Content-Type": "application/json" },
+      //  body: JSON.stringify({ searchInput: searchInput.value }),
+      //});
+      //let searchList = await res.json();
+      //if (searchList.error) {
+      //  Swal.fire({
+      //    icon: "error",
+      //    title: `${searchList.error}`,
+      //    text: "Please enter the correct information.",
+      //  });
+      //}
+      //userResult = searchList.userResult;
+      userResult = searchInput.value;
+      console.log("userResult", userResult);
+      userClone(userResult);
+      //todo show in userList
+      searchInput.value = "";
+    });
+    let selectedUsers = [];
+
+    let addPeopleList = document.querySelector(".people-list");
+    let templateList = document.querySelector("#userList");
+    function userClone(userName) {
+      let node = templateList.content.cloneNode(true);
+      let userDiv = node.querySelector(".userDiv");
+
+      let userNameEl = node.querySelector(".userName");
+      userNameEl.textContent = userName;
+
+      id = Math.random().toString(36);
+      userDiv.setAttribute("id", `name${id}`);
+      let deleteBtn = node.querySelector("#delete");
+
+      if (selectedUsers.includes(userName)) {
+        Swal.fire({
+          icon: "error",
+          title: "Duplicate User found",
+          text: "Please input a new name",
+        });
+      } else {
+        selectedUsers.push(userName);
+        console.log("add", selectedUsers);
+        addPeopleList.appendChild(node);
+      }
+
+      deleteBtn.addEventListener("click", () => {
+        userDiv.parentNode.removeChild(userDiv);
+        selectedUsers.pop(userName);
+        console.log("deleted", selectedUsers);
+      });
+    }
+
+    let requestBtn = document.querySelector("#requestBtn");
+    requestBtn.addEventListener("click", () => {
+      let getPayerList = JSON.parse(localStorage.getItem("payerList"));
+      Swal.fire({
+        icon: "info",
+        title: "Send Request?",
+        showConfirmButton: true,
+        confirmButtonText: "Confirm",
+        showCancelButton: true,
+        showCloseButton: true,
+        preConfirm: async () => {
+          const res = await fetch("/requestPayer", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ payerList: selectedUsers }),
+          });
+        },
+      });
+    });
+  </script>
+</html>
