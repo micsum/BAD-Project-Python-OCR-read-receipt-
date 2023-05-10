@@ -10,16 +10,26 @@ export class ClaimReceiptItemService {
       .where({ receipt_id: receiptID });
   }
 
-  async retrieveReceiptRecipient(receiptStringID: string, userID: number) {
-    let receiptRecipients = await this.knex("receipt")
-      .where({ receipt_id: receiptStringID })
-      .innerJoin(
-        "receipt_recipient",
-        "receipt_recipient.receipt_id",
-        "=",
-        "receipt.id"
-      )
-      .select("to_individual");
+  async retrieveReceiptRecipient(receiptID: string | number, userID: number) {
+    let receiptRecipients;
+    if (typeof receiptID === "string") {
+      receiptRecipients = await this.knex("receipt")
+        .where({ receipt_id: receiptID })
+        .innerJoin(
+          "receipt_recipient",
+          "receipt_recipient.receipt_id",
+          "=",
+          "receipt.id"
+        )
+        .select("to_individual");
+    } else if (typeof receiptID === "number") {
+      receiptRecipients = await this.knex("receipt_recipient")
+        .select("to_individual")
+        .where({ receipt_id: receiptID });
+    } else {
+      return false;
+    }
+
     let userFound = false;
     for (let recipient of receiptRecipients) {
       if (recipient.to_individual === userID) {
@@ -30,14 +40,18 @@ export class ClaimReceiptItemService {
     return userFound;
   }
 
-  async checkReceiptClaimStatus(receiptStringID: string) {
-    let receiptStatus = await this.knex("receipt")
-      .select("confirm_selection")
-      .where({
-        receipt_id: receiptStringID,
+  async checkReceiptClaimStatus(receiptID: string | number) {
+    let result;
+    if (typeof receiptID === "string") {
+      [result] = await this.knex("receipt").select("confirm_selection").where({
+        receipt_id: receiptID,
       });
-
-    return receiptStatus;
+    } else if (typeof receiptID === "number") {
+      [result] = await this.knex("receipt").select("confirm_selection").where({
+        id: receiptID,
+      });
+    }
+    return { status: result.confirm_selection };
   }
 
   async getReceiptItems(receiptID: string) {
@@ -176,13 +190,9 @@ export class ClaimReceiptItemService {
 
   async respondPayMessage(
     userID: number,
-    receiptStringID: string,
+    receiptID: number,
     creditMode: Boolean
   ) {
-    let [{ receiptID }] = await this.knex("receipt")
-      .select("id")
-      .where({ receipt_id: receiptStringID });
-
     if (creditMode) {
       let [{ credit }] = await this.knex("user")
         .select("credit")

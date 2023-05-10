@@ -10,6 +10,10 @@ export class ClaimReceiptItemController {
     private claimReceiptItemService: ClaimReceiptItemService,
     private io: socketIO
   ) {
+    this.router.get(
+      "/getReceiptClaimConfirmStatus/:receiptID",
+      this.getReceiptClaimConfirmStatus
+    );
     this.router.get("/getReceiptItems/:receiptID", this.getReceiptItems);
     this.router.post("/claimReceiptItems/:receiptID", this.claimReceiptItem);
     this.router.delete(
@@ -17,8 +21,31 @@ export class ClaimReceiptItemController {
       this.resetReceiptItemClaim
     );
     this.router.put("/hostConfirmClaim/:receiptID", this.hostConfirmClaim);
-    this.router.post("/respondPayMessage/:receiptID", this.respondPayMessage);
+    this.router.post("/respondPayMessage", this.respondPayMessage);
   }
+
+  getReceiptClaimConfirmStatus = async (req: Request, res: Response) => {
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined ||
+      req.session.user.userName === undefined
+    ) {
+      res.json({ error: "Please Login" });
+      return;
+    }
+
+    try {
+      let receiptID = req.params.receiptID;
+      res.json({
+        receiptStatus:
+          await this.claimReceiptItemService.checkReceiptClaimStatus(receiptID),
+      });
+    } catch (error) {
+      console.log(error);
+      res.json({ error });
+    }
+  };
 
   getReceiptItems = async (req: Request, res: Response) => {
     if (
@@ -252,13 +279,13 @@ export class ClaimReceiptItemController {
     }
 
     try {
-      let receiptStringID = req.params.receiptID;
       let userID = req.session.user.userID;
+      let receiptID = req.body.receiptID;
       let creditMode: Boolean = req.body.creditMode;
 
       let userFound =
         await this.claimReceiptItemService.retrieveReceiptRecipient(
-          receiptStringID,
+          receiptID,
           userID
         );
 
@@ -270,7 +297,7 @@ export class ClaimReceiptItemController {
 
       let result = await this.claimReceiptItemService.respondPayMessage(
         userID,
-        receiptStringID,
+        receiptID,
         creditMode
       );
       res.json(result);
