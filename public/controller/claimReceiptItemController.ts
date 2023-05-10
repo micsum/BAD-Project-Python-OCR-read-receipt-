@@ -21,7 +21,7 @@ export class ClaimReceiptItemController {
       this.resetReceiptItemClaim
     );
     this.router.put("/hostConfirmClaim/:receiptID", this.hostConfirmClaim);
-    this.router.post("/respondPayMessage/:receiptID", this.respondPayMessage);
+    this.router.post("/respondPayMessage", this.respondPayMessage);
   }
 
   getReceiptClaimConfirmStatus = async (req: Request, res: Response) => {
@@ -279,13 +279,13 @@ export class ClaimReceiptItemController {
     }
 
     try {
-      let receiptStringID = req.params.receiptID;
       let userID = req.session.user.userID;
+      let receiptID = req.body.receiptID;
       let creditMode: Boolean = req.body.creditMode;
 
       let userFound =
         await this.claimReceiptItemService.retrieveReceiptRecipient(
-          receiptStringID,
+          receiptID,
           userID
         );
 
@@ -297,7 +297,7 @@ export class ClaimReceiptItemController {
 
       let result = await this.claimReceiptItemService.respondPayMessage(
         userID,
-        receiptStringID,
+        receiptID,
         creditMode
       );
       res.json(result);

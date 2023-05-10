@@ -24,7 +24,7 @@ function updateRowPriceInformation(
 function updateUnitPrice() {
   let itemList = document.querySelectorAll(".itemDiv");
   itemList.forEach((item) => {
-    item.querySelector("unitPrice").value =
+    item.querySelector(".unitPrice").value =
       item.querySelector(".subtotal").value /
       item.querySelector(".quantity").value;
   });
@@ -32,12 +32,16 @@ function updateUnitPrice() {
 
 function updateTotalPrice() {
   let subtotalList = document.querySelectorAll(".subtotal");
-  let total = subtotalList.reduce((acc, elem) => {
-    if (elem.value.toFixed(2) === "NaN") {
-      return acc;
+  let total = 0;
+  subtotalList.forEach((elem) => {
+    if (!elem.disabled) {
+      if (parseFloat(elem.value).toFixed(2) === "NaN") {
+        total = total;
+      } else {
+        total += parseFloat(elem.value);
+      }
     }
-    return acc + parseFloat(elem.value);
-  }, 0);
+  });
   totalInput.value = total;
   updateUnitPrice();
   updateDetectedDiscount();
@@ -69,13 +73,13 @@ function updateDetectedDiscount() {
 }
 
 function createItemRow(data = [[""], ["$0.00"]]) {
-  let node = itemListTemplate.contentEditable.cloneNode(true);
+  let node = itemListTemplate.content.cloneNode(true);
   let itemDiv = node.querySelector(".itemDiv");
   let itemNameInput = node.querySelector(".itemName");
   let quantityInput = node.querySelector(".quantity");
   let unitPriceInput = node.querySelector(".unitPrice");
   let subtotalInput = node.querySelector(".subtotal");
-  let deleteButton = node.querySelector("delete");
+  let deleteButton = node.querySelector(".delete");
 
   let id = Math.random().toString(36).slice(2).substring(0, 4);
 
@@ -89,16 +93,28 @@ function createItemRow(data = [[""], ["$0.00"]]) {
 
   quantityInput.value = 1;
   subtotalInput.value = data[1][0].replace("$", "");
-  unitPriceInput = subtotalInput.value;
+  unitPriceInput.value = subtotalInput.value;
 
-  quantityInput.addEventListener("input", () => {
-    if (quantityInput.value <= 0) {
+  quantityInput.addEventListener("input", async () => {
+    if (quantityInput.value < 0) {
       quantityInput.value = 1;
       Swal.fire({
         icon: "error",
         text: "Quantity Input must be at least 1 !",
       });
       return;
+    } else if (quantityInput.value == 0) {
+      await new Promise((resolve) => {
+        setTimeout(resolve, 2000);
+      });
+      if (quantityInput.value == 0) {
+        quantityInput.value = 1;
+        Swal.fire({
+          icon: "error",
+          text: "Quantity Input must be at least 1 !",
+        });
+        return;
+      }
     }
     updateRowPriceInformation(quantityInput, subtotalInput, unitPriceInput);
   });
@@ -152,6 +168,7 @@ window.addEventListener("load", async (event) => {
 
 addItemButton.addEventListener("click", () => {
   createItemRow();
+  updateTotalPrice();
 });
 
 discountInputButton.addEventListener("click", () => {
@@ -165,12 +182,18 @@ discountInputButton.addEventListener("click", () => {
     newDiscount = newDiscount < 10 ? (newDiscount *= 10) : newDiscount;
 
     let normalizedDiscount;
-    normalizedDiscount = newDiscount / currentDiscount;
-    detectedDiscount = newDiscount;
+    if (newDiscount != detectedDiscount) {
+      normalizedDiscount = newDiscount / currentDiscount;
+      detectedDiscount = newDiscount;
+    } else {
+      normalizedDiscount = currentDiscount / 100;
+    }
+
     let subtotalList = document.querySelectorAll(".subtotal");
     subtotalList.forEach((elem) => {
       elem.value *= normalizedDiscount;
     });
+    updateUnitPrice();
   } else {
     // Call Sweet Alert
   }
