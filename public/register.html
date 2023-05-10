@@ -13,27 +13,6 @@
       id="registrationForm"
       enctype="multipart/form-data"
     >
-      <div id="profilePicUpload">
-        <div
-          for="profile"
-          class="profilePicTitle infoInputTitle"
-          id="profilePicLabel"
-        >
-          Please upload profile photo here. (optional)
-        </div>
-        <div id="browsePocket">
-          <input
-            type="file"
-            name="profilePic"
-            accept="image/*, capture=camera"
-            class="existingButton"
-            id="uploadPhoto"
-          />
-          <button id="previewPhoto" type="button">
-            Preview Profile Picture
-          </button>
-        </div>
-      </div>
       <div id="usernameRegister" class="infoInput">
         <div for="newUsername" class="infoInputTitle">
           <strong
@@ -89,35 +68,54 @@
           required
         />
       </div>
-      <div id="securityQuestion1" class="infoInput">
-        <div for="securityQ1" class="infoInputTitle securityQuestion">
-          <strong
-            >Security Question 1 : <br />What is your favourite animal?
-          </strong>
+      <div id="phoneNumberDiv" class="infoInput">
+        <div for="phoneNumber" class="infoInputTitle securityQuestion">
+          <strong>Phone no. : </strong>
         </div>
         <input
           type="text"
-          name="securityQ1"
-          placeholder="Input favourite animal here~"
-          id="sqone"
+          name="phoneNumber"
+          placeholder="Enter Phone Number Here"
+          id="phoneNumber"
           class="inputBox"
           required
         />
       </div>
-      <div id="securityQuestion1" class="infoInput">
-        <div for="securityQ2" class="infoInputTitle securityQuestion">
-          <strong
-            >Security Question 2 :<br />
-            What is your favourite food?
-          </strong>
+      <div id="emailDiv" class="infoInput">
+        <div for="email" class="infoInputTitle securityQuestion">
+          <strong>Phone no. : </strong>
         </div>
         <input
           type="text"
-          name="securityQ2"
-          placeholder="Input favourite food here~"
-          id="sqtwo"
+          name="email"
+          placeholder="Enter Phone Number Here"
+          id="email"
           class="inputBox"
           required
+        />
+      </div>
+      <div id="payMeLinkDiv" class="infoInput">
+        <div for="payMeLink" class="infoInputTitle securityQuestion">
+          <strong>Pay-Me Link :</strong>
+        </div>
+        <input
+          type="text"
+          name="payMeLink"
+          placeholder="Enter pay-me Link here"
+          id="payMeLink"
+          class="inputBox"
+        />
+      </div>
+      <div id="fpsDiv" class="infoInput">
+        <div for="fps" class="infoInputTitle securityQuestion">
+          <strong>FPS ID :</strong>
+        </div>
+        <input
+          type="text"
+          name="fps"
+          placeholder="Enter FPS ID here"
+          id="fpsID"
+          class="inputBox"
         />
       </div>
       <div id="createNewAccountDiv">
@@ -128,5 +126,7 @@
         />
       </div>
     </form>
+    <button id="return" class="existingButton">Return to Login Page</button>
   </body>
+  <script src="./js/register.js"></script>
 </html>
