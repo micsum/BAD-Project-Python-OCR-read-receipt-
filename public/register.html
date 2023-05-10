@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Register Page</title>
+  </head>
+  <body>
+    <form
+      method="POST"
+      action="/register"
+      id="registrationForm"
+      enctype="multipart/form-data"
+    >
+      <div id="profilePicUpload">
+        <div
+          for="profile"
+          class="profilePicTitle infoInputTitle"
+          id="profilePicLabel"
+        >
+          Please upload profile photo here. (optional)
+        </div>
+        <div id="browsePocket">
+          <input
+            type="file"
+            name="profilePic"
+            accept="image/*, capture=camera"
+            class="existingButton"
+            id="uploadPhoto"
+          />
+          <button id="previewPhoto" type="button">
+            Preview Profile Picture
+          </button>
+        </div>
+      </div>
+      <div id="usernameRegister" class="infoInput">
+        <div for="newUsername" class="infoInputTitle">
+          <strong
+            >New Username <br /><span class="subtext">
+              (Max.Length = 16 characters)</span
+            ></strong
+          >
+        </div>
+        <input
+          type="text"
+          name="newUsername"
+          maxlength="16"
+          placeholder="Enter new username"
+          id="newUsernameEntry"
+          class="inputBox"
+          required
+        />
+      </div>
+      <div id="passwordRegister" class="infoInput">
+        <div for="newPassword" class="infoInputTitle">
+          <strong
+            >New Password <br /><span class="subtext"
+              >(Length = 7 ~ 8 characters)</span
+            ></strong
+          >
+        </div>
+        <input
+          type="text"
+          name="newPassword"
+          minlength="7"
+          maxlength="8"
+          placeholder="Enter new password"
+          id="newPasswordEntry"
+          class="inputBox"
+          required
+        />
+      </div>
+      <div id="reEnterPasswordRegister" class="infoInput">
+        <div for="newPasswordRe-enter" class="infoInputTitle">
+          <strong
+            >Re-enter Password <br /><span class="subtext"
+              >(Same as previous input)</span
+            ></strong
+          >
+        </div>
+        <input
+          type="text"
+          name="newPasswordReEnter"
+          maxlength="8"
+          placeholder="Re-enter new password"
+          id="newPasswordReEntry"
+          class="inputBox"
+          required
+        />
+      </div>
+      <div id="securityQuestion1" class="infoInput">
+        <div for="securityQ1" class="infoInputTitle securityQuestion">
+          <strong
+            >Security Question 1 : <br />What is your favourite animal?
+          </strong>
+        </div>
+        <input
+          type="text"
+          name="securityQ1"
+          placeholder="Input favourite animal here~"
+          id="sqone"
+          class="inputBox"
+          required
+        />
+      </div>
+      <div id="securityQuestion1" class="infoInput">
+        <div for="securityQ2" class="infoInputTitle securityQuestion">
+          <strong
+            >Security Question 2 :<br />
+            What is your favourite food?
+          </strong>
+        </div>
+        <input
+          type="text"
+          name="securityQ2"
+          placeholder="Input favourite food here~"
+          id="sqtwo"
+          class="inputBox"
+          required
+        />
+      </div>
+      <div id="createNewAccountDiv">
+        <input
+          type="submit"
+          value="Create New Account"
+          class="existingButton"
+        />
+      </div>
+    </form>
+  </body>
+</html>
