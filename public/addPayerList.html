@@ -178,22 +178,23 @@
     let userResult;
     searchForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      //let res = await fetch("/searchUser", {
-      //  method: "GET",
-      //  headers: { "Content-Type": "application/json" },
-      //  body: JSON.stringify({ searchInput: searchInput.value }),
-      //});
-      //let searchList = await res.json();
-      //if (searchList.error) {
-      //  Swal.fire({
-      //    icon: "error",
-      //    title: `${searchList.error}`,
-      //    text: "Please enter the correct information.",
-      //  });
-      //}
-      //userResult = searchList.userResult;
-      userResult = searchInput.value;
-      console.log("userResult", userResult);
+      let res = await fetch("/searchUser", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ searchInput: searchInput.value }),
+      });
+      let searchList = await res.json();
+      if (searchList.error) {
+        Swal.fire({
+          icon: "error",
+          title: `${searchList.error}`,
+          text: "Please enter the correct information.",
+        });
+        return;
+      }
+      userResult = searchList.userResult;
+      //userResult = searchInput.value;
+      //console.log("userResult", userResult);
       userClone(userResult);
       //todo show in userList
       searchInput.value = "";
@@ -219,6 +220,7 @@
           title: "Duplicate User found",
           text: "Please input a new name",
         });
+        selectedUsers.splice(selectedUsers.indexOf(userName), 1);
       } else {
         selectedUsers.push(userName);
         console.log("add", selectedUsers);

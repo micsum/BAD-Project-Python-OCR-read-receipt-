@@ -19,7 +19,7 @@ export class ReceiptController {
     this.router.post("/uploadReceipt", this.uploadReadReceipt);
     this.router.get("/loadReceiptItems", this.loadReceiptItems);
     this.router.post("/insertReceiptItems", this.insertReceiptItems);
-    this.router.get("/searchUser", this.searchUser);
+    this.router.post("/searchUser", this.searchUser);
     this.router.post("/requestPayer", this.requestPayer);
   }
 
@@ -97,8 +97,14 @@ export class ReceiptController {
     }
     let userID = req.session.user.userID;
 
+    let mapResult = this.receiptMap.get(userID);
+    if (mapResult === undefined) {
+      res.json({ error: "User did not Create Receipt" });
+      return;
+    }
+
     res.json({
-      itemList: this.receiptMap.get(userID)?.data,
+      itemList: mapResult.data,
     });
   };
 
@@ -181,10 +187,12 @@ export class ReceiptController {
 
   searchUser = async (req: Request, res: Response) => {
     let searchInput = req.body.searchInput;
-    let [{ name }] = await this.receiptService.searchUser(searchInput);
-    if (name === "" || name === "undefined") {
+    let result = await this.receiptService.searchUser(searchInput);
+
+    if (result.length < 1) {
       res.json({ error: "Can not find the user" });
+      return;
     }
-    res.json({ userResult: name });
+    res.json({ userResult: result[0].name });
   };
 }

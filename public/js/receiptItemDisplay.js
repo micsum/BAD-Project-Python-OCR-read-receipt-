@@ -42,7 +42,7 @@ function updateTotalPrice() {
       }
     }
   });
-  totalInput.value = total;
+  totalInput.value = parseFloat(total).toFixed(2);
   updateUnitPrice();
   updateDetectedDiscount();
 }
@@ -140,24 +140,31 @@ function createItemRow(data = [[""], ["$0.00"]]) {
 
 let max, min;
 let receiptDiscount = -1;
-let detectedDiscount = 0;
+let detectedDiscount = 100;
 
 window.addEventListener("load", async (event) => {
   event.preventDefault();
-  // let res = await fetch
-  // let result = await res.json()
-  // if(result.error){
-  //     // Call Sweet Alert
-  //     return
-  // }
-  // let data = result.data
+  const res = await fetch("/loadReceiptItems", {
+    method: "GET",
+    headers: { "Content-Type": "application/json" },
+  });
+
+  const result = await res.json();
+  if (result.error) {
+    Swal.fire({
+      icon: "error",
+      text: result.error,
+    });
+    return;
+  }
+  data = result.itemList;
 
   for (let i = 0; i < data.length; i++) {
     createItemRow(data[i]);
 
     if (receiptDiscount == -1) {
       [max, min] = getMaxMinPrice();
-      detectedDiscount = getDiscountValue(max, min) * 100;
+      let detectedDiscount = getDiscountValue(max, min) * 100;
       detectedDiscount > 100 ? 100 : detectedDiscount;
       scannedDiscountText.value =
         detectedDiscount > 100 ? "/" : detectedDiscount;
@@ -185,15 +192,18 @@ discountInputButton.addEventListener("click", () => {
     if (newDiscount != detectedDiscount) {
       normalizedDiscount = newDiscount / currentDiscount;
       detectedDiscount = newDiscount;
+
+      let subtotalList = document.querySelectorAll(".subtotal");
+      subtotalList.forEach((elem) => {
+        elem.value *= normalizedDiscount;
+        elem.value = parseFloat(elem.value).toFixed(2);
+      });
     } else {
       normalizedDiscount = currentDiscount / 100;
     }
 
-    let subtotalList = document.querySelectorAll(".subtotal");
-    subtotalList.forEach((elem) => {
-      elem.value *= normalizedDiscount;
-    });
     updateUnitPrice();
+    updateTotalPrice();
   } else {
     // Call Sweet Alert
   }

@@ -28,9 +28,9 @@ export class ReceiptService {
   async searchUser(inputValue: string) {
     return await this.knex("user")
       .select("name")
-      .where("email", `${inputValue}`)
-      .orWhere("name", `${inputValue}`)
-      .orWhere("phone_number", `${inputValue}`);
+      .where("email", inputValue)
+      .orWhere("name", inputValue)
+      .orWhere("phone_number", inputValue);
   }
 
   async requestPayer(

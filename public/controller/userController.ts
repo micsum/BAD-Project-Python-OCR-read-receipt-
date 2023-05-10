@@ -102,9 +102,11 @@ export class UserController extends CheckReq implements ObjectAny {
       );
       if (checkUnique.error) {
         res.json(checkUnique.error);
+        return;
       }
       userPassword = await this.hashPassword(userPassword);
       formObject["password"] = userPassword;
+      formObject["credit"] = 0;
       await this.userService.registerNewUser(formObject);
     } catch (error) {
       console.log(error);

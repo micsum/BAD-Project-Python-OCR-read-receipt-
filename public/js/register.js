@@ -2,13 +2,13 @@
 const form = document.getElementById("registrationForm");
 const returnButton = document.getElementById("return");
 
-let newUserName = document.getElementById("newUsernameEntry").value;
-let newPassword = document.getElementById("newPasswordEntry").value;
+let newUserName = document.getElementById("newUsernameEntry");
+let newPassword = document.getElementById("newPasswordEntry");
 let reEnterPassword = document.getElementById("newPasswordReEntry");
-let newPhoneNumber = document.getElementById("phoneNumber").value;
-let newEmail = document.getElementById("email").value;
-let newPayMeLink = document.getElementById("payMeLink").value;
-let newFPSID = document.getElementById("fpsID").value;
+let newPhoneNumber = document.getElementById("phoneNumber");
+let newEmail = document.getElementById("email");
+let newPayMeLink = document.getElementById("payMeLink");
+let newFPSID = document.getElementById("fpsID");
 
 returnButton.addEventListener("click", () => {
   window.location.href = "/index.html";
@@ -16,7 +16,8 @@ returnButton.addEventListener("click", () => {
 
 form.addEventListener("submit", async function (event) {
   event.preventDefault();
-  if (newPassword !== reEnterPassword.value) {
+  console.log("f:", `${newPassword.value}`, "s", `${reEnterPassword.value}`);
+  if (newPassword.value != reEnterPassword.value) {
     Swal.fire({
       icon: "error",
       title: "Password Mismatch",
@@ -26,12 +27,12 @@ form.addEventListener("submit", async function (event) {
     return;
   }
   let formData = {
-    username: newUserName,
-    password: newPassword,
-    phoneNumber: newPhoneNumber,
-    email: newEmail,
-    payMeLink: newPayMeLink,
-    fpsLink: newFPSID,
+    username: newUserName.value,
+    password: newPassword.value,
+    phoneNumber: newPhoneNumber.value,
+    email: newEmail.value,
+    payMeLink: newPayMeLink.value,
+    fpsLink: newFPSID.value,
   };
 
   let res = await fetch("/register", {
@@ -49,4 +50,11 @@ form.addEventListener("submit", async function (event) {
       text: result.error,
     });
   }
+  Swal.fire({
+    icon: "success",
+    title: "User Created",
+    preConfirm: () => {
+      window.location.href = "./index.html";
+    },
+  });
 });

@@ -1,4 +1,5 @@
 // Buffer Line
+let data;
 const imagePath = JSON.parse(localStorage.getItem("imagepath"));
 window.addEventListener("load", async () => {
   let viewImageDiv = document.querySelector("#viewImage");
@@ -18,25 +19,15 @@ window.addEventListener("load", async () => {
   viewImageDiv.appendChild(element);
 });
 
-//const data = JSON.parse(localStorage.getItem("itemData")); using localstorage
-
-//const res = await fetch("/loadReceiptItems",{
-// method:"GET",
-// headers:{"Content-Type": "application/json"}
-//})
-//
-//const result = await res.json();
-//const itemList = result.itemList
-//const data = itemList
-const data = [
-  [["香茅瀦頸肉", "撈檬"], ["$52.00"]],
-  [["2x 魚露雞扒撈", "檬"], ["$104.00"]],
-  [["1x 火車頭", "1x揣粉"], ["$70.00"]],
-  [["小計", "增值稅"], ["$226.00"]],
-  [["增值稅"], ["5.00"]],
-  [[""], ["-$56.50"]],
-  [["總計"], ["$174.50"]],
-];
+//const data = [
+//  [["香茅瀦頸肉", "撈檬"], ["$52.00"]],
+//  [["2x 魚露雞扒撈", "檬"], ["$104.00"]],
+//  [["1x 火車頭", "1x揣粉"], ["$70.00"]],
+//  [["小計", "增值稅"], ["$226.00"]],
+//  [["增值稅"], ["5.00"]],
+//  [[""], ["-$56.50"]],
+//  [["總計"], ["$174.50"]],
+//];
 
 let receiptBtn = document.querySelector("#receiptBtn");
 receiptBtn.addEventListener("click", () => {
@@ -55,11 +46,14 @@ receiptBtn.addEventListener("click", () => {
         let itemName = element.querySelector(".itemName").value;
         let quantity = element.querySelector(".quantity").value;
         let unitPrice = element.querySelector(".unitPrice").value;
-        itemJson.push({
-          item_name: itemName,
-          quantity: quantity,
-          price: unitPrice,
-        });
+        let subtotal = element.querySelector(".subtotal");
+        if (!subtotal.disabled) {
+          itemJson.push({
+            item_name: itemName,
+            quantity: quantity,
+            price: unitPrice,
+          });
+        }
       });
       const res = await fetch("/insertReceiptItems", {
         method: "POST",
@@ -74,7 +68,7 @@ receiptBtn.addEventListener("click", () => {
         });
         return;
       }
-      window.location.href = "./addPeopleList.html";
+      window.location.href = "./addPayerList.html";
       localStorage.removeItem("imagepath");
     },
   });

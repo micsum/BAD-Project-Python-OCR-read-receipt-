@@ -37,7 +37,7 @@ export class CheckReq {
     if (req.body === undefined) {
       return "Information";
     }
-    for (let entry in fields) {
+    for (let entry of fields) {
       if (req.body[entry] === undefined) {
         return entry;
       }
