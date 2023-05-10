@@ -5,6 +5,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Add People</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              clifford: '#da373d',
+            }
+          }
+        }
+      }
+    </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+
+    <style type="text/tailwindcss">
+      @layer utilities {
+        .content-auto {
+          content-visibility: auto;
+        }
+      }
+    </style>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.2.3/js/bootstrap.min.js"
       integrity="sha512-1/RvZTcCDEUjY/CypiMz+iqqtaoQfAITmNSJY17Myp4Ms5mdxPS5UV7iOfdZoxcGhzFbOm6sntTKJppjvuhg4g=="
@@ -18,6 +39,7 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    
 
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css"
@@ -69,7 +91,7 @@
       >
         <label
           for="default-search"
-          class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white"
+          class="mb-2 text-sm font-medium text-gray-900 sr-only light:text-white"
           >Search</label
         >
         <div class="relative">
@@ -78,7 +100,7 @@
           >
             <svg
               aria-hidden="true"
-              class="w-5 h-5 text-gray-500 dark:text-gray-400"
+              class="w-5 h-5 text-gray-500 light:text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -95,14 +117,14 @@
           <input
             type="search"
             id="default-search"
-            class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+            class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 light:bg-gray-700 light:border-gray-600 light:placeholder-gray-400 light:text-white light:focus:ring-blue-500 light:focus:border-blue-500"
             placeholder="Search Mockups, Logos..."
             required
           />
           <button
             type="submit"
             id="submit"
-            class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+            class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 light:bg-blue-600 light:hover:bg-blue-700 light:focus:ring-blue-800"
           >
             Search
           </button>
@@ -110,20 +132,20 @@
       </form>
     </div>
     <div class="container">
-      <div class="row">
+      <div class="flex">
         <div class="col-md-8">
-          <div class="people-list"></div>
+            <ul class="people-list max-w-md divide-y divide-gray-200 light:divide-gray-700"></ul>
         </div>
       </div>
     </div>
     <template id="userList">
-      <div class="userDiv">
-        <div class="row">
-          <div class="nameDiv">
-            <h5 id="userName"></h5>
+      <li class="userDiv pb-3 sm:pb-4">
+        <div class="flex items-center space-x-4">
+          <div class="nameDiv flex-1 min-w-0">
+            <h5 id="userName" class="text-2xl font-large text-black-900 truncate light:text-black"></h5>
           </div>
-          <div class="col-md-3 col-sm-3">
-            <button class="btn btn-primary pull-right" id="add">Add</button>
+          <div class="inline-flex items-center text-base font-semibold text-black-900 light:text-black">
+            <button id="add" class="btn btn-primary pull-right" >Add</button>
           </div>
         </div>
       </div>
@@ -135,31 +157,60 @@
     let searchForm = document.querySelector("#searchForm");
     let displayList = document.querySelector(".displayList");
     let userResult;
-    searchForm.addEventListener("click", async (event) => {
+    searchForm.addEventListener("submit", async (event) => {
       event.preventDefault();
-      let res = await fetch("/searchUser", {
-        method: "GET",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ searchInput: searchInput.value }),
-      });
-      let searchList = await res.json();
-      if (searchList.error) {
-        Swal.fire({
-          icon: "error",
-          title: `${searchList.error}`,
-          text: "Please enter the correct information.",
-        });
-      }
-      userResult = searchList.userResult;
+      //let res = await fetch("/searchUser", {
+      //  method: "GET",
+      //  headers: { "Content-Type": "application/json" },
+      //  body: JSON.stringify({ searchInput: searchInput.value }),
+      //});
+      //let searchList = await res.json();
+      //if (searchList.error) {
+      //  Swal.fire({
+      //    icon: "error",
+      //    title: `${searchList.error}`,
+      //    text: "Please enter the correct information.",
+      //  });
+      //}
+      //userResult = searchList.userResult;
+      userResult = searchInput.value
       console.log("userResult", userResult);
+      userClone(userResult)
       //todo show in userList
     });
 
     let addPeopleList = document.querySelector(".people-list");
     let templateList = document.querySelector("#userList");
     function userClone(userName) {
+      let selectedUsers=[];
+
       let node = templateList.content.cloneNode(true);
+      const userNameEl = node.querySelector("#userName");
+      userNameEl.textContent = userName
+      addPeopleList.appendChild(node)
+
+
       const addBtn = node.querySelector("#add");
+      if(selectedUsers.includes(userName)){
+        addBtn.innerHTML = '<i class="fa-solid fa-square-check" style="color: #376ca4;"></i>'
+        addBtn.setAttribute(disabled,true);
+      }else{
+        //addBtn.textContent = "Add";
+        addBtn.setAttribute(disabled,false);
+        addBtn.addEventListener("click",()=>{
+            selectedUsers.push(userName)
+            console.log("selectedUsers",selectedUsers)
+            addBtn.textContent=''
+            addBtn.innerHTML='<i class="fa-solid fa-square-check" style="color: #376ca4;"></i>'
+            addBtn.disabled=true;
+
+            const selectedUsersEl = userClone(userName);
+            const iconEl = selectedUsersEl.querySelector("#add")
+            iconEl.innerHTML = '<i class="fa-solid fa-square-check" style="color: #376ca4;"></i>';
+            iconEl.disabled=true;
+            addPeopleList.appendChild(selectedUsersEl)
+        })
+      }
     }
   </script>
 </html>
