@@ -200,15 +200,8 @@
 
       const attachData = new FormData();
       attachData.append("croppedImage", blob, "cropped.jpeg");
-      const res = await fetch("/uploadReceipt", {
-        method: "POST",
-        body: attachData,
-      });
-
-      const result = await res.json();
-      const itemData = result.data;
-
-      Swal.fire({
+      
+      await Swal.fire({
         title: "Reading Receipt Content.\nPlease wait.\u{1F64C}",
         allowOutsideClick: false,
         showConfirmButton: false,
@@ -225,14 +218,14 @@
           if (itemData) {
             //console.log("newItemData",itemData);
 
-            Swal.fire({
+            await Swal.fire({
               title: "Receipt Content is ready to edit.",
               allowOutsideClick: false,
               icon: "success",
               showConfirmButton: false,
               timer: 8000,
               willOpen: () => {
-                window.location.href = "./createReceipt.html";
+                setTimeout(()=>{window.location.href = "./createReceipt.html";},3000)
               },
             });
           } else if (result.error) {
