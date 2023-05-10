@@ -26,15 +26,15 @@ export class ReceiptController {
   uploadReadReceipt = async (req: Request, res: Response) => {
     //console.log("test upload");
 
-    //if (
-    //  req.session === undefined ||
-    //  req.session.user === undefined ||
-    //  req.session.user.userID === undefined
-    //) {
-    //  res.status(401).json({ error: "User Not Found" });
-    //  return;
-    //}
-    //let userID = req.session.user.userID;
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined
+    ) {
+      res.status(401).json({ error: "User Not Found" });
+      return;
+    }
+    let userID = req.session.user.userID;
 
     this.form.parse(req, async (err, fields, files) => {
       if (err) {
@@ -60,16 +60,16 @@ export class ReceiptController {
       });
       let response = await toPython.json();
 
-      //let receipt_id = await this.receiptService.createReceipt(
-      //  filename,
-      //  userID
-      //);
-      //
-      //this.receiptMap.set(userID, {
-      //  receipt_id: receipt_id,
-      //  data: response.data,
-      //});
-      //console.log(this.receiptMap);
+      let receipt_id = await this.receiptService.createReceipt(
+        filename,
+        userID
+      );
+
+      this.receiptMap.set(userID, {
+        receipt_id: receipt_id,
+        data: response.data,
+      });
+      console.log(this.receiptMap);
       let responseData = response.data;
       console.log(response.data); //fetch data from python easyocr
 
@@ -123,8 +123,15 @@ export class ReceiptController {
       } else if (item.name === null || item.name === "") {
         res.json({ error: "item name cannot be empty" });
       }
+
+      let mapResult = this.receiptMap.get(userID);
+      if (mapResult === undefined) {
+        res.json({ error: "User did not Create Receipt" });
+        return;
+      }
+
       let itemID = Math.random().toString(36).slice(2).substring(0, 6);
-      item["receipt_id"] = this.receiptMap.get(userID)?.receipt_id;
+      item["receipt_id"] = mapResult.receipt_id;
       item["item_id"] = itemID;
       newItemList.push(item);
     }
@@ -153,7 +160,14 @@ export class ReceiptController {
     }
     let userID = req.session.user.userID;
     let hostName = req.session.user.userName;
-    let receiptID = this.receiptMap.get(userID)?.receipt_id;
+
+    let mapResult = this.receiptMap.get(userID);
+    if (mapResult === undefined) {
+      res.json({ error: "User did not Create Receipt" });
+      return;
+    }
+
+    let receiptID = mapResult.receipt_id;
     let result = await this.receiptService.requestPayer(
       payerList,
       userID,
