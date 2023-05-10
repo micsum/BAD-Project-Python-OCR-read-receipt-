@@ -9,9 +9,19 @@ function displayNotification(notification, destination) {
   let node = notificationTemplate.content.cloneNode(true);
   let notificationDiv = node.querySelector(".notificationDiv");
   notificationDiv.setAttribute("id", `notification${notification.receipt_id}`);
-  notificationDiv.addEventListener("click", function (event) {
+  notificationDiv.addEventListener("click", async function (event) {
     event.preventDefault();
-    window.location = `./testReceiptDisplay.html?receiptID=${notification.receipt_id}`;
+    let res = await fetch(
+      `/getReceiptClaimConfirmStatus/${notification.receipt_id}`
+    );
+    let result = await res.json();
+    if (result.status == false) {
+      window.location = `./testReceiptDisplay.html?receiptID=${notification.receipt_id}`;
+    } else if (result.status == true) {
+      // Call Sweet Alert Ask Pay Method
+    } else {
+      // Call Sweet Alert Display Receipt Not Found Error
+    }
   });
 
   let icon;

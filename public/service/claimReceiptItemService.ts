@@ -30,14 +30,18 @@ export class ClaimReceiptItemService {
     return userFound;
   }
 
-  async checkReceiptClaimStatus(receiptStringID: string) {
-    let receiptStatus = await this.knex("receipt")
-      .select("confirm_selection")
-      .where({
-        receipt_id: receiptStringID,
+  async checkReceiptClaimStatus(receiptID: string | number) {
+    let result;
+    if (typeof receiptID === "string") {
+      [result] = await this.knex("receipt").select("confirm_selection").where({
+        receipt_id: receiptID,
       });
-
-    return receiptStatus;
+    } else if (typeof receiptID === "number") {
+      [result] = await this.knex("receipt").select("confirm_selection").where({
+        id: receiptID,
+      });
+    }
+    return { status: result.confirm_selection };
   }
 
   async getReceiptItems(receiptID: string) {
