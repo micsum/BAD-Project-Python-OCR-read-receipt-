@@ -161,9 +161,12 @@ discountInputButton.addEventListener("click", () => {
     discountInput.value <= 100
   ) {
     let currentDiscount = detectedDiscount;
+    let newDiscount = parseInt(discountInput.value);
+    newDiscount = newDiscount < 10 ? (newDiscount *= 10) : newDiscount;
+
     let normalizedDiscount;
-    normalizedDiscount = discountInput.value / currentDiscount;
-    detectedDiscount = discountInput.value;
+    normalizedDiscount = newDiscount / currentDiscount;
+    detectedDiscount = newDiscount;
     let subtotalList = document.querySelectorAll(".subtotal");
     subtotalList.forEach((elem) => {
       elem.value *= normalizedDiscount;
