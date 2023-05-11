@@ -169,7 +169,7 @@ export class ReceiptController {
 
     let mapResult = this.receiptMap.get(userID);
     if (mapResult === undefined) {
-      res.json({ error: "User did not Create Receipt" });
+      res.json({ error: "You did not Create the Receipt" });
       return;
     }
 
@@ -181,7 +181,7 @@ export class ReceiptController {
       hostName
     );
 
-    console.log("payerlist", payerList);
+    //console.log("payerlist", payerList);
     res.json(result);
   };
 
