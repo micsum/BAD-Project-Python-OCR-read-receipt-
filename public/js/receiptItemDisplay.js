@@ -66,10 +66,21 @@ function getDiscountValue(max, min) {
   return 1 - (-min / max).toFixed(2);
 }
 
+function formatDiscountText(number) {
+  let resultText;
+  if (number >= 100) {
+    resultText = "/";
+  } else if (number % 10 == 0) {
+    resultText = number / 10;
+  }
+  resultText += "折";
+  return resultText;
+}
+
 function updateDetectedDiscount() {
   let [newMax, newMin] = getMaxMinPrice();
   let newDiscount = getDiscountValue(newMax, newMin);
-  scannedDiscountText.textContent = newDiscount > 100 ? "/" : newDiscount;
+  scannedDiscountText.textContent = formatDiscountText(newDiscount);
 }
 
 function createItemRow(data = [[""], ["$0.00"]]) {
@@ -166,8 +177,7 @@ window.addEventListener("load", async (event) => {
       [max, min] = getMaxMinPrice();
       let detectedDiscount = getDiscountValue(max, min) * 100;
       detectedDiscount > 100 ? 100 : detectedDiscount;
-      scannedDiscountText.value =
-        detectedDiscount > 100 ? "/" : detectedDiscount;
+      scannedDiscountText.value = formatDiscountText(detectedDiscount);
     }
   }
   updateTotalPrice();
