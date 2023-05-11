@@ -28,7 +28,7 @@ window.addEventListener("load", async function (event) {
     });
     return;
   }
-  console.log(result);
+
   userID = result.userID;
   userName = result.userName;
 
@@ -43,7 +43,6 @@ window.addEventListener("load", async function (event) {
     return;
   }
   receiptItemsInfo = result.itemInfoList;
-  console.log(receiptItemsInfo);
   let itemStringIDList = [];
 
   for (let item of receiptItemsInfo) {
@@ -58,7 +57,6 @@ window.addEventListener("load", async function (event) {
     body: JSON.stringify({ itemStringIDList }),
   });
   result = await res.json();
-  console.log(result);
   if (result.error) {
     Swal.fire({
       icon: "error",
@@ -71,10 +69,8 @@ window.addEventListener("load", async function (event) {
   for (let claimedItem of result.userClaimRecord) {
     claimedItemMap.set(claimedItem.itemStringID, claimedItem.quantity);
   }
-  console.log(claimedItemMap);
 
   for (let receiptItem of receiptItemsInfo) {
-    console.log(receiptItem);
     if (claimedItemMap.get(receiptItem.item_id) === undefined) {
       createItem(
         receiptItem,

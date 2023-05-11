@@ -119,18 +119,17 @@ export class DisplayController extends CheckReq {
       return;
     }
 
-    console.log(req.body);
     let missingField = super.checkReqBody(req, [
       "itemStringID",
       "quantity",
       "user_id",
     ]);
-    console.log(missingField);
+
     if (missingField !== "") {
       res.json({ error: `Missing ${missingField}` });
       return;
     }
-    console.log("1");
+
     let { itemStringID, quantity, user_id } = req.body;
     if (
       typeof itemStringID !== "string" ||
@@ -142,7 +141,7 @@ export class DisplayController extends CheckReq {
       res.json({ error: "Wrong Data Input for Claiming Item" });
       return;
     }
-    console.log("3");
+
     let claimInfo = {
       user_id: user_id,
       itemStringID: itemStringID,
@@ -151,7 +150,6 @@ export class DisplayController extends CheckReq {
     };
 
     temporarySelections.push(claimInfo);
-    console.log(`abc`, temporarySelections);
     res.json({});
   };
 
