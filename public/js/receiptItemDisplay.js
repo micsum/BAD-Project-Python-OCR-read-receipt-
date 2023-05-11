@@ -217,7 +217,7 @@ discountInputButton.addEventListener("click", () => {
   } else {
     Swal.fire({
       icon: "error",
-      title: 
-    })
+      title: "Please Input an appropriate Discount",
+    });
   }
 });
