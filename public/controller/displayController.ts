@@ -20,12 +20,12 @@ export class DisplayController extends CheckReq {
   router = Router();
   constructor(private displayService: DisplayService) {
     super();
-    this.router.get("/getUserID", this.getUserID);
+    this.router.post("/getUserID", this.getUserID);
     this.router.get("/getUserName", this.getUserName);
-    this.router.post("getTempClaim", this.getTempClaim);
+    this.router.post("/getTempClaim", this.getTempClaim);
     this.router.put("/updateItemQuantity", this.updateItemQuantity);
     this.router.delete("/removeTempClaim", this.removeTempClaim);
-
+    this.router.post("/addTempClaim", this.addNewTempClaim);
     this.router.get("/getNotifications", this.getNotifications);
   }
 
@@ -80,7 +80,7 @@ export class DisplayController extends CheckReq {
       }
     } catch (error) {
       console.log(error);
-      res.json({ error });
+      res.json(error);
     }
   };
 
@@ -94,19 +94,19 @@ export class DisplayController extends CheckReq {
       return;
     }
 
-    if (req.body === undefined || req.body.itemList === undefined) {
+    if (req.body === undefined || req.body.itemStringIDList === undefined) {
       res.json({ error: "Missing ItemList" });
     }
 
     let userID = req.session.user.userID;
-    let itemStringList = req.body.itemStringList;
+    let itemStringIDList = req.body.itemStringIDList;
     let userClaimRecord = temporarySelections.filter((elem) => {
       return (
         elem.user_id === userID &&
-        itemStringList.indexOf(elem.itemStringID) !== -1
+        itemStringIDList.indexOf(elem.itemStringID) !== -1
       );
     });
-    return userClaimRecord;
+    res.json({ userClaimRecord });
   };
 
   addNewTempClaim = async (req: Request, res: Response) => {
@@ -119,16 +119,18 @@ export class DisplayController extends CheckReq {
       return;
     }
 
+    console.log(req.body);
     let missingField = super.checkReqBody(req, [
       "itemStringID",
       "quantity",
       "user_id",
     ]);
-
+    console.log(missingField);
     if (missingField !== "") {
       res.json({ error: `Missing ${missingField}` });
+      return;
     }
-
+    console.log("1");
     let { itemStringID, quantity, user_id } = req.body;
     if (
       typeof itemStringID !== "string" ||
@@ -138,8 +140,9 @@ export class DisplayController extends CheckReq {
       user_id < 0
     ) {
       res.json({ error: "Wrong Data Input for Claiming Item" });
+      return;
     }
-
+    console.log("3");
     let claimInfo = {
       user_id: user_id,
       itemStringID: itemStringID,
@@ -148,6 +151,7 @@ export class DisplayController extends CheckReq {
     };
 
     temporarySelections.push(claimInfo);
+    console.log(`abc`, temporarySelections);
     res.json({});
   };
 
@@ -199,6 +203,7 @@ export class DisplayController extends CheckReq {
     let missingField = super.checkReqBody(req, ["itemStringID", "user_id"]);
     if (missingField !== "") {
       res.json({ error: `Missing ${missingField}` });
+      return;
     }
 
     let { itemStringID, user_id } = req.body;
@@ -218,6 +223,7 @@ export class DisplayController extends CheckReq {
 
     if (!deleted) {
       res.json({ error: "Claim Record Not Found" });
+      return;
     }
     res.json({});
   };
@@ -248,20 +254,27 @@ export class DisplayController extends CheckReq {
           secondParty.push(notification.to);
         }
       }
-      console.log("secparty", secondParty);
       let userNameResult = await this.displayService.getUserName(secondParty);
       const userIDNameMap = new Map();
       for (let userName of userNameResult) {
         userIDNameMap.set(userName.id, userName.name);
       }
 
+      let receiptIDList: string[] = [];
+      let newNotificationResult = [];
       for (let notification of notificationResult) {
+        if (receiptIDList.indexOf(notification.receiptStringID) !== -1) {
+          continue;
+        }
         notification.notificationSender = userIDNameMap.get(
           notification.notificationSender
         );
         notification.to = userIDNameMap.get(notification.to);
+        receiptIDList.push(notification.receiptStringID);
+        newNotificationResult.push(notification);
       }
-      res.json({ notifications: notificationResult });
+
+      res.json({ notifications: newNotificationResult });
     } catch (error) {
       console.log(error);
       res.json(error);

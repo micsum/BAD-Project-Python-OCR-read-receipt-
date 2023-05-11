@@ -163,6 +163,7 @@
         </div>
         <div class="flex items-center justify-center">
           <button
+            id="create"
             data-tooltip-target="tooltip-new"
             type="button"
             class="inline-flex items-center justify-center w-10 h-10 font-medium bg-blue-600 rounded-full hover:bg-blue-700 group focus:ring-4 focus:ring-blue-300 focus:outline-none light:focus:ring-blue-800"
@@ -194,7 +195,7 @@
         <button
           data-tooltip-target="tooltip-settings"
           type="button"
-          class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 light:hover:bg-gray-800 group"
+          class="realtive inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 light:hover:bg-gray-800 group"
         >
           <svg
             class="w-6 h-6 mb-1 text-gray-500 light:text-gray-400 group-hover:text-blue-600 light:group-hover:text-blue-500"
@@ -207,14 +208,19 @@
               d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z"
             ></path>
           </svg>
-          <span class="sr-only">Settings</span>
+          <span class="sr-only">Notification</span>
+          <div
+            class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -right-2 dark:border-gray-900"
+          >
+            8
+          </div>
         </button>
         <div
           id="tooltip-settings"
           role="tooltip"
           class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip light:bg-gray-700"
         >
-          Settings
+          Messages
           <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
         <button

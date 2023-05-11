@@ -4,14 +4,14 @@ export class DisplayService {
   constructor(private knex: Knex) {}
   async retrieveReceiptRecipient(receiptStringID: string, userID: number) {
     let receiptRecipientsResult = await this.knex("receipt")
-      .where({ receipt_id: receiptStringID })
       .innerJoin(
         "receipt_recipient",
         "receipt_recipient.receipt_id",
         "=",
         "receipt.id"
       )
-      .select("to_individual");
+      .select("receipt_recipient.to_individual")
+      .where({ "receipt.receipt_id": receiptStringID });
 
     if (receiptRecipientsResult === undefined) {
       return false;

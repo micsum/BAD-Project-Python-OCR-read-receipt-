@@ -12,12 +12,12 @@ let claimedItemMap = new Map();
 
 window.addEventListener("load", async function (event) {
   event.preventDefault();
-  let res = await fetch("/getID", {
+  let res = await fetch("/getUserID", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: { receiptID },
+    body: JSON.stringify({ receiptID }),
   });
   let result = await res.json();
   if (result.error) {
@@ -28,6 +28,9 @@ window.addEventListener("load", async function (event) {
     });
     return;
   }
+  console.log(result);
+  userID = result.userID;
+  userName = result.userName;
 
   res = await fetch(`/getReceiptItems/${receiptID}`);
   result = await res.json();
@@ -39,7 +42,8 @@ window.addEventListener("load", async function (event) {
     });
     return;
   }
-  receiptItemsInfo = result;
+  receiptItemsInfo = result.itemInfoList;
+  console.log(receiptItemsInfo);
   let itemStringIDList = [];
 
   for (let item of receiptItemsInfo) {
@@ -51,9 +55,10 @@ window.addEventListener("load", async function (event) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: itemStringIDList,
+    body: JSON.stringify({ itemStringIDList }),
   });
   result = await res.json();
+  console.log(result);
   if (result.error) {
     Swal.fire({
       icon: "error",
@@ -63,12 +68,14 @@ window.addEventListener("load", async function (event) {
     return;
   }
 
-  for (let claimedItem of result) {
+  for (let claimedItem of result.userClaimRecord) {
     claimedItemMap.set(claimedItem.itemStringID, claimedItem.quantity);
   }
+  console.log(claimedItemMap);
 
   for (let receiptItem of receiptItemsInfo) {
-    if (claimedItemMap.get(receiptItem.item_id) !== undefined) {
+    console.log(receiptItem);
+    if (claimedItemMap.get(receiptItem.item_id) === undefined) {
       createItem(
         receiptItem,
         {
@@ -90,20 +97,20 @@ window.addEventListener("load", async function (event) {
         receiptItem.claimerList,
         false
       );
-      document.getElementById(`setQuantity${itemID}`).value =
+      document.getElementById(`setQuantity${receiptItem.item_id}`).value =
         receiptItem.quantity;
     }
   }
 });
 
-socket.on("claimItem", ({ claimItemsInfo, claimUserName }) => {
-  let claimUserID = claimItemsInfo[0].user_id;
-  if (claimUserID == userID) {
-    window.location.href = ""; //redirect to main page
-  }
-  for (let item of claimItemsInfo) {
-    let itemStringID = item.itemStringID;
-    let claimerList = document.getElementById(`claimedUser${itemStringID}`);
-    claimerList.textContent += ", " + claimUserName + ` x${item.quantity}`;
-  }
-});
+//socket.on("claimItem", ({ claimItemsInfo, claimUserName }) => {
+//  let claimUserID = claimItemsInfo[0].user_id;
+//  if (claimUserID == userID) {
+//    window.location.href = ""; //redirect to main page
+//  }
+//  for (let item of claimItemsInfo) {
+//    let itemStringID = item.itemStringID;
+//    let claimerList = document.getElementById(`claimedUser${itemStringID}`);
+//    claimerList.textContent += ", " + claimUserName + ` x${item.quantity}`;
+//  }
+//});

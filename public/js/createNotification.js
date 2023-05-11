@@ -1,4 +1,5 @@
 // Buffer Line
+let createButton = document.querySelector("#create");
 const notificationTemplate = document.getElementById("notificationTemplate");
 let notificationDiv = document.getElementById("notificationDisplayDiv");
 
@@ -65,21 +66,21 @@ function displayNotification(notification, destination) {
 
   let icon;
   let receiptSender = notification.notificationSender;
+  let notificationMessage = notification.information;
+  let payment = notification.payment;
   if (receiptSender == userName) {
     //userName
-    let payment = notification.payment;
     receiptSender = "You";
+    notificationMessage = "You sent a receipt successfully";
     icon = payment ? "bank" : "wallet";
   } else {
     icon = payment ? "piggy-bank" : "coin";
   }
   node.querySelector(".notificationSender").textContent = receiptSender;
 
-  let payment = notification.payment;
-
   node.querySelector(".moneyIcon").innerHTML = `<i class="bi bi-${icon}"></i>`;
 
-  node.querySelector(".message").textContent = notification.information;
+  node.querySelector(".message").textContent = notificationMessage;
   destination.appendChild(node);
 }
 window.addEventListener("load", async (event) => {

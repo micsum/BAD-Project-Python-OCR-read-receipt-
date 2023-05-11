@@ -72,23 +72,27 @@ export class ClaimReceiptItemService {
     }
   }
 
-  async getReceiptItems(receiptID: string) {
-    let result = await this.knex
-      .from("receipt_item")
-      .select("id", "item_name", "price", "quantity", "item_id")
-      .where({ receipt_id: receiptID });
-
+  async getReceiptItems(receiptStringID: string) {
+    let result = await this.knex("receipt")
+      .select("id")
+      .where({ receipt_id: receiptStringID });
     if (result === undefined) {
       return { error: "Wrong Information Submitted" };
     } else if (result.length === 0) {
       return { error: "Receipt Not Found" };
     }
+    let receiptID = result[0].id;
+    result = await this.knex
+      .from("receipt_item")
+      .select("id", "item_name", "price", "quantity", "item_id")
+      .where({ receipt_id: receiptID });
+
     let receiptItems = result;
     let receiptItemClaimers = await this.knex("receipt_item")
-      .where({ receipt_id: receiptID })
       .innerJoin("item_payer", "receipt_item.id", "=", "item_payer.item_id")
       .innerJoin("user", "item_payer.user_id", "=", "user.id")
-      .select("receipt_item.id as item_id", "user.name as user_name");
+      .select("receipt_item.id as item_id", "user.name as user_name")
+      .where({ receipt_id: receiptID });
 
     const itemClaimerMap = new Map();
     for (let claimer of receiptItemClaimers) {

@@ -32,7 +32,7 @@ function formatClaimedUserNameList(claimedUserName) {
 }
 
 function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
-  let { quantity, itemName, itemID, price } = itemInfo;
+  let { quantity, item_name, item_id, price } = itemInfo;
 
   let node = template.content.cloneNode(true);
   let quantityDisplay = node.querySelector("#quantity");
@@ -41,15 +41,15 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
 
   quantityDisplay.textContent = `${quantity}x`;
   node.querySelector("#price").textContent = `$${price}`;
-  node.querySelector("#itemName").textContent = `${itemName}`;
-  node.querySelector(".receiptItemDiv").setAttribute("id", `item${itemID}`);
+  node.querySelector("#itemName").textContent = `${item_name}`;
+  node.querySelector(".receiptItemDiv").setAttribute("id", `item${item_id}`);
 
   if (claim) {
     let claimUserText = document.createElement("span");
     let claimUserDiv = document.createElement("div");
     claimedUserName = formatClaimedUserNameList(claimedUserName);
     claimUserText.textContent = claimedUserName;
-    claimUserText.setAttribute("id", `claimedUser${itemID}`);
+    claimUserText.setAttribute("id", `claimedUser${item_id}`);
     claimUserDiv.textContent = "Claimed by : ";
     claimUserDiv.appendChild(claimUserText);
     node.querySelector(".itemDiv").appendChild(claimUserDiv);
@@ -61,7 +61,7 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
       return;
     }
     let quantitySelector = document.createElement("select");
-    quantitySelector.setAttribute("id", `setQuantity${itemID}`);
+    quantitySelector.setAttribute("id", `setQuantity${item_id}`);
     for (let i = 1; i <= availableQuantity; i++) {
       let option = document.createElement("option");
       option.setAttribute("value", i);
@@ -88,7 +88,7 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
     event.preventDefault();
     if (claim) {
       let claimedUserName = document.getElementById(
-        `claimedUser${itemID}`
+        `claimedUser${item_id}`
       ).textContent;
       if (getAvailableQuantity(quantity, claimedUserName) === 0) {
         Swal.fire({
@@ -101,13 +101,21 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
       let res = await fetch("/addTempClaim", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: { itemStringID: itemID, quantity: 1, user_id: userID },
+        body: JSON.stringify({
+          itemStringID: item_id,
+          quantity: 1,
+          user_id: userID,
+        }),
       });
       let result = res.json();
       if (result.error) {
+        Swal.fire({
+          icon: "error",
+          title: result.error,
+        });
         return;
       }
-      document.getElementById(`item${itemID}`).remove();
+      document.getElementById(`item${item_id}`).remove();
       createItem(
         itemInfo,
         {
@@ -124,13 +132,13 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: { itemStringID: itemID, user_id: userID },
+        body: JSON.stringify({ itemStringID: item_id, user_id: userID }),
       });
       let result = res.json();
       if (result.error) {
         return;
       }
-      document.getElementById(`item${itemID}`).remove();
+      document.getElementById(`item${item_id}`).remove();
       createItem(
         itemInfo,
         {
@@ -150,7 +158,7 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
 type itemInfo = {
     quantity: number,
     itemName: string,
-    itemID: string,
+    item_id: string,
     price: decimal,
 }
 
