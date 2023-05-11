@@ -78,8 +78,10 @@ function displayNotification(notification, destination) {
   destination.appendChild(node);
 }
 
+/* With Test Data Only
 for (let notification of testNotificationData) {
   if (notification.from == userName || notification.to == userName) {
     displayNotification(notification, notificationDiv);
   }
 }
+ */

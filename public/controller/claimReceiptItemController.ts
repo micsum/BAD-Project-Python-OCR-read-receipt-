@@ -57,10 +57,6 @@ export class ClaimReceiptItemController {
       return;
     }
 
-    if (req.body === undefined || req.body !== req.params.receiptID) {
-      res.status(401).json({ error: "Receipt Not Found" });
-    }
-
     let userID = req.session.user.userID;
     let userName = req.session.user.userName;
     let receiptID = req.params.receiptID;
