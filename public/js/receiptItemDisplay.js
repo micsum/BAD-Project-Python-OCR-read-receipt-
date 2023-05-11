@@ -215,6 +215,9 @@ discountInputButton.addEventListener("click", () => {
     updateUnitPrice();
     updateTotalPrice();
   } else {
-    // Call Sweet Alert
+    Swal.fire({
+      icon: "error",
+      title: 
+    })
   }
 });

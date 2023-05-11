@@ -85,15 +85,10 @@ export class UserController extends CheckReq implements ObjectAny {
     if (req.body.fpsLink !== undefined) {
       formObject["fps_id"] = req.body.fpsLink;
       fields.push("fps_id");
-    } else {
-      formObject["fps_id"] = "";
     }
-
     if (req.body.payMeLink !== undefined) {
       formObject["payme_link"] = req.body.payMeLink;
       fields.push("payme_link");
-    } else {
-      formObject["payme_link"] = "";
     }
     try {
       let checkUnique = await this.userService.checkUserInfoUniqueness(
@@ -108,6 +103,7 @@ export class UserController extends CheckReq implements ObjectAny {
       formObject["password"] = userPassword;
       formObject["credit"] = 0;
       await this.userService.registerNewUser(formObject);
+      res.json({});
     } catch (error) {
       console.log(error);
       res.json({ error });
