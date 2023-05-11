@@ -3,7 +3,7 @@ import { Knex } from "knex";
 export class DisplayService {
   constructor(private knex: Knex) {}
   async retrieveReceiptRecipient(receiptStringID: string, userID: number) {
-    let receiptRecipients = await this.knex("receipt")
+    let receiptRecipientsResult = await this.knex("receipt")
       .where({ receipt_id: receiptStringID })
       .innerJoin(
         "receipt_recipient",
@@ -12,6 +12,12 @@ export class DisplayService {
         "receipt.id"
       )
       .select("to_individual");
+
+    if (receiptRecipientsResult === undefined) {
+      return false;
+    }
+
+    let receiptRecipients = receiptRecipientsResult;
     let userFound = false;
     for (let recipient of receiptRecipients) {
       if (recipient.to_individual === userID) {
