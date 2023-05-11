@@ -21,6 +21,7 @@ export class DisplayController extends CheckReq {
   constructor(private displayService: DisplayService) {
     super();
     this.router.get("/getUserID", this.getUserID);
+    this.router.get("/getUserName", this.getUserName);
     this.router.post("getTempClaim", this.getTempClaim);
     this.router.put("/updateItemQuantity", this.updateItemQuantity);
     this.router.delete("/removeTempClaim", this.removeTempClaim);
@@ -28,7 +29,7 @@ export class DisplayController extends CheckReq {
     this.router.get("/getNotifications", this.getNotifications);
   }
 
-  getUserID = async (req: Request, res: Response) => {
+  getUserName = async (req: Request, res: Response) => {
     if (
       req.session === undefined ||
       req.session.user === undefined ||
@@ -40,8 +41,22 @@ export class DisplayController extends CheckReq {
       return;
     }
 
-    if (req.body === undefined || req.body.receiptID === undefined) {
-      res.json({ error: "Insufficient Information Submitted" });
+    res.json({
+      userID: req.session.user.userID,
+      userName: req.session.user.userName,
+    });
+  };
+
+  getUserID = async (req: Request, res: Response) => {
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined ||
+      req.session.user.userName === undefined ||
+      req.session.user.isLogin === false
+    ) {
+      res.json({ error: "Please Login" });
+      return;
     }
 
     try {
@@ -225,14 +240,15 @@ export class DisplayController extends CheckReq {
       );
 
       let secondParty: number[] = [];
+
       for (let notification of notificationResult) {
-        if (secondParty.indexOf(notification.from) == -1) {
-          secondParty.push(notification.from);
+        if (secondParty.indexOf(notification.notificationSender) == -1) {
+          secondParty.push(notification.notificationSender);
         } else if (secondParty.indexOf(notification.to) == -1) {
           secondParty.push(notification.to);
         }
       }
-
+      console.log("secparty", secondParty);
       let userNameResult = await this.displayService.getUserName(secondParty);
       const userIDNameMap = new Map();
       for (let userName of userNameResult) {
@@ -240,7 +256,9 @@ export class DisplayController extends CheckReq {
       }
 
       for (let notification of notificationResult) {
-        notification.from = userIDNameMap.get(notification.from);
+        notification.notificationSender = userIDNameMap.get(
+          notification.notificationSender
+        );
         notification.to = userIDNameMap.get(notification.to);
       }
       res.json({ notifications: notificationResult });

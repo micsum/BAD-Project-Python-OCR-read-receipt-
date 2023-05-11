@@ -1,21 +1,26 @@
 // Buffer Line
-
 const notificationTemplate = document.getElementById("notificationTemplate");
 let notificationDiv = document.getElementById("notificationDisplayDiv");
+
+let userName;
+let userID;
 
 function displayNotification(notification, destination) {
   let node = notificationTemplate.content.cloneNode(true);
   let notificationDiv = node.querySelector(".notificationDiv");
-  notificationDiv.setAttribute("id", `notification${notification.receipt_id}`);
+  notificationDiv.setAttribute(
+    "id",
+    `notification${notification.receiptStringID}`
+  );
   notificationDiv.addEventListener("click", async function (event) {
     event.preventDefault();
     let res = await fetch(
-      `/getReceiptClaimConfirmStatus/${notification.receipt_id}`
+      `/getReceiptClaimConfirmStatus/${notification.receiptStringID}`
     );
     let result = await res.json();
-    if (result.status == false) {
-      window.location = `./testReceiptDisplay.html?receiptID=${notification.receipt_id}`;
-    } else if (result.status == true) {
+    if (result.receiptStatus == false) {
+      window.location = `./receiptDisplayPage.html?receiptID=${notification.receiptStringID}`;
+    } else if (result.receiptStatus == true) {
       Swal.fire(
         {
           icon: "question",
@@ -43,12 +48,12 @@ function displayNotification(notification, destination) {
               receiptID: notification.receipt_id,
             }),
           });
-          let result = await res.json();
-          if (result.error) {
+          let result2 = await res.json();
+          if (result2.error) {
             Swal.fire({
               icon: "error",
               title: "An Error Occurred",
-              text: result.error,
+              text: result2.error,
             });
           }
         })
@@ -59,8 +64,10 @@ function displayNotification(notification, destination) {
   });
 
   let icon;
-  let receiptSender = notification.from;
+  let receiptSender = notification.notificationSender;
   if (receiptSender == userName) {
+    //userName
+    let payment = notification.payment;
     receiptSender = "You";
     icon = payment ? "bank" : "wallet";
   } else {
@@ -77,16 +84,26 @@ function displayNotification(notification, destination) {
 }
 window.addEventListener("load", async (event) => {
   event.preventDefault();
-  let res = await fetch("/getNotifications");
-
-  let dbResult = await res.json();
-  if (dbResult.error) {
+  let res = await fetch("/getUserName");
+  let result = await res.json();
+  if (result.error) {
     Swal.fire({
       icon: "error",
-      title: dbResult.error,
+      title: result.error,
     });
   }
-  let notificationData = dbResult.notifications;
+  userName = result.userName;
+  userID = result.userID;
+
+  res = await fetch("/getNotifications");
+  result = await res.json();
+  if (result.error) {
+    Swal.fire({
+      icon: "error",
+      title: result.error,
+    });
+  }
+  let notificationData = result.notifications;
   for (let notification of notificationData) {
     displayNotification(notification, notificationDiv);
   }

@@ -28,23 +28,22 @@ export class DisplayService {
     return userFound;
   }
   async getUserName(idArray: number[]) {
-    return await this.knex("user").select("id", "name").where("id", idArray);
+    return await this.knex("user").select("id", "name").whereIn("id", idArray);
   }
 
   async getNotifications(userID: number) {
     return await this.knex("notification")
-      .where({ from: userID })
-      .orWhere({ from: userID })
-      .innerJoin("receipt", { "notification.receipt_id": "receipt.id" })
+      .innerJoin("receipt", "notification.receipt_id", "receipt.id")
       .select(
-        "notification.from",
+        "notification.from as notificationSender",
         "notification.to",
         "notification.payment",
-        "receipt.id as receipt_id",
+        "receipt.receipt_id as receiptStringID",
         "notification.information"
       )
+      .where({ "notification.from": userID })
+      .orWhere({ to: userID })
       .limit(30)
-      .offset(6)
-      .orderBy("id", "desc");
+      .orderBy("notification.id", "desc");
   }
 }
