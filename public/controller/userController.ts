@@ -96,7 +96,7 @@ export class UserController extends CheckReq implements ObjectAny {
         formObject
       );
       if (checkUnique.error) {
-        res.json(checkUnique.error);
+        res.json(checkUnique);
         return;
       }
       userPassword = await this.hashPassword(userPassword);
