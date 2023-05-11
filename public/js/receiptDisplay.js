@@ -2,6 +2,7 @@
 const receipt = document.getElementById("receipt");
 const claimedItems = document.getElementById("claimedItems");
 const receiptItemTemplate = document.getElementById("receiptItem");
+const confirmClaimButton = document.getElementById("confirmClaim");
 
 let userID, userName;
 let searchParams = new URLSearchParams(location.search);
@@ -97,6 +98,28 @@ window.addEventListener("load", async function (event) {
         receiptItem.quantity;
     }
   }
+});
+
+confirmClaimButton.addEventListener("click", () => {
+  Swal.fire({
+    icon: "info",
+    title: "Confirm Claim?",
+    preConfirm: async () => {
+      let res = await fetch(`/claimReceiptItems/${receiptID}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      });
+      let result = res.json();
+      if (result.error) {
+        Swal.fire({
+          icon: "error",
+          title: result.error,
+        });
+      }
+      window.location.href = "./homepage.html";
+    },
+  });
 });
 
 //socket.on("claimItem", ({ claimItemsInfo, claimUserName }) => {
