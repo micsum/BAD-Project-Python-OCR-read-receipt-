@@ -10,7 +10,7 @@ export class DisplayService {
         "=",
         "receipt.id"
       )
-      .select("receipt_recipient.to_individual")
+      .select("receipt_recipient.to_individual", "receipt.from")
       .where({ "receipt.receipt_id": receiptStringID });
 
     if (receiptRecipientsResult === undefined) {
@@ -24,6 +24,9 @@ export class DisplayService {
         userFound = !userFound;
         break;
       }
+    }
+    if (receiptRecipients[0].from === userID) {
+      userFound = true;
     }
     return userFound;
   }
