@@ -101,6 +101,17 @@ window.addEventListener("load", async function (event) {
 });
 
 confirmClaimButton.addEventListener("click", () => {
+  let claimInfoItemList = [];
+  for (let element of claimedItems) {
+    let quantity = element.getElementById("quantity");
+    let item_id = element.getAttribute("id").substring(4);
+    for (let i = 0; i < quantity; i++) {
+      claimInfoItemList.push({
+        user_id: userID,
+        item_id: item_id,
+      });
+    }
+  }
   Swal.fire({
     icon: "info",
     title: "Confirm Claim?",
@@ -108,7 +119,7 @@ confirmClaimButton.addEventListener("click", () => {
       let res = await fetch(`/claimReceiptItems/${receiptID}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ itemList: claimItemInfoList }),
       });
       let result = res.json();
       if (result.error) {
