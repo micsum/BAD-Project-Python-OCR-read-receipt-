@@ -39,6 +39,10 @@
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+    />
 
     <link
       href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css"
@@ -82,24 +86,120 @@
   </head>
   <body>
     <div
-      id="notificationDisplayDiv"
-      role="status"
-      class="max-w-md p-4 space-y-4 border border-gray-200 divide-y divide-gray-200 rounded shadow animate-pulse light:divide-gray-700 md:p-6 light:border-gray-700"
+      class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 light:bg-gray-800 light:border-gray-700"
     >
-      <div class="flex items-center justify-between">
-        <div>
-          <div
-            class="h-2.5 bg-gray-300 rounded-full light:bg-gray-600 w-24 mb-2.5"
-          ></div>
-          <div
-            class="w-32 h-2 bg-gray-200 rounded-full light:bg-gray-700"
-          ></div>
-        </div>
-        <div
-          class="h-2.5 bg-gray-300 rounded-full light:bg-gray-700 w-12"
-        ></div>
+      <div class="flex items-center justify-between mb-4">
+        <h5
+          class="text-xl font-bold leading-none text-gray-900 light:text-white"
+        >
+          Latest History
+        </h5>
+        <a
+          href="#"
+          class="text-sm font-medium text-blue-600 hover:underline light:text-blue-500"
+        >
+          View all
+        </a>
       </div>
-      <span class="sr-only">Loading...</span>
+      <div class="flow-root">
+        <ul role="list" class="divide-y divide-gray-200 light:divide-gray-700">
+          <li class="py-3 sm:py-4">
+            <div class="flex items-center space-x-4">
+              <div class="flex-1 min-w-0">
+                <p
+                  class="text-sm font-medium text-gray-900 truncate light:text-white"
+                >
+                  Receipt #id
+                </p>
+                <p class="text-sm text-gray-500 truncate light:text-gray-400">
+                  date
+                </p>
+              </div>
+              <div
+                class="inline-flex items-center text-base font-semibold text-gray-900 light:text-white"
+              >
+                $320
+              </div>
+            </div>
+          </li>
+          <li class="py-3 sm:py-4">
+            <div class="flex items-center space-x-4">
+              <div class="flex-1 min-w-0">
+                <p
+                  class="text-sm font-medium text-gray-900 truncate light:text-white"
+                >
+                  Receipt #id
+                </p>
+                <p class="text-sm text-gray-500 truncate light:text-gray-400">
+                  date
+                </p>
+              </div>
+              <div
+                class="inline-flex items-center text-base font-semibold text-gray-900 light:text-white"
+              >
+                $3467
+              </div>
+            </div>
+          </li>
+          <li class="py-3 sm:py-4">
+            <div class="flex items-center space-x-4">
+              <div class="flex-1 min-w-0">
+                <p
+                  class="text-sm font-medium text-gray-900 truncate light:text-white"
+                >
+                  Receipt #id
+                </p>
+                <p class="text-sm text-gray-500 truncate light:text-gray-400">
+                  date
+                </p>
+              </div>
+              <div
+                class="inline-flex items-center text-base font-semibold text-gray-900 light:text-white"
+              >
+                $67
+              </div>
+            </div>
+          </li>
+          <li class="py-3 sm:py-4">
+            <div class="flex items-center space-x-4">
+              <div class="flex-1 min-w-0">
+                <p
+                  class="text-sm font-medium text-gray-900 truncate light:text-white"
+                >
+                  Receipt #id
+                </p>
+                <p class="text-sm text-gray-500 truncate light:text-gray-400">
+                  date
+                </p>
+              </div>
+              <div
+                class="inline-flex items-center text-base font-semibold text-gray-900 light:text-white"
+              >
+                $367
+              </div>
+            </div>
+          </li>
+          <li class="pt-3 pb-0 sm:pt-4">
+            <div class="flex items-center space-x-4">
+              <div class="flex-1 min-w-0">
+                <p
+                  class="text-sm font-medium text-gray-900 truncate light:text-white"
+                >
+                  Receipt #id
+                </p>
+                <p class="text-sm text-gray-500 truncate light:text-gray-400">
+                  date
+                </p>
+              </div>
+              <div
+                class="inline-flex items-center text-base font-semibold text-gray-900 light:text-white"
+              >
+                $2367
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
     </div>
 
     <div
@@ -133,12 +233,13 @@
           <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
         <button
+          id="wallet"
           data-tooltip-target="tooltip-wallet"
           type="button"
           class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 light:hover:bg-gray-800 group"
         >
           <svg
-            class="w-6 h-6 mb-1 text-gray-500 light:text-gray-400 group-hover:text-blue-600 light:group-hover:text-blue-500"
+            class="w-7 h-7 mb-1 text-gray-500 light:text-gray-400 group-hover:text-blue-600 light:group-hover:text-blue-500"
             fill="currentColor"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
@@ -153,6 +254,7 @@
           </svg>
           <span class="sr-only">Wallet</span>
         </button>
+
         <div
           id="tooltip-wallet"
           role="tooltip"
@@ -162,27 +264,29 @@
           <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
         <div class="flex items-center justify-center">
-          <button
-            id="create"
-            data-tooltip-target="tooltip-new"
-            type="button"
-            class="inline-flex items-center justify-center w-10 h-10 font-medium bg-blue-600 rounded-full hover:bg-blue-700 group focus:ring-4 focus:ring-blue-300 focus:outline-none light:focus:ring-blue-800"
-          >
-            <svg
-              class="w-6 h-6 text-white"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-              xmlns="http://www.w3.org/2000/svg"
-              aria-hidden="true"
+          <a href="./cropImage.html"
+            ><button
+              id="create"
+              data-tooltip-target="tooltip-new"
+              type="button"
+              class="inline-flex items-center justify-center w-10 h-10 font-medium bg-blue-600 rounded-full hover:bg-blue-700 group focus:ring-4 focus:ring-blue-300 focus:outline-none light:focus:ring-blue-800"
             >
-              <path
-                clip-rule="evenodd"
-                fill-rule="evenodd"
-                d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-              ></path>
-            </svg>
-            <span class="sr-only">New item</span>
-          </button>
+              <svg
+                class="w-6 h-6 text-white"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden="true"
+              >
+                <path
+                  clip-rule="evenodd"
+                  fill-rule="evenodd"
+                  d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                ></path>
+              </svg>
+              <span class="sr-only">New item</span>
+            </button>
+          </a>
         </div>
         <div
           id="tooltip-new"
@@ -195,32 +299,36 @@
         <button
           data-tooltip-target="tooltip-settings"
           type="button"
-          class="realtive inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 light:hover:bg-gray-800 group"
+          class="relative inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 light:hover:bg-gray-800 group"
         >
           <svg
-            class="w-6 h-6 mb-1 text-gray-500 light:text-gray-400 group-hover:text-blue-600 light:group-hover:text-blue-500"
+            class="w-7 h-7 mb-1 text-gray-500 light:text-gray-400 group-hover:text-blue-600 light:group-hover:text-blue-50"
             fill="currentColor"
-            viewBox="0 0 20 20"
+            viewBox="0 0 384 512"
             xmlns="http://www.w3.org/2000/svg"
             aria-hidden="true"
           >
             <path
-              d="M5 4a1 1 0 00-2 0v7.268a2 2 0 000 3.464V16a1 1 0 102 0v-1.268a2 2 0 000-3.464V4zM11 4a1 1 0 10-2 0v1.268a2 2 0 000 3.464V16a1 1 0 102 0V8.732a2 2 0 000-3.464V4zM16 3a1 1 0 011 1v7.268a2 2 0 010 3.464V16a1 1 0 11-2 0v-1.268a2 2 0 010-3.464V4a1 1 0 011-1z"
-            ></path>
+              d="M64 0C28.7 0 0 28.7 0 64V448c0 35.3 28.7 64 64 64H320c35.3 0 64-28.7 64-64V160H256c-17.7 0-32-14.3-32-32V0H64zM256 0V128H384L256 0zM64 80c0-8.8 7.2-16 16-16h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H80c-8.8 0-16-7.2-16-16zm0 64c0-8.8 7.2-16 16-16h64c8.8 0 16 7.2 16 16s-7.2 16-16 16H80c-8.8 0-16-7.2-16-16zm128 72c8.8 0 16 7.2 16 16v17.3c8.5 1.2 16.7 3.1 24.1 5.1c8.5 2.3 13.6 11 11.3 19.6s-11 13.6-19.6 11.3c-11.1-3-22-5.2-32.1-5.3c-8.4-.1-17.4 1.8-23.6 5.5c-5.7 3.4-8.1 7.3-8.1 12.8c0 3.7 1.3 6.5 7.3 10.1c6.9 4.1 16.6 7.1 29.2 10.9l.5 .1 0 0 0 0c11.3 3.4 25.3 7.6 36.3 14.6c12.1 7.6 22.4 19.7 22.7 38.2c.3 19.3-9.6 33.3-22.9 41.6c-7.7 4.8-16.4 7.6-25.1 9.1V440c0 8.8-7.2 16-16 16s-16-7.2-16-16V422.2c-11.2-2.1-21.7-5.7-30.9-8.9l0 0c-2.1-.7-4.2-1.4-6.2-2.1c-8.4-2.8-12.9-11.9-10.1-20.2s11.9-12.9 20.2-10.1c2.5 .8 4.8 1.6 7.1 2.4l0 0 0 0 0 0c13.6 4.6 24.6 8.4 36.3 8.7c9.1 .3 17.9-1.7 23.7-5.3c5.1-3.2 7.9-7.3 7.8-14c-.1-4.6-1.8-7.8-7.7-11.6c-6.8-4.3-16.5-7.4-29-11.2l-1.6-.5 0 0c-11-3.3-24.3-7.3-34.8-13.7c-12-7.2-22.6-18.9-22.7-37.3c-.1-19.4 10.8-32.8 23.8-40.5c7.5-4.4 15.8-7.2 24.1-8.7V232c0-8.8 7.2-16 16-16z"
+            />
           </svg>
           <span class="sr-only">Notification</span>
-          <div
-            class="absolute inline-flex items-center justify-center w-6 h-6 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -right-2 dark:border-gray-900"
+          <span
+            id="countNewNotify"
+            class="absolute top-0 right-5 absolute w-3.5 h-3.5 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -right-2 light:border-gray-900"
           >
             8
-          </div>
+          </span>
+          <!--<span
+            class="top-0 right-7 absolute w-3.5 h-3.5 bg-red-500 border-2 border-white light:border-gray-800 rounded-full"
+          ></span>-->
         </button>
         <div
           id="tooltip-settings"
           role="tooltip"
-          class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip light:bg-gray-700"
+          class="z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip light:bg-gray-700"
         >
-          Messages
+          Notification
           <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
         <button

@@ -72,6 +72,8 @@ function formatDiscountText(number) {
     resultText = "/";
   } else if (number % 10 == 0) {
     resultText = number / 10;
+  } else {
+    resultText = number;
   }
   resultText += "折";
   return resultText;
