@@ -37,10 +37,9 @@ export class ClaimReceiptItemController {
 
     try {
       let receiptID = req.params.receiptID;
-      res.json({
-        receiptStatus:
-          await this.claimReceiptItemService.checkReceiptClaimStatus(receiptID),
-      });
+      res.json(
+        await this.claimReceiptItemService.checkReceiptClaimStatus(receiptID)
+      );
     } catch (error) {
       console.log(error);
       res.json({ error });
@@ -66,10 +65,18 @@ export class ClaimReceiptItemController {
     let userName = req.session.user.userName;
     let receiptID = req.params.receiptID;
     try {
-      let itemInfoList = await this.claimReceiptItemService.getReceiptItems(
-        receiptID
-      );
+      let itemInfoListResult =
+        await this.claimReceiptItemService.getReceiptItems(receiptID);
 
+      if (
+        itemInfoListResult.error ||
+        itemInfoListResult.receiptItems === undefined
+      ) {
+        res.json(itemInfoListResult);
+        return;
+      }
+
+      let itemInfoList = itemInfoListResult.receiptItems;
       const tempClaimMap = new Map();
       for (let tempClaim of temporarySelections) {
         if (tempClaim.user_id === userID) {
@@ -121,14 +128,28 @@ export class ClaimReceiptItemController {
     let receiptID = req.params.receiptID;
     let claimItems = req.body.itemList;
     try {
-      if (
-        await this.claimReceiptItemService.checkReceiptClaimStatus(receiptID)
-      ) {
-        res.json({ error: "This Receipt is Closed for Selections" });
-      }
-      let receiptItems = await this.claimReceiptItemService.getReceiptItems(
+      let result = await this.claimReceiptItemService.checkReceiptClaimStatus(
         receiptID
       );
+      if (result.error) {
+        res.json(result);
+        return;
+      }
+      if (result.receiptStatus) {
+        res.json({ error: "This Receipt is Closed for Selections" });
+      }
+      let receiptItemsResult =
+        await this.claimReceiptItemService.getReceiptItems(receiptID);
+
+      if (
+        receiptItemsResult.error ||
+        receiptItemsResult.receiptItems === undefined
+      ) {
+        res.json(receiptItemsResult);
+        return;
+      }
+
+      let receiptItems = receiptItemsResult.receiptItems;
       const itemQuantityMap = new Map();
       for (let item of receiptItems) {
         let itemStringID = item.item_id;
@@ -156,9 +177,14 @@ export class ClaimReceiptItemController {
         }
       }
 
-      let receiptHostResult =
-        await this.claimReceiptItemService.getReceiptSender(receiptID);
-      let receiptHost = receiptHostResult[0];
+      let newResult = await this.claimReceiptItemService.getReceiptSender(
+        receiptID
+      );
+      if (newResult.error) {
+        res.json(newResult);
+        return;
+      }
+      let receiptHost = newResult.from;
       let claimItemsInfo: ClaimItemsInfo[] = [];
       for (let item of claimItems) {
         let itemStringID: string = itemQuantityMap.get(item.itemName);
@@ -170,13 +196,18 @@ export class ClaimReceiptItemController {
         }
       }
       try {
-        await this.claimReceiptItemService.claimReceiptItems(
+        let result = await this.claimReceiptItemService.claimReceiptItems(
           claimItemsInfo,
           req.params.receiptID,
           receiptHost,
           req.session.user.userID,
           req.session.user.userName
         );
+
+        if (result.error) {
+          res.json(result);
+          return;
+        }
       } catch (error) {
         console.log(error);
         res.json(error);
@@ -215,11 +246,15 @@ export class ClaimReceiptItemController {
     }
     try {
       let receiptID = req.params.receiptID;
-      let [{ from }] = await this.claimReceiptItemService.getReceiptSender(
+      let result = await this.claimReceiptItemService.getReceiptSender(
         receiptID
       );
+      if (result.error) {
+        res.json(result);
+        return;
+      }
 
-      if (from !== req.session.user.userID) {
+      if (result.from !== req.session.user.userID) {
         res.status(401).json({ error: "Not the sender of the receipt" });
       }
 
@@ -244,11 +279,16 @@ export class ClaimReceiptItemController {
 
     try {
       let receiptStringID = req.params.receiptID;
-      let [{ from }] = await this.claimReceiptItemService.getReceiptSender(
+      let result = await this.claimReceiptItemService.getReceiptSender(
         receiptStringID
       );
 
-      if (from !== req.session.user.userID) {
+      if (result.error) {
+        res.json(result);
+        return;
+      }
+
+      if (result.from !== req.session.user.userID) {
         res.status(401).json({ error: "Not the sender of the receipt" });
       }
 
@@ -320,11 +360,14 @@ export class ClaimReceiptItemController {
     try {
       let userID = req.session.user.userID;
       let receiptStringID = req.params.receiptID;
-
-      let [{ from }] = await this.claimReceiptItemService.getReceiptSender(
+      let result = await this.claimReceiptItemService.getReceiptSender(
         receiptStringID
       );
-      if (from !== userID) {
+      if (result.error) {
+        res.json(result);
+        return;
+      }
+      if (result.from !== userID) {
         res.status(401).json({ error: "Not the sender of the receipt" });
       }
 

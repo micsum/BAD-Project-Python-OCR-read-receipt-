@@ -5,9 +5,17 @@ export class ClaimReceiptItemService {
   constructor(private knex: Knex) {}
 
   async getReceiptSender(receiptID: string) {
-    return await this.knex("receipt")
+    let result = await this.knex("receipt")
       .select("from")
       .where({ receipt_id: receiptID });
+
+    if (result === undefined) {
+      return { error: "Wrong Information Submitted" };
+    } else if (result.length === 0) {
+      return { error: "Receipt Not Found" };
+    } else {
+      return { from: result[0].from };
+    }
   }
 
   async retrieveReceiptRecipient(receiptID: string | number, userID: number) {
@@ -30,6 +38,10 @@ export class ClaimReceiptItemService {
       return false;
     }
 
+    if (receiptRecipients === undefined) {
+      return false;
+    }
+
     let userFound = false;
     for (let recipient of receiptRecipients) {
       if (recipient.to_individual === userID) {
@@ -43,23 +55,35 @@ export class ClaimReceiptItemService {
   async checkReceiptClaimStatus(receiptID: string | number) {
     let result;
     if (typeof receiptID === "string") {
-      [result] = await this.knex("receipt").select("confirm_selection").where({
+      result = await this.knex("receipt").select("confirm_selection").where({
         receipt_id: receiptID,
       });
     } else if (typeof receiptID === "number") {
-      [result] = await this.knex("receipt").select("confirm_selection").where({
+      result = await this.knex("receipt").select("confirm_selection").where({
         id: receiptID,
       });
     }
-    return { status: result.confirm_selection };
+    if (result === undefined) {
+      return { error: "Wrong Information Submitted" };
+    } else if (result.length === 0) {
+      return { error: "Receipt Not Found" };
+    } else {
+      return { receiptStatus: result[0].confirm_selection };
+    }
   }
 
   async getReceiptItems(receiptID: string) {
-    let receiptItems = await this.knex
+    let result = await this.knex
       .from("receipt_item")
       .select("id", "item_name", "price", "quantity", "item_id")
       .where({ receipt_id: receiptID });
 
+    if (result === undefined) {
+      return { error: "Wrong Information Submitted" };
+    } else if (result.length === 0) {
+      return { error: "Receipt Not Found" };
+    }
+    let receiptItems = result;
     let receiptItemClaimers = await this.knex("receipt_item")
       .where({ receipt_id: receiptID })
       .innerJoin("item_payer", "receipt_item.id", "=", "item_payer.item_id")
@@ -84,7 +108,7 @@ export class ClaimReceiptItemService {
       }
       item["claimerList"] = claimerList;
     }
-    return receiptItems;
+    return { receiptItems };
   }
 
   async claimReceiptItems(
@@ -102,6 +126,10 @@ export class ClaimReceiptItemService {
     let itemIDList = await this.knex("receipt_item")
       .select("id")
       .where("item_id", itemArray);
+
+    if (itemIDList === undefined || itemArray.length !== itemIDList.length) {
+      return { error: "Claim Item(s) Not Found" };
+    }
 
     let newItemsInfo: ObjectAny[] = [];
     for (let i = 0; i < claimItemsInfo.length; i++) {
@@ -143,6 +171,7 @@ export class ClaimReceiptItemService {
       payment: false,
       information: `Updated Claim : ${"\n"}${payerUsername} has claimed ${itemList} with a total of ${itemTotalPrice}`,
     });
+    return {};
   }
 
   async removeItemClaims(item: number) {
@@ -154,10 +183,15 @@ export class ClaimReceiptItemService {
     information: string,
     receiptStringID: string
   ) {
-    let [{ receiptID }] = await this.knex("receipt")
+    let receiptIDResult = await this.knex("receipt")
       .select("id")
       .where({ receipt_id: receiptStringID });
 
+    if (receiptIDResult === undefined) {
+      return { error: "Receipt Not Found" };
+    }
+
+    let receiptID = receiptIDResult[0].id;
     let receiptRecipients = await this.knex("receipt_recipient")
       .select("to_individual")
       .where({ receipt_id: receiptID });
@@ -198,10 +232,15 @@ export class ClaimReceiptItemService {
         .select("credit")
         .where({ id: userID });
 
-      let [{ information }] = await this.knex("notification")
+      let informationResult = await this.knex("notification")
         .select("information")
         .where({ receipt_id: receiptID, from: userID, payment: false });
 
+      if (informationResult === undefined) {
+        return { error: "Total Price of Claim Not Found" };
+      }
+
+      let information = informationResult[0].information;
       information = information.split(",");
       let claimPrice: number = information.slice(-1)[0];
 
