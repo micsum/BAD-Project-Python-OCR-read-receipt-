@@ -74,7 +74,6 @@ window.addEventListener("load", async function (event) {
   }
 
   for (let receiptItem of receiptItemsInfo) {
-    console.log(receiptItem);
     if (claimedItemMap.get(receiptItem.item_id) === undefined) {
       createItem(
         receiptItem,
@@ -98,8 +97,9 @@ window.addEventListener("load", async function (event) {
         false,
         claimedItemMap.get(receiptItem.item_id)
       );
-      //document.getElementById(`setQuantity${receiptItem.item_id}`).value =
-      //receiptItem.quantity;
+      document.getElementById(
+        `setQuantity${receiptItem.item_id}`
+      ).selectedIndex = claimedItemMap.get(receiptItem.itemStringID);
     }
   }
 
@@ -167,7 +167,6 @@ confirmClaimButton.addEventListener("click", () => {
         });
       }
       //socket.leave(receiptID);
-      console.log(result);
       //window.location.href = "./homepage.html";
     },
   });

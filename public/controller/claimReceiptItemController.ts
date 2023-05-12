@@ -145,7 +145,7 @@ export class ClaimReceiptItemController {
         res.json(receiptItemsResult);
         return;
       }
-
+      console.log("running 1");
       let receiptItems = receiptItemsResult.receiptItems;
       const itemQuantityMap = new Map();
       for (let item of receiptItems) {
@@ -158,7 +158,7 @@ export class ClaimReceiptItemController {
           itemName: item.item_name,
         });
       }
-
+      console.log(`receiptItems = ${receiptItems}`);
       for (let userClaim of claimItems) {
         if (itemQuantityMap.get(userClaim.item_id) === undefined) {
           res.json({ error: `This Item is not in this receipt` });
@@ -182,7 +182,7 @@ export class ClaimReceiptItemController {
           return;
         }
       }
-
+      console.log("passed claim checking");
       let newResult = await this.claimReceiptItemService.getReceiptSender(
         receiptID
       );

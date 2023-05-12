@@ -131,27 +131,32 @@ export class ClaimReceiptItemService {
     itemArray = receiptItems.map((elem) => {
       return elem.item_id;
     });
-
-    let itemIDList = await this.knex("receipt_item")
-      .select("id")
+    let itemListResult = await this.knex("receipt_item")
+      .select("id", "item_id")
       .whereIn("item_id", itemArray);
 
-    if (itemIDList === undefined || itemArray.length !== itemIDList.length) {
+    if (
+      itemListResult === undefined ||
+      itemArray.length !== itemListResult.length
+    ) {
       return { error: "Claim Item(s) Not Found" };
     }
 
-    itemIDList = itemIDList.map((elem) => {
-      return elem.id;
-    });
+    let itemIDList: number[] = [];
+    let itemStringIDList: string[] = [];
+
+    for (let item of itemListResult) {
+      itemIDList.push(item.id);
+      itemStringIDList.push(item.item_id);
+    }
 
     let newItemsInfo: ObjectAny[] = [];
-    for (let i = 0; i < claimItemsInfo.length; i++) {
+    for (let item of claimItemsInfo) {
       let userID = receiptPayer;
-      let itemID = itemIDList[i];
-      console.log(userID, itemID);
+      let itemID = itemIDList[itemStringIDList.indexOf(item.item_id)];
       newItemsInfo.push({ user_id: userID, item_id: itemID });
     }
-    console.log(itemIDList);
+
     await this.knex("item_payer")
       .where({ user_id: receiptPayer })
       .whereIn("item_id", itemIDList)
@@ -170,7 +175,7 @@ export class ClaimReceiptItemService {
         "receipt_item.price as itemPrice"
       )
       .where({ "receipt.receipt_id": receiptStringID })
-      .whereIn("receipt_item.item_id", itemArray);
+      .whereIn("receipt_item.item_id", itemStringIDList);
 
     let receiptID: number = -1;
     let itemList: string = "";
