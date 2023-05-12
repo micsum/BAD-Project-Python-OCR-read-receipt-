@@ -44,6 +44,9 @@ export class ReceiptController {
           .json({ success: false, message: "Internal server error" });
         return;
       }
+
+      let transaction_date = String(fields.transaction_date);
+      let receiptTypeText = String(fields.receiptTypeText);
       let imageMaybeArray = files.croppedImage;
       let image = Array.isArray(imageMaybeArray)
         ? imageMaybeArray[0]
@@ -62,7 +65,9 @@ export class ReceiptController {
 
       let receipt_id = await this.receiptService.createReceipt(
         filename,
-        userID
+        userID,
+        transaction_date,
+        receiptTypeText
       );
 
       this.receiptMap.set(userID, {

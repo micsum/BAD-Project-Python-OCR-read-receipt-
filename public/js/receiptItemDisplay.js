@@ -141,9 +141,17 @@ function createItemRow(data = [[""], ["$0.00"]]) {
     if (deleteButton.value == "Delete") {
       subtotalInput.disabled = true;
       deleteButton.value = "Restore";
+      deleteButton.setAttribute(
+        "class",
+        "delete cursor-pointer text-white bg-yellow-700 hover:bg-yellow-800 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 light:bg-yellow-600 light:hover:bg-yellow-700 light:focus:ring-yellow-900"
+      );
     } else if (deleteButton.value == "Restore") {
       subtotalInput.disabled = false;
       deleteButton.value = "Delete";
+      deleteButton.setAttribute(
+        "class",
+        "delete cursor-pointer text-white bg-red-700 hover:bg-red-800 focus:outline-none focus:ring-4 focus:ring-red-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 light:bg-red-600 light:hover:bg-red-700 light:focus:ring-red-900"
+      );
     }
     updateTotalPrice();
   });

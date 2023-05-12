@@ -4,7 +4,12 @@ import { ItemInfo, ObjectAny } from "../routes/helper";
 export class ReceiptService {
   constructor(private knex: Knex) {}
 
-  async createReceipt(fileName: string, userID: number) {
+  async createReceipt(
+    fileName: string,
+    userID: number,
+    transaction_date: string,
+    receiptTypeText: string
+  ) {
     let generatedReceiptID = Math.random()
       .toString(36)
       .slice(2)
@@ -15,6 +20,10 @@ export class ReceiptService {
         receipt_id: generatedReceiptID,
         from: userID,
         created_at: this.knex.fn.now(),
+        transaction_date: this.knex.raw(
+          `to_date('${transaction_date}', 'YYYY-MM-DD')`
+        ),
+        receipt_type: receiptTypeText,
       })
       .into("receipt")
       .returning("id");

@@ -89,6 +89,35 @@
             name="attachment"
             accept="image/*,capture=camera"
           />
+          <div class="date">
+            Transaction Date
+            <input
+              type="date"
+              id="transaction_date"
+              ,
+              name="transaction_date"
+            />
+          </div>
+          <div class="field-group">
+            <label class="field-label" for="catastrophe_event"
+              >Receipt Type</label
+            >
+            <select
+              name="type"
+              id="type-select"
+              class="field border ml-2 text-grey-700 rounded"
+            >
+              <option disabled selected value>
+                Please select the receipt type....
+              </option>
+              <option value="leisure">leisure</option>
+              <option value="food">food</option>
+              <option value="party">party</option>
+              <option value="expenses">office expenses</option>
+              <option value="other">other</option>
+            </select>
+          </div>
+
           <div class="previewClass">
             <div id="preview"></div>
           </div>
@@ -109,9 +138,14 @@
   </body>
   <!--<script src="../../node_modules/cropperjs/dist/cropper.min.js"></script>-->
   <script>
+    let fileLength;
+    function getFileLength(number) {
+      return number;
+    }
     let attachInput = document.querySelector("#attachment");
     let submit = document.querySelector("#submit");
     let angleSlider = document.getElementById("angleSlider");
+    let transactionDateBtn = document.querySelector("#transaction_date");
     let croppedImgSrc;
     attachInput.addEventListener("change", preview);
     function preview() {
@@ -160,6 +194,7 @@
           });
         };
       }
+      fileLength = getFileLength(fileObject.length);
     }
     let return_btn = document.querySelector("#return");
     return_btn.addEventListener("click", function (event) {
@@ -192,15 +227,52 @@
       return new Blob([ia], { type: mimeString });
     }
 
+    let formData;
+
     let attach = document.querySelector("#attach");
     attach.addEventListener("submit", async (event) => {
       event.preventDefault();
+      let transaction_date = transactionDateBtn.value;
+      let receiptTypeText = document.querySelector(
+        'select[name="type"] option:checked'
+      ).textContent;
 
+      if (transaction_date === "" || transaction_date === null) {
+        Swal.fire({
+          icon: "error",
+          title: "Missing Information",
+          text: "Please input transaction date of the receipt.",
+        });
+        return;
+      }
+      const formData = new FormData(attach);
+
+      let isFormEmpty = false;
+      for (let value of formData.values()) {
+        if (value === "") {
+          isFormEmpty = true;
+          break;
+        }
+      }
+      if (
+        isFormEmpty ||
+        `${fileLength}` == 0 ||
+        `${fileLength}` === "undefined" ||
+        document.querySelector('select[name="type"] option:checked')
+          .textContent === "Please select the receipt type...."
+      ) {
+        Swal.fire({
+          icon: "error",
+          title: "Error!",
+          text: "Please select the required fields.",
+        });
+        return;
+      }
       let blob = dataURLtoBlob(croppedImgSrc);
-
-      const attachData = new FormData();
+      const attachData = new FormData(event.target);
       attachData.append("croppedImage", blob, "cropped.jpeg");
-      
+      attachData.append("receiptTypeText", receiptTypeText);
+
       await Swal.fire({
         title: "Reading Receipt Content.\nPlease wait.\u{1F64C}",
         allowOutsideClick: false,
@@ -225,7 +297,9 @@
               showConfirmButton: false,
               timer: 8000,
               willOpen: () => {
-                setTimeout(()=>{window.location.href = "./createReceipt.html";},3000)
+                setTimeout(() => {
+                  window.location.href = "./createReceipt.html";
+                }, 3000);
               },
             });
           } else if (result.error) {

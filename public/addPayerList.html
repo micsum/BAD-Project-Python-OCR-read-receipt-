@@ -9,27 +9,29 @@
 
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
     <link
-  href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap"
-  rel="stylesheet" />
-<link
-  rel="stylesheet"
-  href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/tw-elements.min.css" />
-<script src="https://cdn.tailwindcss.com/3.3.0"></script>
-<script>
-  tailwind.config = {
-    darkMode: "class",
-    theme: {
-      fontFamily: {
-        sans: ["Roboto", "sans-serif"],
-        body: ["Roboto", "sans-serif"],
-        mono: ["ui-monospace", "monospace"],
-      },
-    },
-    corePlugins: {
-      preflight: false,
-    },
-  };
-</script>
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/tw-elements.min.css"
+    />
+    <script src="https://cdn.tailwindcss.com/3.3.0"></script>
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          fontFamily: {
+            sans: ["Roboto", "sans-serif"],
+            body: ["Roboto", "sans-serif"],
+            mono: ["ui-monospace", "monospace"],
+          },
+        },
+        corePlugins: {
+          preflight: false,
+        },
+      };
+    </script>
     <style type="text/tailwindcss">
       @layer utilities {
         .content-auto {
@@ -90,26 +92,44 @@
       }
     </style>
   </head>
-  <body><div class="mt-3 flex justify-center items-center w-full">
-    <div class="w-1/2">
-    <ol class="w-full flex items-center justify-center">
-      <li class="flex w-full items-center text-blue-600 light:text-blue-500 after:content-[''] after:w-full after:h-1 after:border-b after:border-blue-100 after:border-4 after:inline-block light:after:border-blue-800">
-          <span class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full lg:h-12 lg:w-12 light:bg-blue-800 shrink-0">
-            <i class="fa-solid fa-image fa-lg"></i>
-          </span>
-      </li>
-      <li class="flex w-full items-center text-blue-600 light:text-blue-500 after:content-[''] after:w-full after:h-1 after:border-b after:border-blue-100 after:border-4 after:inline-block light:after:border-blue-800">
-          <span class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full lg:h-12 lg:w-12 light:bg-blue-700 shrink-0">
-            <i class="fa-solid fa-pen-to-square fa-lg" style="color:#2B72EE"></i>
-          </span>
-      </li>
-      <li class="flex items-center w-full">
-          <span class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full lg:h-12 lg:w-12 light:bg-blue-700 shrink-0">
-            <i class="fa-solid fa-comment-dollar fa-lg" style="color:#2B72EE"></i></span>
-      </li>
-  </ol>
-  </div>
-</div>  
+  <body>
+    <div class="mt-3 flex justify-center items-center w-full">
+      <div class="w-1/2">
+        <ol class="w-full flex items-center justify-center">
+          <li
+            class="flex w-full items-center text-blue-600 light:text-blue-500 after:content-[''] after:w-full after:h-1 after:border-b after:border-blue-100 after:border-4 after:inline-block light:after:border-blue-800"
+          >
+            <span
+              class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full lg:h-12 lg:w-12 light:bg-blue-800 shrink-0"
+            >
+              <i class="fa-solid fa-image fa-lg"></i>
+            </span>
+          </li>
+          <li
+            class="flex w-full items-center text-blue-600 light:text-blue-500 after:content-[''] after:w-full after:h-1 after:border-b after:border-blue-100 after:border-4 after:inline-block light:after:border-blue-800"
+          >
+            <span
+              class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full lg:h-12 lg:w-12 light:bg-blue-700 shrink-0"
+            >
+              <i
+                class="fa-solid fa-pen-to-square fa-lg"
+                style="color: #2b72ee"
+              ></i>
+            </span>
+          </li>
+          <li class="flex items-center w-full">
+            <span
+              class="flex items-center justify-center w-10 h-10 bg-blue-100 rounded-full lg:h-12 lg:w-12 light:bg-blue-700 shrink-0"
+            >
+              <i
+                class="fa-solid fa-comment-dollar fa-lg fa-bounce"
+                style="color: #2b72ee"
+              ></i
+            ></span>
+          </li>
+        </ol>
+      </div>
+    </div>
     <div class="search">
       <form
         action="/searchUser"
@@ -169,8 +189,14 @@
       </div>
     </div>
     <div class="requestDiv flex items-center justify-center mt-4">
-      <button id="requestBtn" type="button" class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-3 py-2.5 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800">Request
-        <i class="px-2 fa-solid fa-right-long fa-lg" style="color: #ffffff;"></i>      
+      <button
+        id="requestBtn"
+        type="button"
+        class="text-white bg-green-700 hover:bg-green-800 focus:outline-none focus:ring-4 focus:ring-green-300 font-medium rounded-full text-sm px-3 py-2.5 text-center mr-2 mb-2 dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800"
+        hidden="true"
+      >
+        Request
+        <i class="px-2 fa-solid fa-right-long fa-lg" style="color: #ffffff"></i>
       </button>
     </div>
     <template id="userList">
@@ -237,7 +263,7 @@
     function userClone(userName) {
       let node = templateList.content.cloneNode(true);
       let userDiv = node.querySelector(".userDiv");
-
+      let requestBtn = document.querySelector("#requestBtn");
       let userNameEl = node.querySelector(".userName");
       userNameEl.textContent = userName;
 
@@ -256,6 +282,7 @@
         selectedUsers.push(userName);
         console.log("add", selectedUsers);
         addPeopleList.appendChild(node);
+        requestBtn.hidden = false;
       }
 
       deleteBtn.addEventListener("click", () => {
@@ -265,7 +292,6 @@
       });
     }
 
-    let requestBtn = document.querySelector("#requestBtn");
     requestBtn.addEventListener("click", () => {
       let getPayerList = JSON.parse(localStorage.getItem("payerList"));
       Swal.fire({
