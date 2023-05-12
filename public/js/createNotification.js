@@ -22,23 +22,19 @@ function displayNotification(notification, destination) {
     if (result.receiptStatus == false) {
       window.location = `./receiptDisplayPage.html?receiptID=${notification.receiptStringID}`;
     } else if (result.receiptStatus == true) {
-      Swal.fire(
-        {
-          icon: "question",
-          title: "Pay with in-app credit?",
-          showDenyButton: true,
-          showCancelButton: true,
-          confirmButtonText: "Yes, please",
-          denyButtonText: "No, I will use payMe/FPS",
-        }.then(async (result) => {
-          let creditMode;
-          if (result.isConfirmed) {
-            creditMode = true;
-          } else if (result.isDenied) {
-            creditMode = false;
-          } else {
-            return;
-          }
+      Swal.fire({
+        icon: "question",
+        title: "Please Select Payment Method",
+        html: `<select id="paymentChoice">
+        <option value="credit">credit</option>
+        <option value="fps">FPS</option>
+        <option value="payMe">PayMe</option>
+      </select>`,
+        showCancelButton: true,
+        confirmButtonText: "Confirm Selection",
+        preConfirm: async () => {
+          let paymentChoice = document.getElementById("paymentChoice").value;
+          let creditMode = paymentChoice == "credit";
           let res = await fetch("/respondPayMessage", {
             method: "POST",
             headers: {
@@ -46,7 +42,7 @@ function displayNotification(notification, destination) {
             },
             body: JSON.stringify({
               creditMode: creditMode,
-              receiptID: notification.receipt_id,
+              receiptStringID: notification.receiptStringID,
             }),
           });
           let result2 = await res.json();
@@ -56,11 +52,14 @@ function displayNotification(notification, destination) {
               title: "An Error Occurred",
               text: result2.error,
             });
+          } else {
+            Swal.fire({
+              icon: "success",
+              title: "Successfully Paid",
+            });
           }
-        })
-      );
-    } else {
-      // Call Sweet Alert Display Receipt Not Found Error
+        },
+      });
     }
   });
 

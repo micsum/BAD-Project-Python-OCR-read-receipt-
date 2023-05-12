@@ -1,15 +1,16 @@
 import { Request, Response, Router } from "express";
 import { Server as socketIO } from "socket.io";
 import { ClaimReceiptItemService } from "../service/claimReceiptItemService";
-import { ClaimItemsInfo } from "../../helper";
+import { CheckReq } from "../../helper";
 import { temporarySelections, removeTempClaim } from "./displayController";
 
-export class ClaimReceiptItemController {
+export class ClaimReceiptItemController extends CheckReq {
   router = Router();
   constructor(
     private claimReceiptItemService: ClaimReceiptItemService,
     private io: socketIO
   ) {
+    super();
     this.router.get(
       "/getReceiptClaimConfirmStatus/:receiptID",
       this.getReceiptClaimConfirmStatus
@@ -145,7 +146,7 @@ export class ClaimReceiptItemController {
         res.json(receiptItemsResult);
         return;
       }
-      console.log("running 1");
+
       let receiptItems = receiptItemsResult.receiptItems;
       const itemQuantityMap = new Map();
       for (let item of receiptItems) {
@@ -158,7 +159,7 @@ export class ClaimReceiptItemController {
           itemName: item.item_name,
         });
       }
-      console.log(`receiptItems = ${receiptItems}`);
+
       for (let userClaim of claimItems) {
         if (itemQuantityMap.get(userClaim.item_id) === undefined) {
           res.json({ error: `This Item is not in this receipt` });
@@ -182,7 +183,7 @@ export class ClaimReceiptItemController {
           return;
         }
       }
-      console.log("passed claim checking");
+
       let newResult = await this.claimReceiptItemService.getReceiptSender(
         receiptID
       );
@@ -309,18 +310,23 @@ export class ClaimReceiptItemController {
       return;
     }
 
-    if (req.body === undefined || req.body.creditMode === undefined) {
-      res.json({ error: "Pay Method Not Specified" });
+    let missingField = super.checkReqBody(req, [
+      "creditMode",
+      "receiptStringID",
+    ]);
+    if (missingField !== "") {
+      res.json({ error: `Missing ${missingField}` });
     }
 
     try {
       let userID = req.session.user.userID;
-      let receiptID = req.body.receiptID;
+      let userName = req.session.user.userName;
+      let receiptStringID = req.body.receiptStringID;
       let creditMode: Boolean = req.body.creditMode;
 
       let userFound =
         await this.claimReceiptItemService.retrieveReceiptRecipient(
-          receiptID,
+          receiptStringID,
           userID
         );
 
@@ -328,11 +334,13 @@ export class ClaimReceiptItemController {
         res.json({
           error: "User was not Invited to Claim Items in this Receipt",
         });
+        return;
       }
 
       let result = await this.claimReceiptItemService.respondPayMessage(
         userID,
-        receiptID,
+        userName,
+        receiptStringID,
         creditMode
       );
       res.json(result);
