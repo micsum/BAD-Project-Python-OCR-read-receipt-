@@ -5,7 +5,7 @@ import path from "path";
 import socketIO from "socket.io";
 import http from "http";
 import { knex } from "./db";
-import { sessionMiddleware, form } from "./public/routes/helper";
+import { sessionMiddleware, form } from "./helper";
 import { UserController } from "./public/controller/userController";
 import { UserService } from "./public/service/userService";
 import { ReceiptController } from "./public/controller/createReceiptController";

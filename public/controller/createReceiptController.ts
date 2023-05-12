@@ -2,8 +2,8 @@ import { Request, Response, Router, response } from "express";
 import { ReceiptService } from "../service/createReceiptService";
 import IncomingForm from "formidable/Formidable";
 import path from "path";
-import { uploadDir } from "../routes/helper";
-import { ItemInfo } from "../routes/helper";
+import { uploadDir } from "../../helper";
+import { ItemInfo } from "../../helper";
 
 export class ReceiptController {
   router = Router();

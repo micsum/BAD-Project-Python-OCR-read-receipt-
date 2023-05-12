@@ -2,7 +2,7 @@ import { Request, Response, Router } from "express";
 import * as bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { UserService } from "../service/userService";
-import { CheckReq, ObjectAny } from "../routes/helper";
+import { CheckReq, ObjectAny } from "../../helper";
 import nodemailer from "nodemailer";
 import Mailgen from "mailgen";
 

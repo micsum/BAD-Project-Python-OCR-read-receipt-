@@ -1,5 +1,5 @@
 import { Knex } from "knex";
-import { ItemInfo, ObjectAny } from "../routes/helper";
+import { ItemInfo, ObjectAny } from "../../helper";
 
 export class ReceiptService {
   constructor(private knex: Knex) {}
@@ -24,6 +24,8 @@ export class ReceiptService {
           `to_date('${transaction_date}', 'YYYY-MM-DD')`
         ),
         receipt_type: receiptTypeText,
+        confirm_selection: 0,
+        confirm_paid: 0,
       })
       .into("receipt")
       .returning("id");

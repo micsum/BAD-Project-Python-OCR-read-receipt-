@@ -1,7 +1,7 @@
 import { Request, Response, Router } from "express";
 import { Server as socketIO } from "socket.io";
 import { ClaimReceiptItemService } from "../service/claimReceiptItemService";
-import { ClaimItemsInfo } from "../routes/helper";
+import { ClaimItemsInfo } from "../../helper";
 import { temporarySelections, removeTempClaim } from "./displayController";
 
 export class ClaimReceiptItemController {
