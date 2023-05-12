@@ -116,8 +116,9 @@ export class ClaimReceiptItemController {
       return;
     }
 
-    if (req.body === undefined || req.body.itemInfoList === undefined) {
+    if (req.body === undefined || req.body.itemList === undefined) {
       res.status(401).json({ error: "ItemList Not Received" });
+      return;
     }
 
     let userID = req.session.user.userID;
@@ -149,20 +150,24 @@ export class ClaimReceiptItemController {
       const itemQuantityMap = new Map();
       for (let item of receiptItems) {
         let itemStringID = item.item_id;
-        let claimableQuantity: number =
-          item.quantity - item.claimerList.split(",").length;
+        let claimedUsers = item.claimerList.split(",").length;
+        claimedUsers = claimedUsers[0] === undefined ? 0 : 1;
+        let claimableQuantity: number = item.quantity - claimedUsers;
         itemQuantityMap.set(item.item_name, {
           claimableQuantity,
           itemStringID,
         });
       }
       for (let userClaim of claimItems) {
+        console.log(userClaim.item_name);
         if (itemQuantityMap.get(userClaim.item_name) === undefined) {
           res.json({ error: `${userClaim.item_name} is not in this receipt` });
+          return;
         } else if (userClaim.quantity <= 0) {
           res.json({
             error: `Please claim a positive number of ${userClaim.item_name}`,
           });
+          return;
         } else if (
           userClaim.quantity >
           itemQuantityMap.get(userClaim.item_name).claimableQuantity
@@ -170,6 +175,7 @@ export class ClaimReceiptItemController {
           res.json({
             error: `User may not claim more ${userClaim.item_name} than there is remaining`,
           });
+          return;
         }
       }
 
@@ -191,6 +197,7 @@ export class ClaimReceiptItemController {
           });
         }
       }
+      console.log(`claimItemInfo : ${claimItemsInfo}`);
       try {
         let result = await this.claimReceiptItemService.claimReceiptItems(
           claimItemsInfo,

@@ -3,7 +3,7 @@ const receipt = document.getElementById("receipt");
 const claimedItems = document.getElementById("claimedItems");
 const receiptItemTemplate = document.getElementById("receiptItem");
 const confirmClaimButton = document.getElementById("confirmClaim");
-const socket = io.connect();
+//const socket = io.connect();
 
 let userID, userName, receiptHost;
 let searchParams = new URLSearchParams(location.search);
@@ -103,7 +103,7 @@ window.addEventListener("load", async function (event) {
 
   if (receiptHost == userID) {
     let hostConfirmClaimButton = document.createElement("button");
-    hostConfirmClaimButton.value = "Confirm All Receipt Claims";
+    hostConfirmClaimButton.textContent = "Confirm All Receipt Claims";
     hostConfirmClaimButton.addEventListener("click", function () {
       Swal.fire({
         icon: "info",
@@ -128,26 +128,30 @@ window.addEventListener("load", async function (event) {
         },
       });
     });
-    document.appendChild(hostConfirmClaimButton);
+    document.getElementById("footer").appendChild(hostConfirmClaimButton);
   }
-  socket.join(receiptID);
+  //socket.join(receiptID);
 });
 
 confirmClaimButton.addEventListener("click", () => {
-  let claimInfoItemList = [];
-  for (let element of claimedItems) {
-    let quantity = element.getElementById("quantity");
+  let claimItemInfoList = [];
+  let claimedItemDivs = claimedItems.querySelectorAll(".receiptItemDiv");
+  claimedItemDivs.forEach((element) => {
     let item_id = element.getAttribute("id").substring(4);
+    let quantity = element.querySelector(`#setQuantity${item_id}`).value;
     for (let i = 0; i < quantity; i++) {
-      claimInfoItemList.push({
+      claimItemInfoList.push({
         user_id: userID,
         item_id: item_id,
       });
     }
-  }
+  });
+  console.log(claimItemInfoList);
+
   Swal.fire({
     icon: "info",
     title: "Confirm Claim?",
+    showCancelButton: true,
     preConfirm: async () => {
       let res = await fetch(`/claimReceiptItems/${receiptID}`, {
         method: "POST",
@@ -161,7 +165,7 @@ confirmClaimButton.addEventListener("click", () => {
           title: result.error,
         });
       }
-      socket.leave(receiptID);
+      //socket.leave(receiptID);
       window.location.href = "./homepage.html";
     },
   });

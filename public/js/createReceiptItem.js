@@ -153,7 +153,7 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
   });
   if (userID == receiptHost) {
     let resetClaimButton = document.createElement("button");
-    resetClaimButton.value = "Reset Claims";
+    resetClaimButton.textContent = "Reset Claims";
     resetClaimButton.addEventListener("click", function () {
       Swal.fire({
         icon: "info",
