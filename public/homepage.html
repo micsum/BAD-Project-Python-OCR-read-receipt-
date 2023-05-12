@@ -5,18 +5,30 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home Page</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              clifford: "#da373d",
-            },
-          },
+    <link
+    href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap"
+    rel="stylesheet" />
+  <link
+    rel="stylesheet"
+    href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/tw-elements.min.css" />
+  <script src="https://cdn.tailwindcss.com/3.3.0"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/tw-elements.umd.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        fontFamily: {
+          sans: ["Roboto", "sans-serif"],
+          body: ["Roboto", "sans-serif"],
+          mono: ["ui-monospace", "monospace"],
         },
-      };
-    </script>
+      },
+      corePlugins: {
+        preflight: false,
+      },
+    };
+  </script>
     <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
 
     <style type="text/tailwindcss">
@@ -85,8 +97,19 @@
     </style>
   </head>
   <body>
+  <div class="flex items-center justify-center mt-3">
+    <div class="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 light:bg-gray-800 light:border-gray-700">
+      <h5 class="mb-4 text-xl font-medium text-gray-500 light:text-gray-400">Your Credit</h5>
+      <div class="mb-2 flex items-baseline text-gray-900 light:text-white justify-center items-center">
+          <span class="text-3xl font-semibold">$</span>
+          <span class="text-5xl font-extrabold tracking-tight">49</span>
+      </div>
+      <button id="top" type="button" class="text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-200 light:focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-2.5 inline-flex justify-center w-full text-center">Top-up</button>
+  </div>
+  </div>
+    <div class="flex items-center justify-center">
     <div
-      class="w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 light:bg-gray-800 light:border-gray-700"
+      class="mt-3 w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 light:bg-gray-800 light:border-gray-700"
     >
       <div class="flex items-center justify-between mb-4">
         <h5
@@ -101,8 +124,63 @@
           View all
         </a>
       </div>
-      <div class="flow-root">
+      <div class="flow-root overflow-y-contain">
         <ul role="list" class="divide-y divide-gray-200 light:divide-gray-700">
+          <li class="py-3 sm:py-4">
+            <div class="flex items-center space-x-4">
+              <div class="flex-1 min-w-0">
+                <p
+                  class="text-sm font-medium text-gray-900 truncate light:text-white"
+                >
+                  Receipt #id
+                </p>
+                <p class="text-sm text-gray-500 truncate light:text-gray-400">
+                  date
+                </p>
+              </div>
+              <div
+                class="inline-flex items-center text-base font-semibold text-gray-900 light:text-white"
+              >
+                $320
+              </div>
+            </div>
+          </li><li class="py-3 sm:py-4">
+            <div class="flex items-center space-x-4">
+              <div class="flex-1 min-w-0">
+                <p
+                  class="text-sm font-medium text-gray-900 truncate light:text-white"
+                >
+                  Receipt #id
+                </p>
+                <p class="text-sm text-gray-500 truncate light:text-gray-400">
+                  date
+                </p>
+              </div>
+              <div
+                class="inline-flex items-center text-base font-semibold text-gray-900 light:text-white"
+              >
+                $320
+              </div>
+            </div>
+          </li><li class="py-3 sm:py-4">
+            <div class="flex items-center space-x-4">
+              <div class="flex-1 min-w-0">
+                <p
+                  class="text-sm font-medium text-gray-900 truncate light:text-white"
+                >
+                  Receipt #id
+                </p>
+                <p class="text-sm text-gray-500 truncate light:text-gray-400">
+                  date
+                </p>
+              </div>
+              <div
+                class="inline-flex items-center text-base font-semibold text-gray-900 light:text-white"
+              >
+                $320
+              </div>
+            </div>
+          </li>
           <li class="py-3 sm:py-4">
             <div class="flex items-center space-x-4">
               <div class="flex-1 min-w-0">
@@ -179,37 +257,20 @@
               </div>
             </div>
           </li>
-          <li class="pt-3 pb-0 sm:pt-4">
-            <div class="flex items-center space-x-4">
-              <div class="flex-1 min-w-0">
-                <p
-                  class="text-sm font-medium text-gray-900 truncate light:text-white"
-                >
-                  Receipt #id
-                </p>
-                <p class="text-sm text-gray-500 truncate light:text-gray-400">
-                  date
-                </p>
-              </div>
-              <div
-                class="inline-flex items-center text-base font-semibold text-gray-900 light:text-white"
-              >
-                $2367
-              </div>
-            </div>
-          </li>
         </ul>
       </div>
     </div>
+</div>
 
     <div
       class="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 bg-white border border-gray-200 rounded-full bottom-4 left-1/2 light:bg-gray-700 light:border-gray-600"
     >
       <div class="grid h-full max-w-lg grid-cols-5 mx-auto">
+        <a href="./homepage.html" class="flex items-center justify-center">
         <button
           data-tooltip-target="tooltip-home"
           type="button"
-          class="inline-flex flex-col items-center justify-center px-5 rounded-l-full hover:bg-gray-50 light:hover:bg-gray-800 group"
+          class="inline-flex flex-col items-center justify-center px-5 rounded-l-full hover:bg-gray-45 light:hover:bg-gray-800 group"
         >
           <svg
             class="w-6 h-6 mb-1 text-gray-500 light:text-gray-400 group-hover:text-blue-600 light:group-hover:text-blue-500"
@@ -223,7 +284,7 @@
             ></path>
           </svg>
           <span class="sr-only">Home</span>
-        </button>
+        </button></a>
         <div
           id="tooltip-home"
           role="tooltip"
@@ -232,11 +293,12 @@
           Home
           <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
+        <a href="./wallet.html" class="flex items-center justify-center">
         <button
           id="wallet"
           data-tooltip-target="tooltip-wallet"
           type="button"
-          class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 light:hover:bg-gray-800 group"
+          class="inline-flex flex-col items-center justify-center px-5 hover:bg-gray-45 light:hover:bg-gray-800 group"
         >
           <svg
             class="w-7 h-7 mb-1 text-gray-500 light:text-gray-400 group-hover:text-blue-600 light:group-hover:text-blue-500"
@@ -253,7 +315,7 @@
             ></path>
           </svg>
           <span class="sr-only">Wallet</span>
-        </button>
+        </button></a>
 
         <div
           id="tooltip-wallet"
@@ -264,7 +326,7 @@
           <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
         <div class="flex items-center justify-center">
-          <a href="./cropImage.html"
+          <a href="./cropImage.html" class="flex items-center justify-center"
             ><button
               id="create"
               data-tooltip-target="tooltip-new"
@@ -293,13 +355,14 @@
           role="tooltip"
           class="absolute z-10 invisible inline-block px-3 py-2 text-sm font-medium text-white transition-opacity duration-300 bg-gray-900 rounded-lg shadow-sm opacity-0 tooltip light:bg-gray-700"
         >
-          Create new item
+          Create receipt
           <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
+        <a href="./notification.html" class="flex items-center justify-center">
         <button
           data-tooltip-target="tooltip-settings"
           type="button"
-          class="relative inline-flex flex-col items-center justify-center px-5 hover:bg-gray-50 light:hover:bg-gray-800 group"
+          class="relative inline-flex flex-col items-center justify-center px-5 hover:bg-gray-45 light:hover:bg-gray-800 group"
         >
           <svg
             class="w-7 h-7 mb-1 text-gray-500 light:text-gray-400 group-hover:text-blue-600 light:group-hover:text-blue-50"
@@ -313,16 +376,17 @@
             />
           </svg>
           <span class="sr-only">Notification</span>
-          <span
+          <!--<span
             id="countNewNotify"
             class="absolute top-0 right-5 absolute w-3.5 h-3.5 inline-flex items-center justify-center w-5 h-5 text-xs font-bold text-white bg-red-500 border-2 border-white rounded-full -top-2 -right-2 light:border-gray-900"
           >
             8
-          </span>
-          <!--<span
-            class="top-0 right-7 absolute w-3.5 h-3.5 bg-red-500 border-2 border-white light:border-gray-800 rounded-full"
-          ></span>-->
+          </span>-->
+          <span
+            class="-top-1 right-10 absolute w-2.5 h-2.5 bg-red-500 border-2 border-white light:border-gray-800 rounded-full" hidden=true
+          ></span>
         </button>
+      </a>
         <div
           id="tooltip-settings"
           role="tooltip"
@@ -331,13 +395,14 @@
           Notification
           <div class="tooltip-arrow" data-popper-arrow></div>
         </div>
+        <a href="./profile.html" class="flex items-center justify-center">
         <button
           data-tooltip-target="tooltip-profile"
           type="button"
-          class="inline-flex flex-col items-center justify-center px-5 rounded-r-full hover:bg-gray-50 light:hover:bg-gray-800 group"
+          class="inline-flex flex-col items-center justify-center px-4 hover:bg-gray-45 light:hover:bg-gray-800 group"
         >
           <svg
-            class="w-6 h-6 mb-1 text-gray-500 light:text-gray-400 group-hover:text-blue-600 light:group-hover:text-blue-500"
+            class="w-7 h-7 mb-2 text-gray-500 light:text-gray-400 group-hover:text-blue-600 light:group-hover:text-blue-500"
             fill="currentColor"
             viewBox="0 0 20 20"
             xmlns="http://www.w3.org/2000/svg"
@@ -351,6 +416,7 @@
           </svg>
           <span class="sr-only">Profile</span>
         </button>
+      </a>
         <div
           id="tooltip-profile"
           role="tooltip"

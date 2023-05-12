@@ -8,7 +8,7 @@ window.addEventListener("load", async () => {
   element = document.createElement("img");
   element.setAttribute("id", "uploadedImage");
   element.setAttribute("src", imagePath);
-  element.addEventListener("click", () => {
+  viewImageDiv.addEventListener("click", () => {
     Swal.fire({
       imageUrl: element.src,
       showCloseButton: true,
@@ -16,7 +16,7 @@ window.addEventListener("load", async () => {
       imageWidth: 500,
     });
   });
-  viewImageDiv.appendChild(element);
+  //viewImageDiv.appendChild(element);
 });
 
 //const data = [
