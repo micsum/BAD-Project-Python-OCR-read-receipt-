@@ -19,7 +19,9 @@ def readReceipt(request: HttpRequest):
         itemText = receiptToTextContent("../"+filepath)
         #print("itemText",itemText)
         response_data = {"data": itemText}
-    return JsonResponse(response_data, status=200)
+        return JsonResponse(response_data, status=200)
+    else:
+        return JsonResponse("error",status=404)
 
 
 urlpatterns = [

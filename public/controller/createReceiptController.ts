@@ -81,6 +81,8 @@ export class ReceiptController {
       //console.log("filename", filename);
       if (responseData === "undefined") {
         res.json({ success: true, error: "receipt content fail to load" });
+      } else if (response.error) {
+        res.json({ error: "Server Error" });
       } else {
         res.json({ success: true, data: responseData, filepath: filepath });
       }
