@@ -14,7 +14,7 @@ export class DisplayService {
       .where({ "receipt.receipt_id": receiptStringID });
 
     if (receiptRecipientsResult === undefined) {
-      return false;
+      return { error: "Receipt Not Found" };
     }
 
     let receiptRecipients = receiptRecipientsResult;
@@ -25,10 +25,17 @@ export class DisplayService {
         break;
       }
     }
-    if (receiptRecipients[0].from === userID) {
+    let receiptHost = receiptRecipients[0].from;
+    if (receiptHost === userID) {
       userFound = true;
     }
-    return userFound;
+    if (userFound) {
+      return { receiptHost };
+    } else {
+      return {
+        error: "User was not Invited to Claim Items in this Receipt",
+      };
+    }
   }
   async getUserName(idArray: number[]) {
     return await this.knex("user").select("id", "name").whereIn("id", idArray);

@@ -63,19 +63,18 @@ export class DisplayController extends CheckReq {
       let userID = req.session.user.userID;
       let receiptStringID = req.body.receiptID;
 
-      let userFound = await this.displayService.retrieveReceiptRecipient(
+      let userFoundResult = await this.displayService.retrieveReceiptRecipient(
         receiptStringID,
         userID
       );
 
-      if (userFound) {
+      if (userFoundResult.error) {
+        res.json(userFoundResult);
+      } else {
         res.json({
           userID: userID,
           userName: req.session.user.userName,
-        });
-      } else {
-        res.json({
-          error: "User was not Invited to Claim Items in this Receipt",
+          receiptHost: userFoundResult.receiptHost,
         });
       }
     } catch (error) {
