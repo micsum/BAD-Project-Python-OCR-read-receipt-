@@ -153,27 +153,31 @@ export class ClaimReceiptItemController {
         let claimedUsers = item.claimerList.split(",").length;
         claimedUsers = claimedUsers[0] === undefined ? 0 : 1;
         let claimableQuantity: number = item.quantity - claimedUsers;
-        itemQuantityMap.set(item.item_name, {
-          claimableQuantity,
-          itemStringID,
+        itemQuantityMap.set(itemStringID, {
+          claimableQuantity: claimableQuantity,
+          itemName: item.item_name,
         });
       }
+
       for (let userClaim of claimItems) {
-        console.log(userClaim.item_name);
-        if (itemQuantityMap.get(userClaim.item_name) === undefined) {
-          res.json({ error: `${userClaim.item_name} is not in this receipt` });
+        if (itemQuantityMap.get(userClaim.item_id) === undefined) {
+          res.json({ error: `This Item is not in this receipt` });
           return;
         } else if (userClaim.quantity <= 0) {
           res.json({
-            error: `Please claim a positive number of ${userClaim.item_name}`,
+            error: `Please claim a positive number of ${
+              itemQuantityMap.get(userClaim.item_id).itemName
+            }`,
           });
           return;
         } else if (
           userClaim.quantity >
-          itemQuantityMap.get(userClaim.item_name).claimableQuantity
+          itemQuantityMap.get(userClaim.item_id).claimableQuantity
         ) {
           res.json({
-            error: `User may not claim more ${userClaim.item_name} than there is remaining`,
+            error: `User may not claim more ${
+              itemQuantityMap.get(userClaim.item_id).itemName
+            } than there is remaining`,
           });
           return;
         }
@@ -187,20 +191,10 @@ export class ClaimReceiptItemController {
         return;
       }
       let receiptHost = newResult.from;
-      let claimItemsInfo: ClaimItemsInfo[] = [];
-      for (let item of claimItems) {
-        let itemStringID: string = itemQuantityMap.get(item.itemName);
-        for (let i = 0; i < item.quantity; i++) {
-          claimItemsInfo.push({
-            user_id: userID,
-            item_id: itemStringID,
-          });
-        }
-      }
-      console.log(`claimItemInfo : ${claimItemsInfo}`);
+
       try {
         let result = await this.claimReceiptItemService.claimReceiptItems(
-          claimItemsInfo,
+          claimItems,
           req.params.receiptID,
           receiptHost,
           req.session.user.userID,
@@ -216,7 +210,7 @@ export class ClaimReceiptItemController {
         res.json(error);
       }
 
-      removeTempClaim(claimItemsInfo);
+      removeTempClaim(claimItems);
 
       this.io.to(receiptHost.toString()).emit("claimNotification", {
         userName: req.session.user.userName,

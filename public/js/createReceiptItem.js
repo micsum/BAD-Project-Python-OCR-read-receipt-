@@ -2,9 +2,8 @@
 function getAvailableQuantity(quantity, claimedUserName) {
   let claimerList = claimedUserName.split(",");
   let claimedQuantity = claimerList.length;
-  if (claimedQuantity == 1) {
-    claimedQuantity = claimerList[0].length == 0 ? 0 : 1;
-  }
+  claimedQuantity = claimerList[0] === undefined ? 0 : 1;
+
   return quantity - claimedQuantity;
 }
 
@@ -31,8 +30,16 @@ function formatClaimedUserNameList(claimedUserName) {
   return finalString;
 }
 
-function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
+function createItem(
+  itemInfo,
+  htmlDiv,
+  template,
+  claimedUserName,
+  claim,
+  claimedAmount = 0
+) {
   let { quantity, item_name, item_id, price } = itemInfo;
+  console.log(`itemInfo : ${quantity} ${item_name} ${item_id} ${price}`);
 
   let node = template.content.cloneNode(true);
   let quantityDisplay = node.querySelector("#quantity");
@@ -54,15 +61,24 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
     claimUserDiv.appendChild(claimUserText);
     node.querySelector(".itemDiv").appendChild(claimUserDiv);
   }
-
   if (!claim) {
-    let availableQuantity = getAvailableQuantity(quantity, claimedUserName);
-    if (availableQuantity === 0) {
-      return;
+    let expectedQuantity;
+    if (claimedAmount == 0) {
+      let availableQuantity = getAvailableQuantity(quantity, claimedUserName);
+      if (availableQuantity === 0) {
+        Swal.fire({
+          icon: "error",
+          title: "Item claimed in full",
+        });
+        return;
+      }
+      expectedQuantity = availableQuantity;
+    } else {
+      expectedQuantity = claimedAmount;
     }
     let quantitySelector = document.createElement("select");
     quantitySelector.setAttribute("id", `setQuantity${item_id}`);
-    for (let i = 1; i <= availableQuantity; i++) {
+    for (let i = 1; i <= expectedQuantity; i++) {
       let option = document.createElement("option");
       option.setAttribute("value", i);
       option.textContent = i.toString() + "x";
@@ -90,7 +106,7 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
       let claimedUserName = document.getElementById(
         `claimedUser${item_id}`
       ).textContent;
-      if (getAvailableQuantity(quantity, claimedUserName) === 0) {
+      if (getAvailableQuantity(quantity, claimedUserName) == 0) {
         Swal.fire({
           icon: "error",
           title: "Item Over Claimed",

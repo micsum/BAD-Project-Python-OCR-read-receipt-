@@ -74,6 +74,7 @@ window.addEventListener("load", async function (event) {
   }
 
   for (let receiptItem of receiptItemsInfo) {
+    console.log(receiptItem);
     if (claimedItemMap.get(receiptItem.item_id) === undefined) {
       createItem(
         receiptItem,
@@ -94,10 +95,11 @@ window.addEventListener("load", async function (event) {
         },
         receiptItemTemplate,
         receiptItem.claimerList,
-        false
+        false,
+        claimedItemMap.get(receiptItem.item_id)
       );
-      document.getElementById(`setQuantity${receiptItem.item_id}`).value =
-        receiptItem.quantity;
+      //document.getElementById(`setQuantity${receiptItem.item_id}`).value =
+      //receiptItem.quantity;
     }
   }
 
@@ -146,7 +148,6 @@ confirmClaimButton.addEventListener("click", () => {
       });
     }
   });
-  console.log(claimItemInfoList);
 
   Swal.fire({
     icon: "info",
@@ -158,7 +159,7 @@ confirmClaimButton.addEventListener("click", () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ itemList: claimItemInfoList }),
       });
-      let result = res.json();
+      let result = await res.json();
       if (result.error) {
         Swal.fire({
           icon: "error",
@@ -166,7 +167,8 @@ confirmClaimButton.addEventListener("click", () => {
         });
       }
       //socket.leave(receiptID);
-      window.location.href = "./homepage.html";
+      console.log(result);
+      //window.location.href = "./homepage.html";
     },
   });
 });
