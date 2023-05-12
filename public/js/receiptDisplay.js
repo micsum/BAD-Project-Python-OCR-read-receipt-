@@ -3,8 +3,9 @@ const receipt = document.getElementById("receipt");
 const claimedItems = document.getElementById("claimedItems");
 const receiptItemTemplate = document.getElementById("receiptItem");
 const confirmClaimButton = document.getElementById("confirmClaim");
+const socket = io.connect();
 
-let userID, userName;
+let userID, userName, receiptHost;
 let searchParams = new URLSearchParams(location.search);
 let receiptID = searchParams.get("receiptID");
 
@@ -32,6 +33,7 @@ window.addEventListener("load", async function (event) {
 
   userID = result.userID;
   userName = result.userName;
+  receiptHost = result.receiptHost;
 
   res = await fetch(`/getReceiptItems/${receiptID}`);
   result = await res.json();
@@ -98,6 +100,37 @@ window.addEventListener("load", async function (event) {
         receiptItem.quantity;
     }
   }
+
+  if (receiptHost == userID) {
+    let hostConfirmClaimButton = document.createElement("button");
+    hostConfirmClaimButton.value = "Confirm All Receipt Claims";
+    hostConfirmClaimButton.addEventListener("click", function () {
+      Swal.fire({
+        icon: "info",
+        title: "Confirm All Claims ?",
+        text: "Do you confirm that all claims made on this receipt are valid ?",
+        showCancelButton: true,
+        confirmButtonText: "Yes, I am 100% certain ",
+        cancelButtonText: "No, I need to check again !",
+        preConfirm: async () => {
+          let res = await fetch(`/hostConfirmClaim/${receiptID}`, {
+            method: "PUT",
+          });
+          let result = await res.json();
+          if (result.error) {
+            Swal.fire({
+              icon: "error",
+              title: result.error,
+            });
+            return;
+          }
+          window.location.href = "/homepage.html";
+        },
+      });
+    });
+    document.appendChild(hostConfirmClaimButton);
+  }
+  socket.join(receiptID);
 });
 
 confirmClaimButton.addEventListener("click", () => {
@@ -128,19 +161,12 @@ confirmClaimButton.addEventListener("click", () => {
           title: result.error,
         });
       }
+      socket.leave(receiptID);
       window.location.href = "./homepage.html";
     },
   });
 });
 
-//socket.on("claimItem", ({ claimItemsInfo, claimUserName }) => {
-//  let claimUserID = claimItemsInfo[0].user_id;
-//  if (claimUserID == userID) {
-//    window.location.href = ""; //redirect to main page
-//  }
-//  for (let item of claimItemsInfo) {
-//    let itemStringID = item.itemStringID;
-//    let claimerList = document.getElementById(`claimedUser${itemStringID}`);
-//    claimerList.textContent += ", " + claimUserName + ` x${item.quantity}`;
-//  }
-//});
+socket.on("claimItem", () => {
+  window.location.reload();
+});

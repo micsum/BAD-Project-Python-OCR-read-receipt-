@@ -214,10 +214,7 @@ export class ClaimReceiptItemController {
       this.io.to(receiptHost.toString()).emit("claimNotification", {
         userName: req.session.user.userName,
       });
-      this.io.to(receiptID).emit("claimItem", {
-        claimItemInfo: req.body.itemList,
-        claimUserName: req.session.user.userName,
-      });
+      this.io.to(receiptID).emit("claimItem");
       res.json({});
       return;
     } catch (error) {
@@ -255,6 +252,7 @@ export class ClaimReceiptItemController {
       }
 
       await this.claimReceiptItemService.removeItemClaims(req.body.item);
+      this.io.to(receiptID).emit("claimItem");
       res.json({});
       return;
     } catch (error) {

@@ -151,6 +151,42 @@ function createItem(itemInfo, htmlDiv, template, claimedUserName, claim) {
       );
     }
   });
+  if (userID == receiptHost) {
+    let resetClaimButton = document.createElement("button");
+    resetClaimButton.value = "Reset Claims";
+    resetClaimButton.addEventListener("click", function () {
+      Swal.fire({
+        icon: "info",
+        title: "Reset Claims ?",
+        text: "Do you wish to reset the claims of this item ? ",
+        showCancelButton: true,
+        confirmButtonText: "Yes, I am 100% certain ",
+        cancelButtonText: "No, I mis-clicked !",
+        preConfirm: async () => {
+          let res = await fetch(`/resetReceiptItemClaim/${receiptID}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ item: itemInfo.id }),
+          });
+          let result = await res.json();
+          if (result.error) {
+            Swal.fire({
+              icon: "error",
+              title: result.error,
+            });
+          } else {
+            Swal.fire({
+              icon: "success",
+              title: "Item Claims Successfully Reset",
+            });
+          }
+        },
+      });
+    });
+    node.querySelector(".controlsDiv").appendChild(resetClaimButton);
+  }
   locationDiv.appendChild(node);
 }
 
