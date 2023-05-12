@@ -2,31 +2,49 @@
 function getAvailableQuantity(quantity, claimedUserName) {
   let claimerList = claimedUserName.split(",");
   let claimedQuantity = claimerList.length;
-  claimedQuantity = claimerList[0] === undefined ? 0 : 1;
+  claimedQuantity = claimerList[0] === "" ? 0 : 1;
+  console.log(claimerList);
+  let userCount = 0;
+  for (let i = 0; i < claimerList.length; i++) {
+    let elem = claimerList[i];
+    if (elem.substring(0, elem.length - 4) == userName) {
+      userCount = parseInt(elem.substring(elem.length - 2, elem.length - 1));
+    }
+  }
 
-  return quantity - claimedQuantity;
+  if (userCount == 0) {
+    return quantity - claimedQuantity;
+  } else {
+    return userCount;
+  }
 }
 
 function formatClaimedUserNameList(claimedUserName) {
   let nameList = claimedUserName.split(",");
-  let previousName = "";
-  let finalString = "";
-  let nameCount = 0;
+  nameList = nameList.map((elem) => {
+    return elem.trim();
+  });
 
+  if (nameList[0] == "") {
+    return "";
+  }
+
+  let userNameList = [];
+  let userNameAppearance = {};
   for (let userName of nameList) {
-    if (userName.trim() == previousName.trim()) {
-      nameCount++;
+    if (userNameAppearance[userName] == undefined) {
+      userNameAppearance[userName] = 1;
+      userNameList.push(userName);
     } else {
-      if (previousName != "") {
-        finalString += `${previousName} x${nameCount + 1}, `;
-        nameCount = 0;
-      }
+      userNameAppearance[userName]++;
     }
-    previousName = userName;
   }
-  if (previousName != "") {
-    finalString += `${previousName} x${nameCount + 1} `;
+
+  let finalString = "";
+  for (let name of userNameList) {
+    finalString += `${name} x${userNameAppearance[name]} `;
   }
+
   return finalString;
 }
 
@@ -39,7 +57,6 @@ function createItem(
   claimedAmount = 0
 ) {
   let { quantity, item_name, item_id, price } = itemInfo;
-  console.log(`itemInfo : ${quantity} ${item_name} ${item_id} ${price}`);
 
   let node = template.content.cloneNode(true);
   let quantityDisplay = node.querySelector("#quantity");
@@ -76,9 +93,10 @@ function createItem(
     } else {
       expectedQuantity = claimedAmount;
     }
+    console.log(expectedQuantity);
     let quantitySelector = document.createElement("select");
     quantitySelector.setAttribute("id", `setQuantity${item_id}`);
-    for (let i = 1; i <= expectedQuantity; i++) {
+    for (let i = 1; i <= quantity; i++) {
       let option = document.createElement("option");
       option.setAttribute("value", i);
       option.textContent = i.toString() + "x";
@@ -165,6 +183,7 @@ function createItem(
         claimedUserName,
         true
       );
+      window.location.reload();
     }
   });
   if (userID == receiptHost) {
@@ -197,6 +216,7 @@ function createItem(
               icon: "success",
               title: "Item Claims Successfully Reset",
             });
+            window.location.reload();
           }
         },
       });

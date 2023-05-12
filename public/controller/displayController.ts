@@ -217,7 +217,6 @@ export class DisplayController extends CheckReq {
         break;
       }
     }
-
     if (!deleted) {
       res.json({ error: "Claim Record Not Found" });
       return;

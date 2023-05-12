@@ -22,7 +22,7 @@ export class ClaimReceiptItemService {
     let receiptRecipients;
     if (typeof receiptID === "string") {
       receiptRecipients = await this.knex("receipt")
-        .where({ receipt_id: receiptID })
+        .where({ "receipt.receipt_id": receiptID })
         .innerJoin(
           "receipt_recipient",
           "receipt_recipient.receipt_id",
@@ -131,27 +131,32 @@ export class ClaimReceiptItemService {
     itemArray = receiptItems.map((elem) => {
       return elem.item_id;
     });
-
-    let itemIDList = await this.knex("receipt_item")
-      .select("id")
+    let itemListResult = await this.knex("receipt_item")
+      .select("id", "item_id")
       .whereIn("item_id", itemArray);
 
-    if (itemIDList === undefined || itemArray.length !== itemIDList.length) {
+    if (
+      itemListResult === undefined ||
+      itemArray.length !== itemListResult.length
+    ) {
       return { error: "Claim Item(s) Not Found" };
     }
 
-    itemIDList = itemIDList.map((elem) => {
-      return elem.id;
-    });
+    let itemIDList: number[] = [];
+    let itemStringIDList: string[] = [];
+
+    for (let item of itemListResult) {
+      itemIDList.push(item.id);
+      itemStringIDList.push(item.item_id);
+    }
 
     let newItemsInfo: ObjectAny[] = [];
-    for (let i = 0; i < claimItemsInfo.length; i++) {
+    for (let item of claimItemsInfo) {
       let userID = receiptPayer;
-      let itemID = itemIDList[i];
-      console.log(userID, itemID);
+      let itemID = itemIDList[itemStringIDList.indexOf(item.item_id)];
       newItemsInfo.push({ user_id: userID, item_id: itemID });
     }
-    console.log(itemIDList);
+
     await this.knex("item_payer")
       .where({ user_id: receiptPayer })
       .whereIn("item_id", itemIDList)
@@ -170,7 +175,7 @@ export class ClaimReceiptItemService {
         "receipt_item.price as itemPrice"
       )
       .where({ "receipt.receipt_id": receiptStringID })
-      .whereIn("receipt_item.item_id", itemArray);
+      .whereIn("receipt_item.item_id", itemStringIDList);
 
     let receiptID: number = -1;
     let itemList: string = "";
@@ -228,7 +233,7 @@ export class ClaimReceiptItemService {
     for (let receiptRecipient of receiptRecipients) {
       notifications.push({
         from: userID,
-        to: receiptRecipient,
+        to: receiptRecipient.to_individual,
         payment: false,
         receipt_id: receiptID,
         information: information,
@@ -238,29 +243,44 @@ export class ClaimReceiptItemService {
       .update({ confirm_selection: true })
       .where({ id: receiptID });
     await this.knex("notification").insert(notifications);
+    return {};
   }
 
   async respondPayMessage(
     userID: number,
-    receiptID: number,
+    userName: string,
+    receiptStringID: string,
     creditMode: Boolean
   ) {
+    let receiptIDResult = await this.knex("receipt")
+      .select("id")
+      .where({ receipt_id: receiptStringID });
+
+    if (receiptIDResult[0] === undefined) {
+      return { error: "Receipt Not Found" };
+    }
+
+    let receiptID = receiptIDResult[0].id;
+
+    let { from, error } = await this.getReceiptSender(receiptStringID);
+
+    let informationResult = await this.knex("notification")
+      .select("information")
+      .where({ receipt_id: receiptID, from: userID, payment: false });
+
+    if (informationResult === undefined) {
+      return { error: "Total Price of Claim Not Found" };
+    }
+
+    let information = informationResult[0].information;
+    information = information.split(",");
+    information = information[information.length - 1].split(" ");
+    let claimPrice: number = information.slice(-1)[0];
+
     if (creditMode) {
       let [{ credit }] = await this.knex("user")
         .select("credit")
         .where({ id: userID });
-
-      let informationResult = await this.knex("notification")
-        .select("information")
-        .where({ receipt_id: receiptID, from: userID, payment: false });
-
-      if (informationResult === undefined) {
-        return { error: "Total Price of Claim Not Found" };
-      }
-
-      let information = informationResult[0].information;
-      information = information.split(",");
-      let claimPrice: number = information.slice(-1)[0];
 
       if (credit <= claimPrice) {
         return { error: "Insufficient Credit" };
@@ -270,6 +290,14 @@ export class ClaimReceiptItemService {
           .where({ id: userID });
       }
     }
+
+    await this.knex("notification").insert({
+      from: userID,
+      to: from,
+      payment: true,
+      receipt_id: receiptID,
+      information: `${userName} has paid you $${claimPrice} for a receipt`,
+    });
     return {};
   }
 
