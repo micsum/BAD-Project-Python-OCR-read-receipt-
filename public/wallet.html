@@ -59,8 +59,7 @@
       rel="stylesheet"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
-
-    <script
+    <script src="https://js.stripe.com/v3/"></script>    <script
       src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.all.js"
       integrity="sha512-AINSNy+d2WG9ts1uJvi8LZS42S8DT52ceWey5shLQ9ArCmIFVi84nXNrvWyJ6bJ+qIb1MnXR46+A4ic/AUcizQ=="
       crossorigin="anonymous"
@@ -93,42 +92,45 @@
         }
       }
     </style>
-        <script src="https://js.stripe.com/v3/"></script>
   </head>
   <body>
+    <div class="flex items-center justify-center mt-3">
+      <div
+        class="w-full max-w-sm p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 light:bg-gray-800 light:border-gray-700"
+      >
+        <h5 class="mb-4 text-xl font-medium text-gray-500 light:text-gray-400">
+          Your Credit<i class="mx-2 bi bi-currency-exchange"></i>
+        </h5>
+        <div
+          class="mb-2 flex items-baseline text-gray-900 light:text-white justify-center items-center"
+        >
+          <span class="text-3xl font-semibold">$</span>
+          <span class="text-5xl font-extrabold tracking-tight" id="creditBalance">49</span>
+        </div>
+      </div>
+    </div>
     <div class="mt-4 m-3 flex flex-col items-center justify-center">
       <div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow light:bg-gray-800 light:border-gray-700">
         <i class="fa-solid fa-money-bill-transfer fa-2xl" style="color: #8b8e92;"></i>  
         <a href="#">
-            <h5 class="mb-2 text-2xl font-semibold tracking-tight text-gray-900 light:text-white">Faster Payment?</h5>
+            <h5 class="mb-2 text-2xl font-semibold tracking-tight text-gray-900 light:text-white">Top Up Credit</h5>
         </a>
-        <p class="mb-3 font-normal text-gray-500 light:te xt-gray-400">Click the below link to top link your credit card to pay the receipt:</p>
-        <a href="#" class="inline-flex items-center text-blue-600 hover:underline">
-            Link credit card
-            <i class="px-2 fa-solid fa-credit-card fa-lg"></i>    
-        </a>
-      </div>
-
-      <div class="mt-4 max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow light:bg-gray-800 light:border-gray-700">
-        <h1>Top-up Credit</h1>
+        <p class="mb-3 font-normal text-gray-500 light:te xt-gray-400">Enter the amount to top up your credit to pay the receipt:</p>
+       
+        <div class="topUpDiv mt-4">
+        <form ID="topUpForm">
         <div class="mt-2">
           <label for="amount">Amount:</label>
           <input type="number" class="border-round-2" id="amount" name="amount" min="1" step="1" required>
         </div>
-        <div>
-          <label for="card-element">Credit Card:</label>
-          <div id="card-element"></div>
-          <div id="card-errors" role="alert"></div>
+        <div class="buttonDiv mt-3 flex items-center justify-center">
+        <button id="topUpBtn" class="btn bg-cyan-600 text-white">Top Up with <i class="px-2 fa-solid fa-credit-card fa-lg"></i></button>
+      </div>
+        </form>
+        
         </div>
-        <div class="buttonDiv flex items-center justify-center">
-        <button id="submit">Pay</button>
       </div>
-    </div>
-
-      
-
-
-      </div>
+   </div>
     <div
       class="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 bg-white border border-gray-200 rounded-full bottom-4 left-1/2 light:bg-gray-700 light:border-gray-600"
     >
