@@ -85,3 +85,11 @@ export type Notification = {
     item_id: string,
     claimerList: string
   } */
+
+export function hasLogin(req: Request, res: Response, next: NextFunction) {
+  if (req.session === undefined || req.session.user === undefined) {
+    res.sendFile(path.resolve("public", "index.html"));
+  } else {
+    next();
+  }
+}

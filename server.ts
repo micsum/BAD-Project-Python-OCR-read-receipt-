@@ -17,7 +17,7 @@ import { ClaimReceiptItemService } from "./public/service/claimReceiptItemServic
 
 const app = express();
 let server = http.createServer(app);
-let io = new socketIO.Server(server);
+export let io = new socketIO.Server(server);
 
 const receiptService = new ReceiptService(knex);
 const receiptController = new ReceiptController(receiptService, form);
@@ -36,8 +36,8 @@ app.use(express.json());
 app.use(express.urlencoded());
 
 app.use(sessionMiddleware);
-app.use(receiptController.router);
 app.use(userController.router);
+app.use(receiptController.router);
 app.use(displayController.router);
 app.use(claimReceiptItemController.router);
 
