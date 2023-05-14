@@ -3,7 +3,6 @@ function getAvailableQuantity(quantity, claimedUserName) {
   let claimerList = claimedUserName.split(",");
   let claimedQuantity = claimerList.length;
   claimedQuantity = claimerList[0] === "" ? 0 : 1;
-  console.log(claimerList);
   let userCount = 0;
   for (let i = 0; i < claimerList.length; i++) {
     let elem = claimerList[i];
@@ -93,7 +92,7 @@ function createItem(
     } else {
       expectedQuantity = claimedAmount;
     }
-    console.log(expectedQuantity);
+
     let quantitySelector = document.createElement("select");
     quantitySelector.setAttribute("id", `setQuantity${item_id}`);
     for (let i = 1; i <= quantity; i++) {
@@ -198,12 +197,15 @@ function createItem(
         confirmButtonText: "Yes, I am 100% certain ",
         cancelButtonText: "No, I mis-clicked !",
         preConfirm: async () => {
-          let res = await fetch(`/resetReceiptItemClaim/${receiptID}`, {
+          let res = await fetch(`/resetReceiptItemClaim/${receiptStringID}`, {
             method: "DELETE",
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ item: itemInfo.id }),
+            body: JSON.stringify({
+              itemID: itemInfo.id,
+              itemStringID: item_id,
+            }),
           });
           let result = await res.json();
           if (result.error) {

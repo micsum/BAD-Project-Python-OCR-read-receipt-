@@ -33,8 +33,51 @@ window.addEventListener("load", async (event) => {
     });
   }
   let notificationData = result.notifications;
+  const notificationMap = new Map();
   for (let notification of notificationData) {
-    displayNotification(notification, notificationDiv);
+    if (notification.confirmStatus) {
+      notification.information = `You sent a receipt out for claim (receipt ID : ${notification.receiptStringID})`;
+    } else {
+      notification.information = `You sent a receipt out for claim (receipt ID : ${notification.receiptStringID})`;
+    }
+    console.log(`init ${notification}`);
+    let notificationSender = notification.notificationSender;
+    let notificationStringID = notification.receiptStringID;
+    let notificationConfirm = notification.confirm_selection;
+
+    let userMessageInformation = notificationMap.get(notificationSender);
+    if (userMessageInformation == undefined) {
+      displayNotification(notification, notificationDiv);
+      console.log(notification);
+      notificationMap.set(notificationSender, [
+        {
+          receiptStringID: notificationStringID,
+          confirmStatus: [notificationConfirm],
+        },
+      ]);
+    } else {
+      let duplicate = false;
+      for (let row of userMessageInformation) {
+        if (row.receiptStringID == notificationStringID) {
+          duplicate = true;
+          if (row.confirmStatus.indexOf(notificationConfirm) != -1) {
+            break;
+          } else {
+            displayNotification(notification, notificationDiv);
+            row.confirmStatus.push(notificationConfirm);
+            break;
+          }
+        }
+      }
+      if (!duplicate) {
+        displayNotification(notification, notificationDiv);
+        console.log(notification);
+        userMessageInformation.push({
+          receiptStringID: notificationStringID,
+          confirmStatus: [notificationConfirm],
+        });
+      }
+    }
   }
   socket.emit("joinUserSocketRoom", { userID: userID.toString() });
 });

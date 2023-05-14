@@ -33,6 +33,7 @@ window.addEventListener("load", async (event) => {
   }
   let notificationData = result.notifications;
   for (let notification of notificationData) {
+    notification.information += ` (receipt ID : ${notification.receiptStringID})`;
     displayNotification(notification, notificationDiv);
   }
 });

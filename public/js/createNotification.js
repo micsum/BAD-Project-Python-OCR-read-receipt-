@@ -1,6 +1,7 @@
 function displayNotification(notification, destination) {
   let node = notificationTemplate.content.cloneNode(true);
   let notificationDiv = node.querySelector(".notificationDiv");
+  let receiptSender = notification.notificationSender;
   notificationDiv.setAttribute(
     "id",
     `notification${notification.receiptStringID}`
@@ -11,7 +12,6 @@ function displayNotification(notification, destination) {
       `/getReceiptClaimConfirmStatus/${notification.receiptStringID}`
     );
     let result = await res.json();
-    let receiptSender = notification.notificationSender;
 
     if (result.receiptStatus == false || receiptSender == userName) {
       window.location = `./receiptDisplayPage.html?receiptID=${notification.receiptStringID}`;
