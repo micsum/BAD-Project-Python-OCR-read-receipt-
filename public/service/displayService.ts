@@ -41,19 +41,22 @@ export class DisplayService {
     return await this.knex("user").select("id", "name").whereIn("id", idArray);
   }
 
-  async getNotifications(userID: number) {
-    return await this.knex("notification")
+  async getNotifications(userID: number, sentFromUser: Boolean) {
+    let query = this.knex("notification")
       .innerJoin("receipt", "notification.receipt_id", "receipt.id")
       .select(
         "notification.from as notificationSender",
         "notification.to",
         "notification.payment",
         "receipt.receipt_id as receiptStringID",
+        "receipt.confirm_selection",
         "notification.information"
-      )
-      .where({ "notification.from": userID })
-      .orWhere({ to: userID })
-      .limit(30)
-      .orderBy("notification.id", "desc");
+      );
+
+    query = sentFromUser
+      ? query.where({ "notification.from": userID })
+      : query.where({ "notification.to": userID });
+    query = query.limit(30).orderBy("notification.id", "desc");
+    return await query;
   }
 }

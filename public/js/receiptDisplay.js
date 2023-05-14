@@ -3,6 +3,7 @@ const receipt = document.getElementById("receipt");
 const claimedItems = document.getElementById("claimedItems");
 const receiptItemTemplate = document.getElementById("receiptItem");
 const confirmClaimButton = document.getElementById("confirmClaim");
+const returnButton = document.getElementById("return");
 
 let userID, userName, receiptHost;
 let searchParams = new URLSearchParams(location.search);
@@ -171,6 +172,14 @@ confirmClaimButton.addEventListener("click", () => {
       window.location.href = "./homepage.html";
     },
   });
+});
+
+returnButton.addEventListener("click", function () {
+  socket.emit("leaveReceiptRoom", {
+    userID: userID,
+    roomName: receiptStringID,
+  });
+  window.location.href = "./homepage.html";
 });
 
 socket.on("claimItem", () => {

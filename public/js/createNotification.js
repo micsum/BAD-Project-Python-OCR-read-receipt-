@@ -1,10 +1,3 @@
-// Buffer Line
-let createButton = document.querySelector("#create");
-const notificationTemplate = document.getElementById("notificationTemplate");
-let notificationDiv = document.getElementById("notificationDisplayDiv");
-
-let userName, userID;
-
 function displayNotification(notification, destination) {
   let node = notificationTemplate.content.cloneNode(true);
   let notificationDiv = node.querySelector(".notificationDiv");
@@ -18,17 +11,19 @@ function displayNotification(notification, destination) {
       `/getReceiptClaimConfirmStatus/${notification.receiptStringID}`
     );
     let result = await res.json();
-    if (result.receiptStatus == false) {
+    let receiptSender = notification.notificationSender;
+
+    if (result.receiptStatus == false || receiptSender == userName) {
       window.location = `./receiptDisplayPage.html?receiptID=${notification.receiptStringID}`;
-    } else if (result.receiptStatus == true) {
+    } else if (result.receiptStatus == true && receiptSender != userName) {
       Swal.fire({
         icon: "question",
         title: "Please Select Payment Method",
         html: `<select id="paymentChoice">
-        <option value="credit">credit</option>
-        <option value="fps">FPS</option>
-        <option value="payMe">PayMe</option>
-      </select>`,
+          <option value="credit">credit</option>
+          <option value="fps">FPS</option>
+          <option value="payMe">PayMe</option>
+        </select>`,
         showCancelButton: true,
         confirmButtonText: "Confirm Selection",
         preConfirm: async () => {
@@ -63,15 +58,16 @@ function displayNotification(notification, destination) {
   });
 
   let icon;
-  let receiptSender = notification.notificationSender;
   let notificationMessage = notification.information;
+  let confirmSelection = notification.confirm_selection;
   let payment = notification.payment;
   if (receiptSender == userName) {
     receiptSender = "You";
-    notificationMessage = "You sent a receipt successfully";
-    icon = payment ? "bank" : "wallet";
+    let dummyText = confirmSelection ? "claim request" : "receipt";
+    notificationMessage = `You sent a ${dummyText} successfully (receiptID : ${notification.receiptStringID})`;
+    icon = payment ? "bank" : "piggy-bank";
   } else {
-    icon = payment ? "piggy-bank" : "coin";
+    icon = payment ? "wallet" : "coin";
   }
   node.querySelector(".notificationSender").textContent = receiptSender;
 
@@ -80,30 +76,3 @@ function displayNotification(notification, destination) {
   node.querySelector(".message").textContent = notificationMessage;
   destination.appendChild(node);
 }
-window.addEventListener("load", async (event) => {
-  event.preventDefault();
-  let res = await fetch("/getUserName");
-  let result = await res.json();
-  if (result.error) {
-    Swal.fire({
-      icon: "error",
-      title: result.error,
-    });
-  }
-  userName = result.userName;
-  userID = result.userID;
-
-  res = await fetch("/getNotifications");
-  result = await res.json();
-  if (result.error) {
-    Swal.fire({
-      icon: "error",
-      title: result.error,
-    });
-  }
-  let notificationData = result.notifications;
-  for (let notification of notificationData) {
-    displayNotification(notification, notificationDiv);
-  }
-  socket.emit("joinUserSocketRoom", { userID: userID.toString() });
-});

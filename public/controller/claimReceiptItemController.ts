@@ -44,6 +44,7 @@ export class ClaimReceiptItemController extends CheckReq {
     } catch (error) {
       console.log(error);
       res.json({ error });
+      return;
     }
   };
 
@@ -101,9 +102,11 @@ export class ClaimReceiptItemController extends CheckReq {
         }
       }
       res.json({ itemInfoList });
+      return;
     } catch (error) {
       console.log(error);
-      res.json({ error });
+      res.json(error);
+      return;
     }
   };
 
@@ -122,7 +125,6 @@ export class ClaimReceiptItemController extends CheckReq {
       return;
     }
 
-    let userID = req.session.user.userID;
     let receiptID = req.params.receiptID;
     let claimItems = req.body.itemList;
     try {
@@ -135,7 +137,9 @@ export class ClaimReceiptItemController extends CheckReq {
       }
       if (result.receiptStatus) {
         res.json({ error: "This Receipt is Closed for Selections" });
+        return;
       }
+
       let receiptItemsResult =
         await this.claimReceiptItemService.getReceiptItems(receiptID);
 
@@ -222,7 +226,8 @@ export class ClaimReceiptItemController extends CheckReq {
       return;
     } catch (error) {
       console.log(error);
-      res.json({ error });
+      res.json(error);
+      return;
     }
   };
 
@@ -254,6 +259,19 @@ export class ClaimReceiptItemController extends CheckReq {
         res.status(401).json({ error: "Not the sender of the receipt" });
       }
 
+      let newResult =
+        await this.claimReceiptItemService.checkReceiptClaimStatus(receiptID);
+      if (newResult.error) {
+        res.json(result);
+        return;
+      }
+      if (newResult.receiptStatus) {
+        res.json({
+          error: "This Receipt is Closed, No Further Changes can be made",
+        });
+        return;
+      }
+
       await this.claimReceiptItemService.removeItemClaims(req.body.item);
       this.io.to(receiptID).emit("claimItem");
       res.json({});
@@ -261,6 +279,7 @@ export class ClaimReceiptItemController extends CheckReq {
     } catch (error) {
       console.log(error);
       res.json({ error });
+      return;
     }
   };
 
@@ -289,6 +308,21 @@ export class ClaimReceiptItemController extends CheckReq {
         res.status(401).json({ error: "Not the sender of the receipt" });
       }
 
+      let newResult =
+        await this.claimReceiptItemService.checkReceiptClaimStatus(
+          receiptStringID
+        );
+      if (newResult.error) {
+        res.json(result);
+        return;
+      }
+      if (newResult.receiptStatus) {
+        res.json({
+          error: "This Receipt is Closed, No Further Changes can be made",
+        });
+        return;
+      }
+
       let information = `${req.session.user.userName}(host) has confirmed the claims, please pay !`;
       let broadCastResult =
         await this.claimReceiptItemService.broadcastConfirmClaim(
@@ -308,6 +342,7 @@ export class ClaimReceiptItemController extends CheckReq {
         }
       }
       res.json({});
+      return;
     } catch (error) {
       console.log(error);
       res.json({ error });
@@ -331,6 +366,7 @@ export class ClaimReceiptItemController extends CheckReq {
     ]);
     if (missingField !== "") {
       res.json({ error: `Missing ${missingField}` });
+      return;
     }
 
     try {
@@ -359,9 +395,11 @@ export class ClaimReceiptItemController extends CheckReq {
         creditMode
       );
       res.json(result);
+      return;
     } catch (error) {
       console.log(error);
-      res.json({ error });
+      res.json(error);
+      return;
     }
   };
 
