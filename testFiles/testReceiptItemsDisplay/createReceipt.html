@@ -104,6 +104,40 @@
     </div>
     <div id="viewImage"></div>
 
+    <div class="tableWrapper">
+      <table class="table">
+        <thead>
+          <tr class="headerRow">
+            <th class="itemHeader">ITEMS</th>
+            <th class="quantityHeader">QUANTITY</th>
+            <th class="unitPriceHeader">UNIT PRICE</th>
+            <th class="subTotalHeader">SUBTOTAL</th>
+            <th class="deleteHeader">DELETE</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="dataRow">
+            <td class="itemName">Item 1</td>
+            <td class="quantity">1</td>
+            <td class="unitPrice">$10.99</td>
+            <td class="subTotal">$10.99</td>
+            <td class="delete">
+              <button class="deleteButton">Delete</button>
+            </td>
+          </tr>
+          <tr class="dataRow">
+            <td class="itemName">Item 2</td>
+            <td class="quantity">2</td>
+            <td class="unitPrice">$20.99</td>
+            <td class="subTotal">$41.98</td>
+            <td class="delete">
+              <button class="deleteButton">Delete</button>
+            </td>
+          </tr>
+          <!-- add more rows as needed -->
+        </tbody>
+      </table>
+    </div>
     <template id="itemList">
       <div class="itemDiv">
         <input type="text" class="itemName" />

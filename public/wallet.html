@@ -93,9 +93,10 @@
         }
       }
     </style>
+        <script src="https://js.stripe.com/v3/"></script>
   </head>
   <body>
-    <div class="mt-4 flex items-center justify-center">
+    <div class="mt-4 m-3 flex flex-col items-center justify-center">
       <div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow light:bg-gray-800 light:border-gray-700">
         <i class="fa-solid fa-money-bill-transfer fa-2xl" style="color: #8b8e92;"></i>  
         <a href="#">
@@ -107,6 +108,26 @@
             <i class="px-2 fa-solid fa-credit-card fa-lg"></i>    
         </a>
       </div>
+
+      <div class="mt-4 max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow light:bg-gray-800 light:border-gray-700">
+        <h1>Top-up Credit</h1>
+        <div class="mt-2">
+          <label for="amount">Amount:</label>
+          <input type="number" class="border-round-2" id="amount" name="amount" min="1" step="1" required>
+        </div>
+        <div>
+          <label for="card-element">Credit Card:</label>
+          <div id="card-element"></div>
+          <div id="card-errors" role="alert"></div>
+        </div>
+        <div class="buttonDiv flex items-center justify-center">
+        <button id="submit">Pay</button>
+      </div>
+    </div>
+
+      
+
+
       </div>
     <div
       class="fixed z-50 w-full h-16 max-w-lg -translate-x-1/2 bg-white border border-gray-200 rounded-full bottom-4 left-1/2 light:bg-gray-700 light:border-gray-600"
@@ -301,4 +322,5 @@
     </template>
   </body>
   <script src="./js/createNotification.js"></script>
+  <script src="./js/topUpCredit.js"></script>
 </html>
