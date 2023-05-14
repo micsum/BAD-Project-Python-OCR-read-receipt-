@@ -209,6 +209,7 @@ export class ClaimReceiptItemController extends CheckReq {
       } catch (error) {
         console.log(error);
         res.json(error);
+        return;
       }
 
       removeTempClaim(claimItems);
@@ -289,14 +290,28 @@ export class ClaimReceiptItemController extends CheckReq {
       }
 
       let information = `${req.session.user.userName}(host) has confirmed the claims, please pay !`;
-      await this.claimReceiptItemService.broadcastConfirmClaim(
-        req.session.user.userID,
-        information,
-        receiptStringID
-      );
+      let broadCastResult =
+        await this.claimReceiptItemService.broadcastConfirmClaim(
+          req.session.user.userID,
+          information,
+          receiptStringID
+        );
+      if (
+        broadCastResult.error ||
+        broadCastResult.recipientList === undefined
+      ) {
+        res.json(broadCastResult);
+        return;
+      } else {
+        for (let recipient of broadCastResult.recipientList) {
+          this.io.to(recipient.toString()).emit("notification");
+        }
+      }
+      res.json({});
     } catch (error) {
       console.log(error);
       res.json({ error });
+      return;
     }
   };
 

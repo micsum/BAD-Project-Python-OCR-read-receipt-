@@ -5,7 +5,8 @@ import path from "path";
 import socketIO from "socket.io";
 import http from "http";
 import { knex } from "./db";
-import { sessionMiddleware, form } from "./helper";
+import { sessionMiddleware, hasLogin, form } from "./helper";
+import { createSocketServer } from "./createSocketServer";
 import { UserController } from "./public/controller/userController";
 import { UserService } from "./public/service/userService";
 import { ReceiptController } from "./public/controller/createReceiptController";
@@ -37,11 +38,12 @@ app.use(express.urlencoded());
 
 app.use(sessionMiddleware);
 app.use(userController.router);
-app.use(receiptController.router);
-app.use(displayController.router);
-app.use(claimReceiptItemController.router);
+app.use(hasLogin, receiptController.router);
+app.use(hasLogin, displayController.router);
+app.use(hasLogin, claimReceiptItemController.router);
 
 app.use(express.static("public"));
+createSocketServer();
 
 app.use((req, res) => {
   res.status(404);

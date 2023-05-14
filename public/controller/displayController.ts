@@ -80,6 +80,7 @@ export class DisplayController extends CheckReq {
     } catch (error) {
       console.log(error);
       res.json(error);
+      return;
     }
   };
 
@@ -274,6 +275,7 @@ export class DisplayController extends CheckReq {
     } catch (error) {
       console.log(error);
       res.json(error);
+      return;
     }
   };
 }

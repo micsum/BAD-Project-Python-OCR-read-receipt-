@@ -3,11 +3,10 @@ const receipt = document.getElementById("receipt");
 const claimedItems = document.getElementById("claimedItems");
 const receiptItemTemplate = document.getElementById("receiptItem");
 const confirmClaimButton = document.getElementById("confirmClaim");
-//const socket = io.connect();
 
 let userID, userName, receiptHost;
 let searchParams = new URLSearchParams(location.search);
-let receiptID = searchParams.get("receiptID");
+let receiptStringID = searchParams.get("receiptID");
 
 let receiptItemsInfo;
 let claimedItemMap = new Map();
@@ -19,7 +18,7 @@ window.addEventListener("load", async function (event) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ receiptID }),
+    body: JSON.stringify({ receiptStringID }),
   });
   let result = await res.json();
   if (result.error) {
@@ -35,7 +34,7 @@ window.addEventListener("load", async function (event) {
   userName = result.userName;
   receiptHost = result.receiptHost;
 
-  res = await fetch(`/getReceiptItems/${receiptID}`);
+  res = await fetch(`/getReceiptItems/${receiptStringID}`);
   result = await res.json();
   if (result.error) {
     Swal.fire({
@@ -115,7 +114,7 @@ window.addEventListener("load", async function (event) {
         confirmButtonText: "Yes, I am 100% certain ",
         cancelButtonText: "No, I need to check again !",
         preConfirm: async () => {
-          let res = await fetch(`/hostConfirmClaim/${receiptID}`, {
+          let res = await fetch(`/hostConfirmClaim/${receiptStringID}`, {
             method: "PUT",
           });
           let result = await res.json();
@@ -132,7 +131,10 @@ window.addEventListener("load", async function (event) {
     });
     document.getElementById("footer").appendChild(hostConfirmClaimButton);
   }
-  //socket.join(receiptID);
+  socket.emit("joinReceiptRoom", {
+    userID: userID,
+    receiptStringID: receiptStringID,
+  });
 });
 
 confirmClaimButton.addEventListener("click", () => {
@@ -154,7 +156,7 @@ confirmClaimButton.addEventListener("click", () => {
     title: "Confirm Claim?",
     showCancelButton: true,
     preConfirm: async () => {
-      let res = await fetch(`/claimReceiptItems/${receiptID}`, {
+      let res = await fetch(`/claimReceiptItems/${receiptStringID}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ itemList: claimItemInfoList }),
@@ -166,8 +168,7 @@ confirmClaimButton.addEventListener("click", () => {
           title: result.error,
         });
       }
-      //socket.leave(receiptID);
-      //window.location.href = "./homepage.html";
+      window.location.href = "./homepage.html";
     },
   });
 });

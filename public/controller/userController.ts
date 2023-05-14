@@ -38,8 +38,10 @@ export class UserController extends CheckReq implements ObjectAny {
         isLogin: true,
       };
       res.json({});
+      return;
     } else {
       res.json({ error: "Wrong Email or Password" });
+      return;
     }
   };
 
@@ -47,10 +49,12 @@ export class UserController extends CheckReq implements ObjectAny {
     let fields = ["username", "password", "phoneNumber", "email"];
     if (req.body === undefined) {
       res.json({ error: "No Information Submitted" });
+      return;
     } else {
       let field = this.checkReqBody(req, fields);
       if (field !== "") {
         res.json({ error: `Missing ${field}` });
+        return;
       }
     }
     let userName = req.body.username;
@@ -62,19 +66,24 @@ export class UserController extends CheckReq implements ObjectAny {
     for (let basicField of userBasicInfo) {
       if (basicField.length === 0) {
         res.json({ error: `Empty ${basicField} Submitted` });
+        return;
       }
       if (typeof basicField !== "string") {
         res.json({ error: `Non-string ${basicField} Submitted` });
+        return;
       }
     }
     if (userPassword.length < 8 || userPassword.length > 15) {
       res.json({ error: "Password must have 8 ~ 15 characters" });
+      return;
     }
     if (userPhoneNumber.length !== 8) {
       res.json({ error: "Inappropriate Phone Number Submitted" });
+      return;
     }
     if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(userEmail)) {
       res.json({ error: "Please Input an Appropriate Email" });
+      return;
     }
     fields = ["name", "phone_number", "email"];
     let formObject: ObjectAny = {};
@@ -104,9 +113,11 @@ export class UserController extends CheckReq implements ObjectAny {
       formObject["credit"] = 0;
       await this.userService.registerNewUser(formObject);
       res.json({});
+      return;
     } catch (error) {
       console.log(error);
       res.json({ error });
+      return;
     }
   };
 
@@ -120,6 +131,7 @@ export class UserController extends CheckReq implements ObjectAny {
       res.json({
         error: "Invalid Email Submitted, Please Enter a Valid Email",
       });
+      return;
     }
 
     let requestedEmail = req.body.email;
@@ -129,6 +141,7 @@ export class UserController extends CheckReq implements ObjectAny {
       let userID = result[0].id;
       if (userID === undefined) {
         res.json({ error: "This User was not Registered" });
+        return;
       }
       const payload = {
         email: requestedEmail,
@@ -192,9 +205,11 @@ export class UserController extends CheckReq implements ObjectAny {
         console.log("reset password message sent:", message.messageId);
       }
       res.json({});
+      return;
     } catch (error) {
       console.log(error);
       res.json({ error });
+      return;
     }
   };
 }

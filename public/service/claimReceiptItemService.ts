@@ -230,6 +230,7 @@ export class ClaimReceiptItemService {
     }
 
     let notifications: Notification[] = [];
+    let recipientList: number[] = [];
     for (let receiptRecipient of receiptRecipients) {
       notifications.push({
         from: userID,
@@ -238,12 +239,13 @@ export class ClaimReceiptItemService {
         receipt_id: receiptID,
         information: information,
       });
+      recipientList.push(receiptRecipient.to_individual);
     }
     await this.knex("receipt")
       .update({ confirm_selection: true })
       .where({ id: receiptID });
     await this.knex("notification").insert(notifications);
-    return {};
+    return { recipientList };
   }
 
   async respondPayMessage(
@@ -278,17 +280,29 @@ export class ClaimReceiptItemService {
     let claimPrice: number = information.slice(-1)[0];
 
     if (creditMode) {
-      let [{ credit }] = await this.knex("user")
+      let creditResult = await this.knex("user")
         .select("credit")
-        .where({ id: userID });
+        .whereIn(" id", [userID, from]);
 
-      if (credit <= claimPrice) {
+      console.log(
+        `${userID}'s credit = ${creditResult[0].credit}, 
+        ${from}'s credit = ${creditResult[1].credit}`
+      );
+
+      let payerCredit = creditResult[0].credit;
+      let hostCredit = creditResult[1].credit;
+
+      if (payerCredit <= claimPrice) {
         return { error: "Insufficient Credit" };
       } else {
         await this.knex("user")
-          .update({ credit: credit - claimPrice })
+          .update({ credit: payerCredit - claimPrice })
           .where({ id: userID });
+        await this.knex("user")
+          .update({ credit: hostCredit + claimPrice })
+          .where({ id: from });
       }
+      return {};
     }
 
     await this.knex("notification").insert({

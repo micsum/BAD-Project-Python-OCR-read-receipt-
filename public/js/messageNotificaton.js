@@ -1,6 +1,6 @@
 const socket = io.connect();
 
-socket.on("claimNotification", ({ userName }) => {
+socket.on("notification", ({ userName }) => {
   Swal.fire({
     position: "top-end",
     icon: "success",

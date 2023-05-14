@@ -3,8 +3,7 @@ let createButton = document.querySelector("#create");
 const notificationTemplate = document.getElementById("notificationTemplate");
 let notificationDiv = document.getElementById("notificationDisplayDiv");
 
-let userName;
-let userID;
+let userName, userID;
 
 function displayNotification(notification, destination) {
   let node = notificationTemplate.content.cloneNode(true);
@@ -68,7 +67,6 @@ function displayNotification(notification, destination) {
   let notificationMessage = notification.information;
   let payment = notification.payment;
   if (receiptSender == userName) {
-    //userName
     receiptSender = "You";
     notificationMessage = "You sent a receipt successfully";
     icon = payment ? "bank" : "wallet";
@@ -107,4 +105,5 @@ window.addEventListener("load", async (event) => {
   for (let notification of notificationData) {
     displayNotification(notification, notificationDiv);
   }
+  socket.emit("joinUserSocketRoom", { userID: userID.toString() });
 });
