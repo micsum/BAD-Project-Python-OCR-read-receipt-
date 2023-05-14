@@ -1,6 +1,3 @@
-const stripe = Stripe(
-  "pk_test_51N7XVOJtmaIoojFvS7PLBNHaAdEc2Rf8ViFTEdq3NLTILWrsaqrJ7AXErvrGweacm226KESFkx3yxI5dtx8Y9u6400sRbQ5Z60"
-);
 const elements = stripe.elements();
 const cardElement = elements.create("card");
 cardElement.mount("#card-element");
