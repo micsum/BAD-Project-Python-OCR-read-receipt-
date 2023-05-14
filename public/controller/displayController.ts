@@ -26,7 +26,7 @@ export class DisplayController extends CheckReq {
     this.router.put("/updateItemQuantity", this.updateItemQuantity);
     this.router.delete("/removeTempClaim", this.removeTempClaim);
     this.router.post("/addTempClaim", this.addNewTempClaim);
-    this.router.get("/getNotifications", this.getNotifications);
+    this.router.post("/getNotifications", this.getNotifications);
   }
 
   getUserName = async (req: Request, res: Response) => {
@@ -236,21 +236,32 @@ export class DisplayController extends CheckReq {
       return;
     }
 
+    if (req.body === undefined || req.body.sentFromUser === undefined) {
+      res.json({ error: "Insufficient Information" });
+      return;
+    }
+
     let userID = req.session.user.userID;
+    let sentFromUser = req.body.sentFromUser;
     try {
       let notificationResult = await this.displayService.getNotifications(
-        userID
+        userID,
+        sentFromUser
       );
 
       let secondParty: number[] = [];
 
       for (let notification of notificationResult) {
-        if (secondParty.indexOf(notification.notificationSender) == -1) {
-          secondParty.push(notification.notificationSender);
-        } else if (secondParty.indexOf(notification.to) == -1) {
+        if (sentFromUser && secondParty.indexOf(notification.to) === -1) {
           secondParty.push(notification.to);
+        } else if (
+          !sentFromUser &&
+          secondParty.indexOf(notification.notificationSender) === -1
+        ) {
+          secondParty.push(notification.notificationSender);
         }
       }
+
       let userNameResult = await this.displayService.getUserName(secondParty);
       const userIDNameMap = new Map();
       for (let userName of userNameResult) {
@@ -260,18 +271,21 @@ export class DisplayController extends CheckReq {
       let receiptIDList: string[] = [];
       let newNotificationResult = [];
       for (let notification of notificationResult) {
-        if (receiptIDList.indexOf(notification.receiptStringID) !== -1) {
-          continue;
+        if (sentFromUser) {
+          if (receiptIDList.indexOf(notification.receiptStringID) !== -1) {
+            continue;
+          }
+          notification.to = userIDNameMap.get(notification.to);
+        } else {
+          notification.notificationSender = userIDNameMap.get(
+            notification.notificationSender
+          );
         }
-        notification.notificationSender = userIDNameMap.get(
-          notification.notificationSender
-        );
-        notification.to = userIDNameMap.get(notification.to);
-        receiptIDList.push(notification.receiptStringID);
         newNotificationResult.push(notification);
       }
 
       res.json({ notifications: newNotificationResult });
+      return;
     } catch (error) {
       console.log(error);
       res.json(error);

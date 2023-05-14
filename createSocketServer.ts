@@ -17,8 +17,9 @@ export function createSocketServer() {
       userReceiptMap.set(userID, receiptStringID);
     });
 
-    socket.on("leaveSocketRoom", function ({ roomName }) {
+    socket.on("leaveReceiptRoom", function ({ userID, roomName }) {
       socket.leave(roomName);
+      userReceiptMap.delete(userID);
     });
 
     socket.on("disconnect", function () {

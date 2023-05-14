@@ -52,17 +52,12 @@ export class ClaimReceiptItemService {
     return userFound;
   }
 
-  async checkReceiptClaimStatus(receiptID: string | number) {
+  async checkReceiptClaimStatus(receiptID: string) {
     let result;
-    if (typeof receiptID === "string") {
-      result = await this.knex("receipt").select("confirm_selection").where({
-        receipt_id: receiptID,
-      });
-    } else if (typeof receiptID === "number") {
-      result = await this.knex("receipt").select("confirm_selection").where({
-        id: receiptID,
-      });
-    }
+    result = await this.knex("receipt").select("confirm_selection").where({
+      receipt_id: receiptID,
+    });
+
     if (result === undefined) {
       return { error: "Wrong Information Submitted" };
     } else if (result.length === 0) {
@@ -203,7 +198,7 @@ export class ClaimReceiptItemService {
 
   async broadcastConfirmClaim(
     userID: number,
-    information: string,
+    messageInformation: string,
     receiptStringID: string
   ) {
     let receiptIDResult = await this.knex("receipt")
@@ -224,20 +219,31 @@ export class ClaimReceiptItemService {
       .where({ id: userID });
 
     if (paymentMethod.payme_link !== "") {
-      information += `${"\n"}PayMeLink : ${paymentMethod.payme_link}`;
+      messageInformation += `${"\n"}PayMeLink : ${paymentMethod.payme_link}`;
     } else if (paymentMethod.fps_id !== "") {
-      information += `${"\n"}FPS-id : ${paymentMethod.fps_id}`;
+      messageInformation += `${"\n"}FPS-id : ${paymentMethod.fps_id}`;
     }
 
     let notifications: Notification[] = [];
     let recipientList: number[] = [];
     for (let receiptRecipient of receiptRecipients) {
+      let message = messageInformation;
+      let [{ information }] = await this.knex("notification")
+        .select("information")
+        .where({ receipt_id: receiptID, from: userID, payment: false });
+
+      information = information.split(",");
+      information = information[information.length - 1].split(" ");
+      let claimPrice: number = information.slice(-1)[0];
+
+      message += `${"\n"} Price : ${claimPrice}`;
+
       notifications.push({
         from: userID,
         to: receiptRecipient.to_individual,
         payment: false,
         receipt_id: receiptID,
-        information: information,
+        information: message,
       });
       recipientList.push(receiptRecipient.to_individual);
     }
