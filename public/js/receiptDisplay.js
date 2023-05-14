@@ -4,11 +4,10 @@ const claimedItems = document.getElementById("claimedItems");
 const receiptItemTemplate = document.getElementById("receiptItem");
 const confirmClaimButton = document.getElementById("confirmClaim");
 const returnButton = document.getElementById("return");
-
 let userID, userName, receiptHost;
 let searchParams = new URLSearchParams(location.search);
 let receiptStringID = searchParams.get("receiptID");
-
+let url;
 let receiptItemsInfo;
 let claimedItemMap = new Map();
 
@@ -46,6 +45,23 @@ window.addEventListener("load", async function (event) {
     return;
   }
   receiptItemsInfo = result.itemInfoList;
+  file_name = result.file_name;
+  //console.log("file", file_name);
+  url = `uploads/attachment/${file_name}`;
+  let element;
+  const viewImageDiv = document.querySelector("#viewImage");
+  element = document.createElement("img");
+  element.setAttribute("id", "uploadedImage");
+  element.setAttribute("src", url);
+  viewImageDiv.addEventListener("click", () => {
+    console.log(url);
+    Swal.fire({
+      imageUrl: url,
+      showCloseButton: true,
+      showConfirmButton: false,
+      imageWidth: 600,
+    });
+  });
   let itemStringIDList = [];
 
   for (let item of receiptItemsInfo) {

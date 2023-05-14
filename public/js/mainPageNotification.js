@@ -36,9 +36,19 @@ window.addEventListener("load", async (event) => {
   const notificationMap = new Map();
   for (let notification of notificationData) {
     if (notification.confirmStatus) {
-      notification.information = `You sent a receipt out for claim (receipt ID : ${notification.receiptStringID})`;
+      notification.information = `Receipt #${
+        notification.receiptStringID
+      } created at ${new Date(notification.created_at)
+        .toLocaleString()
+        .slice(0, 10)},
+        total: ${"$" + notification.total}`;
     } else {
-      notification.information = `You sent a receipt out for claim (receipt ID : ${notification.receiptStringID})`;
+      notification.information = `Receipt #${
+        notification.receiptStringID
+      } created at ${new Date(notification.created_at)
+        .toLocaleString()
+        .slice(0, 10)},
+        total: ${"$" + notification.total}`;
     }
     console.log(`init ${notification}`);
     let notificationSender = notification.notificationSender;

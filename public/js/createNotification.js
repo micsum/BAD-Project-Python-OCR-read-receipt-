@@ -74,5 +74,6 @@ function displayNotification(notification, destination) {
   node.querySelector(".moneyIcon").innerHTML = `<i class="bi bi-${icon}"></i>`;
 
   node.querySelector(".message").textContent = notificationMessage;
+
   destination.appendChild(node);
 }

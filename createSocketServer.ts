@@ -23,7 +23,7 @@ export function createSocketServer() {
     });
 
     socket.on("disconnect", function () {
-      console.log("disconnected");
+      console.log("socket disconnected");
     });
   });
 }
