@@ -241,7 +241,11 @@ export class ClaimReceiptItemController extends CheckReq {
       return;
     }
 
-    if (req.body === undefined || req.body.item === undefined) {
+    if (
+      req.body === undefined ||
+      req.body.itemID === undefined ||
+      req.body.itemStringID === undefined
+    ) {
       res.status(401).json({ error: "Receipt Items Not Found" });
       return;
     }
@@ -271,9 +275,12 @@ export class ClaimReceiptItemController extends CheckReq {
         });
         return;
       }
-
-      await this.claimReceiptItemService.removeItemClaims(req.body.item);
+      removeTempClaim([{ user_id: -1, item_id: req.body.itemStringID }]);
+      await this.claimReceiptItemService.removeItemClaims(req.body.itemID);
       this.io.to(receiptID).emit("claimItem");
+      this.io
+        .to(result.from.toString())
+        .emit("notification", { userName: req.session.user.userName });
       res.json({});
       return;
     } catch (error) {

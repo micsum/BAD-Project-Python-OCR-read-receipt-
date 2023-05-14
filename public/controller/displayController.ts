@@ -61,7 +61,7 @@ export class DisplayController extends CheckReq {
 
     try {
       let userID = req.session.user.userID;
-      let receiptStringID = req.body.receiptID;
+      let receiptStringID = req.body.receiptStringID;
 
       let userFoundResult = await this.displayService.retrieveReceiptRecipient(
         receiptStringID,
@@ -70,12 +70,14 @@ export class DisplayController extends CheckReq {
 
       if (userFoundResult.error) {
         res.json(userFoundResult);
+        return;
       } else {
         res.json({
           userID: userID,
           userName: req.session.user.userName,
           receiptHost: userFoundResult.receiptHost,
         });
+        return;
       }
     } catch (error) {
       console.log(error);
