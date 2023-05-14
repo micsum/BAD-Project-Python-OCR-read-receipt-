@@ -218,7 +218,7 @@ export class ClaimReceiptItemController extends CheckReq {
 
       removeTempClaim(claimItems);
 
-      this.io.to(receiptHost.toString()).emit("claimNotification", {
+      this.io.to(receiptHost.toString()).emit("notification", {
         userName: req.session.user.userName,
       });
       this.io.to(receiptID).emit("claimItem");
@@ -345,7 +345,9 @@ export class ClaimReceiptItemController extends CheckReq {
         return;
       } else {
         for (let recipient of broadCastResult.recipientList) {
-          this.io.to(recipient.toString()).emit("notification");
+          this.io
+            .to(recipient.toString())
+            .emit("notification", { userName: req.session.user.userName });
         }
       }
       res.json({});
