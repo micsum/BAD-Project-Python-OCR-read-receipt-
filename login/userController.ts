@@ -14,7 +14,7 @@ export class UserController extends CheckReq implements ObjectAny {
     this.JWT_SECRET = "fullStackMicIsAmazing";
     this.router.post("/login", this.userLogin);
     this.router.post("/register", this.userRegister);
-    this.router.post("/logout", this.logout);
+    this.router.put("/updateProfile", this.updateProfileInformation);
   }
 
   private async hashPassword(plainPassword: string) {
@@ -119,6 +119,77 @@ export class UserController extends CheckReq implements ObjectAny {
     } catch (error) {
       console.log(error);
       res.json({ error });
+      return;
+    }
+  };
+
+  updateProfileInformation = async (req: Request, res: Response) => {
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.isLogin === false
+    ) {
+      res.json({ error: "Please Login" });
+      return;
+    }
+
+    if (req.body === undefined) {
+      res.json({ error: "Insufficient Information Submitted" });
+      return;
+    }
+
+    let fields = ["password", "name", "phone_number", "payme_link", "fps_id"];
+
+    let missingString = "information";
+    while (missingString !== "") {
+      missingString = super.checkReqBody(req, fields);
+      if (missingString !== "") {
+        fields.splice(fields.indexOf(missingString), 1);
+      }
+    }
+
+    let userID = req.session.user.userID;
+    let updatedInfo: ObjectAny = {};
+    for (let field of fields) {
+      if (typeof req.body[field] !== "string") {
+        res.json({ error: `Non-string ${field} Submitted` });
+        return;
+      }
+      if (field === "password") {
+        if (req.body.password.length < 8 || req.body.password.length > 15) {
+          res.json({ error: "Password must have 8 ~ 15 characters" });
+          return;
+        }
+      }
+      if (field === "phone_number") {
+        if (req.body.phone_number.length !== 8) {
+          res.json({ error: "Inappropriate Phone Number Submitted" });
+          return;
+        }
+      }
+      updatedInfo[field] = req.body[field];
+    }
+
+    try {
+      let uniquenessResult = await this.userService.checkUserInfoUniqueness(
+        fields,
+        updatedInfo
+      );
+      if (uniquenessResult.error) {
+        res.json(uniquenessResult);
+        return;
+      }
+
+      if (updatedInfo.password !== undefined) {
+        updatedInfo.password = await this.hashPassword(updatedInfo.password);
+      }
+
+      await this.userService.updateUserInfo(userID, updatedInfo);
+      res.json({});
+      return;
+    } catch (error) {
+      console.log(error);
+      res.json(error);
       return;
     }
   };

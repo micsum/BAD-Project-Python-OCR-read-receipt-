@@ -38,7 +38,7 @@ export class CheckReq {
       return "Information";
     }
     for (let entry of fields) {
-      if (req.body[entry] === undefined) {
+      if (req.body[entry] === undefined || req.body[entry] === "") {
         return entry;
       }
     }
