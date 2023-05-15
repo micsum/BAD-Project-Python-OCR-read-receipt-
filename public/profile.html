@@ -103,9 +103,9 @@
       class="mt-5 w-3/4 pt-3 pb-3 container border-gray-400 shadow flex items-center justify-center rounded-lg"
     >
       <form
-        method="POST"
-        action="/register"
-        id="registrationForm"
+        method="PUT"
+        action="/updateProfile"
+        id="updateInfoForm"
         enctype="multipart/form-data"
       >
         <div class="header flex items-center justify-center">
@@ -119,21 +119,6 @@
             </button>
           </h4>
         </div>
-        <div id="usernameRegister" class="relative z-0 w-full mb-6 group">
-          <input
-            type="email"
-            name="email"
-            id="email"
-            class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-t-0 border-r-0 border-l-0 border-b-2 border-gray-300 appearance-none light:text-dark light:border-gray-600 light:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-            placeholder=" "
-            disabled
-          />
-          <label
-            for="email"
-            class="peer-focus:font-medium absolute text-sm text-gray-500 light:text-gray-400 duration-300 transform -translate-y-6 scale-75 top-3 -z-10 origin-[0] peer-focus:left-0 peer-focus:text-blue-600 peer-focus:light:text-blue-500 peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6"
-            >Email address</label
-          >
-        </div>
         <div class="relative z-0 w-full mb-6 group">
           <input
             type="password"
@@ -142,7 +127,6 @@
             class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-t-0 border-r-0 border-l-0 border-b-2 border-gray-300 appearance-none light:text-white light:border-gray-600 light:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             maxlength="8"
-            required
           />
           <label
             for="newPassword"
@@ -159,7 +143,6 @@
             class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-t-0 border-r-0 border-l-0 border-b-2 border-gray-300 appearance-none light:text-white light:border-gray-600 light:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
             maxlength="8"
-            required
           />
           <label
             for="newPasswordReEnter"
@@ -176,7 +159,6 @@
               maxlength="16"
               class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-t-0 border-r-0 border-l-0 border-b-2 border-gray-300 appearance-none light:text-white light:border-gray-600 light:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
-              disabled
             />
             <label
               for="newUsername"
@@ -191,7 +173,6 @@
               id="phoneNumber"
               class="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-t-0 border-r-0 border-l-0 border-b-2 border-gray-300 appearance-none light:text-white light:border-gray-600 light:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
-              required
             />
             <label
               for="phoneNumber"

@@ -61,4 +61,8 @@ export class UserService implements ObjectAny {
   async checkEmailExistence(email: string) {
     return await this.knex("user").select("id").where({ email: email });
   }
+
+  async updateUserInfo(userID: number, updatedInfo: ObjectAny) {
+    await this.knex("user").update(updatedInfo).where({ id: userID });
+  }
 }
