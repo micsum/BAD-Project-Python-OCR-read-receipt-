@@ -64,6 +64,7 @@ function displayNotification(notification, destination) {
   if (receiptSender == userName) {
     if (notificationMessage.substring(0, 7) == "Updated") {
       notificationMessage = `You claimed items successfully (receiptID : ${notification.receiptStringID})`;
+      icon = "wallet";
     } else {
       let dummyText = confirmSelection ? "claim request" : "receipt";
       notificationMessage = `You sent a ${dummyText} successfully (receiptID : ${notification.receiptStringID})`;
@@ -71,7 +72,7 @@ function displayNotification(notification, destination) {
     }
     node.querySelector(".notificationSender").hidden = true;
   } else {
-    icon = payment ? "wallet" : "coin";
+    icon = "coin";
   }
   node.querySelector(".notificationSender").textContent = receiptSender;
 
