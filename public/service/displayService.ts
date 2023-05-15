@@ -1,4 +1,5 @@
 import { Knex } from "knex";
+import { ObjectAny } from "../../helper";
 
 export class DisplayService {
   constructor(private knex: Knex) {}
@@ -57,23 +58,42 @@ export class DisplayService {
         "receipt.confirm_selection",
         "receipt.created_at",
         "notification.information",
-        this.knex.raw("SUM(receipt_item.price) as total")
-      )
-      .groupBy(
-        "notification.from",
-        "notification.to",
-        "notification.payment",
-        "receipt.receipt_id",
-        "receipt.confirm_selection",
-        "receipt.created_at",
-        "notification.information",
-        "notification.id"
+        "receipt.id as receiptID"
       );
 
     query = sentFromUser
       ? query.where({ "notification.from": userID })
       : query.where({ "notification.to": userID });
     query = query.limit(30).orderBy("notification.id", "desc");
-    return await query;
+
+    let queryResult: ObjectAny[] = await query;
+    let receiptIDList: number[] = [];
+    for (let notification of queryResult) {
+      receiptIDList.push(notification.receiptID);
+    }
+
+    let receiptItemList = await this.knex("receipt")
+      .innerJoin("receipt_item", "receipt_item.receipt_id", "receipt.id")
+      .select("receipt.id", "receipt_item.price", "receipt_item.quantity")
+      .whereIn("receipt.id", receiptIDList);
+
+    let receiptTotalPriceMap: Map<number, number> = new Map();
+    for (let item of receiptItemList) {
+      let receiptTotalPrice = receiptTotalPriceMap.get(item.id);
+      let itemTotalPrice = item.price * item.quantity;
+      if (receiptTotalPrice === undefined) {
+        receiptTotalPriceMap.set(item.id, itemTotalPrice);
+      } else {
+        let newTotalPrice = receiptTotalPrice + itemTotalPrice;
+        receiptTotalPriceMap.set(item.id, newTotalPrice);
+      }
+    }
+
+    for (let notification of queryResult) {
+      let totalPrice = receiptTotalPriceMap.get(notification.receiptID);
+      notification["total"] = totalPrice;
+    }
+
+    return queryResult;
   }
 }
