@@ -23,7 +23,7 @@ let server = http.createServer(app);
 export let io = new socketIO.Server(server);
 
 const receiptService = new ReceiptService(knex);
-const receiptController = new ReceiptController(receiptService, form);
+const receiptController = new ReceiptController(receiptService, form, io);
 const userService = new UserService(knex);
 const userController = new UserController(userService);
 const displayService = new DisplayService(knex);

@@ -75,6 +75,6 @@ export class ReceiptService {
     }
     await this.knex("notification").insert(insertNotification);
     await this.knex("receipt_recipient").insert(insertRecipient);
-    return {};
+    return { userIDList: comparedDB };
   }
 }

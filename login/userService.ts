@@ -47,6 +47,7 @@ export class UserService implements ObjectAny {
         userName: "",
       };
     }
+
     return {
       valid: await this.checkPassword(password, userInfo.password),
       userID: userInfo.id,

@@ -199,7 +199,7 @@ export class ClaimReceiptItemService {
         let itemName = itemInfo.itemName;
         let itemPrice = itemInfo.itemPrice;
 
-        itemTotalPrice += parseInt(itemPrice);
+        itemTotalPrice += parseFloat(itemPrice);
         itemTotalPrice = Math.round(itemTotalPrice * 100) / 100;
 
         if (itemNameCountObject[itemName] === undefined) {
@@ -214,11 +214,13 @@ export class ClaimReceiptItemService {
     }
 
     for (let item of itemNameList) {
+      console.log(item);
       let itemQuantity = itemNameCountObject[item];
       itemList =
         itemList.length === 0
           ? `${item} x${itemQuantity}`
-          : `, ${item} x${itemQuantity}`;
+          : `${itemList}, ${item} x${itemQuantity}`;
+      console.log(itemList);
     }
 
     await this.knex("notification").insert({
@@ -258,24 +260,28 @@ export class ClaimReceiptItemService {
       .where({ id: userID });
 
     if (paymentMethod.payme_link !== "") {
-      messageInformation += `${"\n"}PayMeLink : ${paymentMethod.payme_link}`;
-    } else if (paymentMethod.fps_id !== "") {
-      messageInformation += `${"\n"}FPS-id : ${paymentMethod.fps_id}`;
+      messageInformation += ` PayMeLink : ${paymentMethod.payme_link}`;
+    }
+    if (paymentMethod.fps_id !== "") {
+      messageInformation += ` FPS-id : ${paymentMethod.fps_id}`;
     }
 
     let notifications: Notification[] = [];
     let recipientList: number[] = [];
     for (let receiptRecipient of receiptRecipients) {
       let message = messageInformation;
-      let [{ information }] = await this.knex("notification")
+      let informationResult = await this.knex("notification")
         .select("information")
-        .where({ receipt_id: receiptID, from: userID, payment: false });
+        .where({ receipt_id: receiptID, to: userID, payment: false })
+        .orderBy("id", "desc");
 
-      information = information.split(",");
-      information = information[information.length - 1].split(" ");
-      let claimPrice: number = information.slice(-1)[0];
-
-      message += `${"\n"} Price : ${claimPrice}`;
+      let information = String(informationResult[0].information);
+      console.log(`host Information : ${information}`);
+      let informationSplit = information.split(",");
+      informationSplit = information[information.length - 1].split(" ");
+      let claimPrice: number = parseFloat(information.replace("$", ""));
+      console.log(`claimPrice : ${claimPrice}`);
+      message += ` Price : ${claimPrice}`;
 
       notifications.push({
         from: userID,
@@ -322,20 +328,26 @@ export class ClaimReceiptItemService {
     let information = informationResult[0].information;
     information = information.split(",");
     information = information[information.length - 1].split(" ");
-    let claimPrice: number = information.slice(-1)[0];
+    let claimPrice: number = parseInt(
+      information.slice(-1)[0].replace("$", "")
+    );
 
     if (creditMode) {
       let creditResult = await this.knex("user")
-        .select("credit")
+        .select("id", "credit")
         .whereIn(" id", [userID, from]);
 
+      let payerCredit, hostCredit;
+      if (creditResult[0].id === userID) {
+        payerCredit = creditResult[0].credit;
+        hostCredit = creditResult[1].credit;
+      } else {
+        payerCredit = creditResult[1].credit;
+        hostCredit = creditResult[0].credit;
+      }
       console.log(
-        `${userID}'s credit = ${creditResult[0].credit}, 
-        ${from}'s credit = ${creditResult[1].credit}`
+        `payerCredit : ${payerCredit}, hostCredit : ${hostCredit}, claimPrice : ${claimPrice}`
       );
-
-      let payerCredit = creditResult[0].credit;
-      let hostCredit = creditResult[1].credit;
 
       if (payerCredit <= claimPrice) {
         return { error: "Insufficient Credit" };

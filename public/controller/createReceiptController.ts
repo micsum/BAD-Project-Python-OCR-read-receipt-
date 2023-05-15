@@ -4,6 +4,7 @@ import IncomingForm from "formidable/Formidable";
 import path from "path";
 import { uploadDir } from "../../helper";
 import { ItemInfo } from "../../helper";
+import { Server as socketIO } from "socket.io";
 
 export class ReceiptController {
   router = Router();
@@ -13,7 +14,8 @@ export class ReceiptController {
   >;
   constructor(
     private receiptService: ReceiptService,
-    private form: IncomingForm
+    private form: IncomingForm,
+    private io: socketIO
   ) {
     this.receiptMap = new Map();
     this.router.post("/uploadReceipt", this.uploadReadReceipt);
@@ -187,9 +189,18 @@ export class ReceiptController {
       receiptID,
       hostName
     );
-
-    //console.log("payerlist", payerList);
-    res.json(result);
+    if (result.error || result.userIDList === undefined) {
+      res.json(result);
+      return;
+    } else {
+      for (let user of result.userIDList) {
+        this.io
+          .to(user.id.toString())
+          .emit("notification", { userName: hostName });
+      }
+      res.json({});
+      return;
+    }
   };
 
   searchUser = async (req: Request, res: Response) => {

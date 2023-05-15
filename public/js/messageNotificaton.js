@@ -6,6 +6,6 @@ socket.on("notification", ({ userName }) => {
     icon: "success",
     title: `${userName} has sent you a notification`,
     showConfirmButton: false,
-    timer: 1500,
+    timer: 4000,
   });
 });
