@@ -14,6 +14,7 @@ export class UserController extends CheckReq implements ObjectAny {
     this.JWT_SECRET = "fullStackMicIsAmazing";
     this.router.post("/login", this.userLogin);
     this.router.post("/register", this.userRegister);
+    this.router.post("/logout", this.logout);
   }
 
   private async hashPassword(plainPassword: string) {
@@ -211,5 +212,16 @@ export class UserController extends CheckReq implements ObjectAny {
       res.json({ error });
       return;
     }
+  };
+
+  logout = async (req: Request, res: Response) => {
+    console.log("logout");
+    req.session.destroy((err) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+    res.json({ success: "logout" });
+    console.log("destroy:", req.session);
   };
 }
