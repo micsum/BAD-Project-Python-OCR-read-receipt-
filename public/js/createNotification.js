@@ -62,10 +62,14 @@ function displayNotification(notification, destination) {
   let confirmSelection = notification.confirm_selection;
   let payment = notification.payment;
   if (receiptSender == userName) {
-    receiptSender = "You";
-    let dummyText = confirmSelection ? "claim request" : "receipt";
-    notificationMessage = `You sent a ${dummyText} successfully (receiptID : ${notification.receiptStringID})`;
-    icon = payment ? "bank" : "piggy-bank";
+    if (notificationMessage.substring(0, 7) == "Updated") {
+      notificationMessage = `You claimed items successfully (receiptID : ${notification.receiptStringID})`;
+    } else {
+      let dummyText = confirmSelection ? "claim request" : "receipt";
+      notificationMessage = `You sent a ${dummyText} successfully (receiptID : ${notification.receiptStringID})`;
+      icon = payment ? "bank" : "piggy-bank";
+    }
+    node.querySelector(".notificationSender").hidden = true;
   } else {
     icon = payment ? "wallet" : "coin";
   }

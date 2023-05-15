@@ -170,7 +170,7 @@ export class ClaimReceiptItemService {
         "receipt_item.item_name as itemName",
         "receipt_item.price as itemPrice"
       )
-      .where({ "receipt.receipt_id": receiptStringID })
+      //.where({ "receipt.receipt_id": receiptStringID })
       .whereIn("receipt_item.item_id", itemStringIDList);
 
     let receiptID: number = -1;
