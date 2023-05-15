@@ -4,7 +4,7 @@ cardElement.mount("#card-element");
 const amountInput = document.getElementById("amount");
 const topUpForm = document.querySelector("#topUpForm");
 const payForm = document.querySelector("#payForm");
-topUpForm.addEventListener("submit", async function (event) {
+topUpForm.addEventListener("submit", async function (event){
   event.preventDefault();
   const amount = amountInput.value;
 
