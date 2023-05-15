@@ -39,14 +39,14 @@ const topUpController = new TopUpController(stripe, topUpService);
 app.use("/uploads", express.static("uploads"));
 app.use(express.json());
 app.use(express.urlencoded());
-
 app.use(sessionMiddleware);
+app.use(express.static("public"));
+
 app.use(userController.router);
 app.use(hasLogin, receiptController.router);
 app.use(hasLogin, displayController.router);
 app.use(hasLogin, claimReceiptItemController.router);
 app.use(hasLogin, topUpController.router);
-app.use(express.static("public"));
 createSocketServer();
 
 app.use((req, res) => {
