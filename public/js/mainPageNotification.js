@@ -35,7 +35,7 @@ window.addEventListener("load", async (event) => {
   let notificationData = result.notifications;
   const notificationMap = new Map();
   for (let notification of notificationData) {
-    if (notification.confirmStatus) {
+    /*if (notification.confirmStatus) {
       notification.information = `Receipt #${
         notification.receiptStringID
       } created at ${new Date(notification.created_at)
@@ -49,7 +49,7 @@ window.addEventListener("load", async (event) => {
         .toLocaleString()
         .slice(0, 10)},
         total: ${"$" + notification.total}`;
-    }
+    }*/
     console.log(`init ${notification}`);
     let notificationSender = notification.notificationSender;
     let notificationStringID = notification.receiptStringID;
