@@ -7,8 +7,8 @@ import http from "http";
 import { knex } from "./db";
 import { sessionMiddleware, hasLogin, form } from "./helper";
 import { createSocketServer } from "./createSocketServer";
-import { UserController } from "./public/controller/userController";
-import { UserService } from "./public/service/userService";
+import { UserController } from "./login/userController";
+import { UserService } from "./login/userService";
 import { ReceiptController } from "./public/controller/createReceiptController";
 import { ReceiptService } from "./public/service/createReceiptService";
 import { DisplayController } from "./public/controller/displayController";
@@ -40,13 +40,14 @@ app.use("/uploads", express.static("uploads"));
 app.use(express.json());
 app.use(express.urlencoded());
 app.use(sessionMiddleware);
-app.use(express.static("public"));
+app.use(express.static("login"));
 
 app.use(userController.router);
 app.use(hasLogin, receiptController.router);
 app.use(hasLogin, displayController.router);
 app.use(hasLogin, claimReceiptItemController.router);
 app.use(hasLogin, topUpController.router);
+app.use(hasLogin, express.static("public"));
 createSocketServer();
 
 app.use((req, res) => {
