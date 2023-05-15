@@ -1,5 +1,6 @@
 import Stripe from "stripe";
 import { Request, Response, Router, response } from "express";
+import express from 'express'
 import { TopUpService } from "../service/topUpService";
 
 export const stripe = new Stripe(
@@ -9,11 +10,20 @@ export const stripe = new Stripe(
   }
 );
 
+
+type line_items=[{
+name:String,
+amount:number,
+currency:String,
+quantity:number 
+}]
+
+
 export class TopUpController {
   router = Router();
   constructor(private stripe: Stripe, private topUpService: TopUpService) {
-    this.router.post("/top-up", this.topUpCredit);
-    this.router.post("/top-up/success", this.updateDbCredit);
+    this.router.post("/create-checkout-session", this.topUpCredit);
+    this.router.post("/webhook", express.raw({type:'application/json'}), this.updateDbCredit);
   }
 
   topUpCredit = async (req: Request, res: Response) => {
@@ -27,12 +37,28 @@ export class TopUpController {
         return;
       }
       let userID = req.session.user.userID;
-      const amount = req.body.amount;
-      const paymentIntent = await this.stripe.paymentIntents.create({
-        amount: amount * 100,
-        currency: "hkd",
+      const amount = parseFloat(req.body.amount);
+      const session = await this.stripe.checkout.sessions.create({
+        payment_method_types:['card'],
+        line_items: [
+          {
+            price_data:{
+              currency:'hkd',
+              product_data:{
+                name:'Top-Up Balance'
+              },
+              unit_amount_decimal:Math.round(amount*100).toString(),
+            },quantity:1,
+          },
+      ],
+      mode:'payment',
+      success_url:'http://localhost:8105/wallet.html',
+      cancel_url:'http://localhost:8105/wallet.html'
       });
-      res.json({ clientSecret: paymentIntent.client_secret });
+      //const checkoutUrl = `https://checkout.stripe.com/pay/${sessionId}`
+      //@ts-ignore
+      res.redirect(session.url)
+
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "server error" });
@@ -40,11 +66,8 @@ export class TopUpController {
   };
 
   updateDbCredit = async (req: Request, res: Response) => {
+    const event=req.body;      
     try {
-      const paymentIntentId = req.body.paymentIntentId;
-      const paymentIntent = await this.stripe.paymentIntents.retrieve(
-        paymentIntentId
-      );
       if (
         req.session === undefined ||
         req.session.user === undefined ||
@@ -54,7 +77,13 @@ export class TopUpController {
         return;
       }
       let userID = req.session.user.userID;
-      if ((paymentIntent.status = "succeeded")) {
+      const sig = req.headers['stripe-signature']
+      const endpointSecret = "whsec_2a1a0881f42e6b2d6cf346cc74287921a484e075753bb37220139839a45bffbe";
+       //@ts-ignore
+       const verifiedEvent = this.stripe.webhooks.constructEvent(req.body, sig, endpointSecret)
+      if ((verifiedEvent.type === "payment_intent.succeeded")) {
+        const paymentIntent = verifiedEvent.data.object
+        //@ts-ignore
         const amount = paymentIntent.amount / 100;
         await this.topUpService.updateCredit(userID, amount);
         res.json({ success: true });

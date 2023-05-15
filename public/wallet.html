@@ -117,13 +117,11 @@
         <p class="mb-3 font-normal text-gray-500 light:te xt-gray-400">Enter the amount to top up your credit to pay the receipt:</p>
        
         <div class="topUpDiv mt-4">
-        <form id="topUpForm" action="/top-up" method="POST">
+        <form id="topUpForm" action="/create-checkout-session" method="POST">
         <div class="mt-2">
           <label for="amount">Amount:</label>
           <input type="number" class="border-round-2" id="amount" name="amount" min="1" step="1" required>
         </div>
-        <label for="card-element">Card</label>
-        <div id="card-element"></div>
         <div class="buttonDiv mt-3 flex items-center justify-center">
         <button id="topUpBtn" type="submit" class="btn bg-cyan-600 hover:bg-cyan-700 text-white">Top Up with <i class="px-2 fa-solid fa-credit-card fa-lg"></i></button>
       </div>
