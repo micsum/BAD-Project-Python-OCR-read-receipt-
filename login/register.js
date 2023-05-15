@@ -10,7 +10,8 @@ let newEmail = document.getElementById("email");
 let newPayMeLink = document.getElementById("payMeLink");
 let newFPSID = document.getElementById("fpsID");
 
-returnButton.addEventListener("click", () => {
+returnButton.addEventListener("click", (event) => {
+  event.preventDefault();
   window.location.href = "/index.html";
 });
 

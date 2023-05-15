@@ -121,6 +121,10 @@ window.addEventListener("load", async function (event) {
 
   if (receiptHost == userID) {
     let hostConfirmClaimButton = document.createElement("button");
+    hostConfirmClaimButton.setAttribute(
+      "class",
+      "mt-3 btn mx-2 bg-green-400 hover:bg-green-500"
+    );
     hostConfirmClaimButton.textContent = "Confirm All Receipt Claims";
     hostConfirmClaimButton.addEventListener("click", function () {
       Swal.fire({

@@ -188,7 +188,11 @@ function createItem(
   });
   if (userID == receiptHost) {
     let resetClaimButton = document.createElement("button");
-    resetClaimButton.textContent = "Reset Claims";
+    resetClaimButton.setAttribute(
+      "class",
+      "text-dark btn bg-red-200 hover:bg-red-400 rounded-full"
+    );
+    resetClaimButton.textContent = "Reset";
     resetClaimButton.addEventListener("click", function () {
       Swal.fire({
         icon: "info",

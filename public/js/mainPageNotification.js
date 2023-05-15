@@ -2,7 +2,11 @@
 let createButton = document.querySelector("#create");
 const notificationTemplate = document.getElementById("notificationTemplate");
 let notificationDiv = document.getElementById("notificationDisplayDiv");
+let topBtn = document.querySelector("#top");
 
+topBtn.addEventListener("click", () => {
+  window.location.href = "./wallet.html";
+});
 let userName, userID;
 
 window.addEventListener("load", async (event) => {
