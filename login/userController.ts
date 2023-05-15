@@ -15,6 +15,7 @@ export class UserController extends CheckReq implements ObjectAny {
     this.router.post("/login", this.userLogin);
     this.router.post("/register", this.userRegister);
     this.router.put("/updateProfile", this.updateProfileInformation);
+    this.router.post("/logout", this.logout);
   }
 
   private async hashPassword(plainPassword: string) {

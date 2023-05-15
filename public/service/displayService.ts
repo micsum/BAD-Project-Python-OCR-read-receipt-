@@ -45,11 +45,7 @@ export class DisplayService {
   async getNotifications(userID: number, sentFromUser: Boolean) {
     let query = this.knex("notification")
       .innerJoin("receipt", "notification.receipt_id", "receipt.id")
-      .innerJoin(
-        "receipt_item",
-        "notification.receipt_id",
-        "receipt_item.receipt_id"
-      )
+
       .select(
         "notification.from as notificationSender",
         "notification.to",
@@ -67,6 +63,7 @@ export class DisplayService {
     query = query.limit(30).orderBy("notification.id", "desc");
 
     let queryResult: ObjectAny[] = await query;
+
     let receiptIDList: number[] = [];
     for (let notification of queryResult) {
       receiptIDList.push(notification.receiptID);

@@ -1,7 +1,7 @@
 // Buffer Line
 const returnButton = document.getElementById("return");
 const updateForm = document.getElementById("updateInfoForm");
-
+const logOutBtn = document.querySelector("#logout");
 const newPassword = document.getElementById("newPasswordEntry");
 const newPasswordDouble = document.getElementById("newPasswordReEntry");
 const newUsername = document.getElementById("newUsernameEntry");

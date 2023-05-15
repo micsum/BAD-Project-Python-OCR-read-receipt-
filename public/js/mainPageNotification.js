@@ -44,8 +44,10 @@ window.addEventListener("load", async (event) => {
     let notificationConfirm = notification.confirm_selection;
 
     let userMessageInformation = notificationMap.get(notificationSender);
+    console.log(notification, userMessageInformation);
     if (userMessageInformation == undefined) {
       displayNotification(notification, notificationDiv);
+      console.log("noti", notification);
       notificationMap.set(notificationSender, [
         {
           receiptStringID: notificationStringID,
@@ -61,6 +63,7 @@ window.addEventListener("load", async (event) => {
             break;
           } else {
             displayNotification(notification, notificationDiv);
+            console.log("noti", notification);
             row.confirmStatus.push(notificationConfirm);
             break;
           }
@@ -68,6 +71,7 @@ window.addEventListener("load", async (event) => {
       }
       if (!duplicate) {
         displayNotification(notification, notificationDiv);
+        console.log("noti", notification);
         userMessageInformation.push({
           receiptStringID: notificationStringID,
           confirmStatus: [notificationConfirm],
