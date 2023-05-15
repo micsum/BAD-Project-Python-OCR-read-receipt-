@@ -88,7 +88,7 @@ export type Notification = {
 
 export function hasLogin(req: Request, res: Response, next: NextFunction) {
   if (req.session === undefined || req.session.user === undefined) {
-    res.sendFile(path.resolve("public", "index.html"));
+    res.sendFile(path.resolve("login", "index.html"));
   } else {
     next();
   }
