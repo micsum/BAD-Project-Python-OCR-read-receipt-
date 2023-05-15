@@ -140,6 +140,7 @@ export class ClaimReceiptItemService {
 
     let itemIDList: number[] = [];
     let itemStringIDList: string[] = [];
+    let claimItemStringIDList: string[] = [];
 
     for (let item of itemListResult) {
       itemIDList.push(item.id);
@@ -150,6 +151,7 @@ export class ClaimReceiptItemService {
     for (let item of claimItemsInfo) {
       let userID = receiptPayer;
       let itemID = itemIDList[itemStringIDList.indexOf(item.item_id)];
+      claimItemStringIDList.push(item.item_id);
       newItemsInfo.push({ user_id: userID, item_id: itemID });
     }
 
@@ -166,21 +168,57 @@ export class ClaimReceiptItemService {
     let receiptItemList = await this.knex("receipt")
       .innerJoin("receipt_item", "receipt_item.receipt_id", "=", "receipt.id")
       .select(
+        "receipt_item.item_id as itemStringID",
         "receipt_item.receipt_id as receiptID",
         "receipt_item.item_name as itemName",
         "receipt_item.price as itemPrice"
       )
       //.where({ "receipt.receipt_id": receiptStringID })
-      .whereIn("receipt_item.item_id", itemStringIDList);
+      .whereIn("receipt_item.item_id", claimItemStringIDList);
 
-    let receiptID: number = -1;
-    let itemList: string = "";
-    let itemTotalPrice: number = 0;
+    let itemStringIDNamePriceMap: Map<
+      string,
+      { itemName: string; itemPrice: string }
+    > = new Map();
     for (let item of receiptItemList) {
+      itemStringIDNamePriceMap.set(item.itemStringID, {
+        itemName: item.itemName,
+        itemPrice: item.itemPrice,
+      });
+    }
+
+    let receiptID: number = receiptItemList[0].receiptID;
+    let itemList: string = "";
+    let itemNameList: string[] = [];
+    let itemNameCountObject: ObjectAny = {};
+    let itemTotalPrice: number = 0;
+
+    for (let item of claimItemsInfo) {
+      let itemInfo = itemStringIDNamePriceMap.get(item.item_id);
+      if (itemInfo !== undefined) {
+        let itemName = itemInfo.itemName;
+        let itemPrice = itemInfo.itemPrice;
+
+        itemTotalPrice += parseInt(itemPrice);
+        itemTotalPrice = Math.round(itemTotalPrice * 100) / 100;
+
+        if (itemNameCountObject[itemName] === undefined) {
+          itemNameList.push(itemName);
+          itemNameCountObject[itemName] = 1;
+        } else {
+          itemNameCountObject[itemName]++;
+        }
+      } else {
+        continue;
+      }
+    }
+
+    for (let item of itemNameList) {
+      let itemQuantity = itemNameCountObject[item];
       itemList =
-        itemList.length === 0 ? item.itemName : itemList + ", " + item.itemName;
-      itemTotalPrice += parseInt(item.itemPrice);
-      receiptID = item.receiptID;
+        itemList.length === 0
+          ? `${item} x${itemQuantity}`
+          : `, ${item} x${itemQuantity}`;
     }
 
     await this.knex("notification").insert({
@@ -188,7 +226,7 @@ export class ClaimReceiptItemService {
       to: receiptHost,
       receipt_id: receiptID,
       payment: false,
-      information: `Updated Claim : ${"\n"}${payerUsername} has claimed ${itemList} with a total of $${itemTotalPrice}`,
+      information: `Updated Claim : ${payerUsername} has claimed ${itemList} with a total of $${itemTotalPrice}`,
     });
     return {};
   }

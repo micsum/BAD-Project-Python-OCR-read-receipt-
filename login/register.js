@@ -34,6 +34,7 @@ form.addEventListener("submit", async function (event) {
     payMeLink: newPayMeLink.value,
     fpsLink: newFPSID.value,
   };
+  console.log(formData);
 
   let res = await fetch("/register", {
     method: "POST",

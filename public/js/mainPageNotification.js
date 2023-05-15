@@ -35,22 +35,6 @@ window.addEventListener("load", async (event) => {
   let notificationData = result.notifications;
   const notificationMap = new Map();
   for (let notification of notificationData) {
-    if (notification.confirmStatus) {
-      notification.information = `Receipt #${
-        notification.receiptStringID
-      } created at ${new Date(notification.created_at)
-        .toLocaleString()
-        .slice(0, 10)},
-        total: ${"$" + notification.total}`;
-    } else {
-      notification.information = `Receipt #${
-        notification.receiptStringID
-      } created at ${new Date(notification.created_at)
-        .toLocaleString()
-        .slice(0, 10)},
-        total: ${"$" + notification.total}`;
-    }
-    console.log(`init ${notification}`);
     let notificationSender = notification.notificationSender;
     let notificationStringID = notification.receiptStringID;
     let notificationConfirm = notification.confirm_selection;
@@ -58,7 +42,6 @@ window.addEventListener("load", async (event) => {
     let userMessageInformation = notificationMap.get(notificationSender);
     if (userMessageInformation == undefined) {
       displayNotification(notification, notificationDiv);
-      console.log(notification);
       notificationMap.set(notificationSender, [
         {
           receiptStringID: notificationStringID,
@@ -81,7 +64,6 @@ window.addEventListener("load", async (event) => {
       }
       if (!duplicate) {
         displayNotification(notification, notificationDiv);
-        console.log(notification);
         userMessageInformation.push({
           receiptStringID: notificationStringID,
           confirmStatus: [notificationConfirm],

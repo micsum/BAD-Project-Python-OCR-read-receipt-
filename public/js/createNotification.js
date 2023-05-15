@@ -61,19 +61,35 @@ function displayNotification(notification, destination) {
   let notificationMessage = notification.information;
   let confirmSelection = notification.confirm_selection;
   let payment = notification.payment;
-  if (receiptSender == userName) {
+  if (receiptSender == userID) {
     if (notificationMessage.substring(0, 7) == "Updated") {
-      notificationMessage = `You claimed items successfully (receiptID : ${notification.receiptStringID})`;
+      notificationMessage = `You claimed items successfully `;
       icon = "wallet";
     } else {
+      let lowerDiv = node.querySelector(".lowerDiv");
       let dummyText = confirmSelection ? "claim request" : "receipt";
-      notificationMessage = `You sent a ${dummyText} successfully (receiptID : ${notification.receiptStringID})`;
+      notificationMessage = `You sent a ${dummyText} successfully`;
+      let dateDiv = document.createElement("div");
+      dateDiv.classList.add(["cursor-pointer", "border-blue-500"]);
+      dateDiv.textContent = `Created at ${new Date(notification.created_at)
+        .toLocaleString()
+        .slice(0, 10)}`;
+
+      let TotalDiv = document.createElement("div");
+      TotalDiv.classList.add(["cursor-pointer", "border-blue-500"]);
+      TotalDiv.textContent = `Total: ${"$" + notification.total}`;
+      lowerDiv.appendChild(TotalDiv);
+      lowerDiv.appendChild(dateDiv);
       icon = payment ? "bank" : "piggy-bank";
     }
-    node.querySelector(".notificationSender").hidden = true;
+    node.querySelector(".sender").hidden = true;
   } else {
     icon = "coin";
   }
+  node.querySelector(
+    ".receiptID"
+  ).textContent = `(receiptID : ${notification.receiptStringID})`;
+
   node.querySelector(".notificationSender").textContent = receiptSender;
 
   node.querySelector(".moneyIcon").innerHTML = `<i class="bi bi-${icon}"></i>`;
