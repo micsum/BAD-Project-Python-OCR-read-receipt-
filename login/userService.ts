@@ -1,6 +1,6 @@
 import * as bcrypt from "bcryptjs";
 import { Knex } from "knex";
-import { ObjectAny } from "../../helper";
+import { ObjectAny } from "../helper";
 
 export class UserService implements ObjectAny {
   constructor(private knex: Knex) {}
