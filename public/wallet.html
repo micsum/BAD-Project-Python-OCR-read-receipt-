@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Wallet Page</title>
+<script src="https://js.stripe.com/v3/"></script>   
     <link
   href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap"
   rel="stylesheet" />
@@ -59,7 +60,7 @@
       rel="stylesheet"
     />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
-    <script src="https://js.stripe.com/v3/"></script>    <script
+    <script
       src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.all.js"
       integrity="sha512-AINSNy+d2WG9ts1uJvi8LZS42S8DT52ceWey5shLQ9ArCmIFVi84nXNrvWyJ6bJ+qIb1MnXR46+A4ic/AUcizQ=="
       crossorigin="anonymous"
@@ -112,22 +113,22 @@
     <div class="mt-4 m-3 flex flex-col items-center justify-center">
       <div class="max-w-sm p-6 bg-white border border-gray-200 rounded-lg shadow light:bg-gray-800 light:border-gray-700">
         <i class="fa-solid fa-money-bill-transfer fa-2xl" style="color: #8b8e92;"></i>  
-        <a href="#">
             <h5 class="mb-2 text-2xl font-semibold tracking-tight text-gray-900 light:text-white">Top Up Credit</h5>
-        </a>
         <p class="mb-3 font-normal text-gray-500 light:te xt-gray-400">Enter the amount to top up your credit to pay the receipt:</p>
        
         <div class="topUpDiv mt-4">
-        <form ID="topUpForm">
+        <form id="topUpForm" action="/top-up" method="POST">
         <div class="mt-2">
           <label for="amount">Amount:</label>
           <input type="number" class="border-round-2" id="amount" name="amount" min="1" step="1" required>
         </div>
+        <label for="card-element">Card</label>
+        <div id="card-element"></div>
         <div class="buttonDiv mt-3 flex items-center justify-center">
-        <button id="topUpBtn" class="btn bg-cyan-600 text-white">Top Up with <i class="px-2 fa-solid fa-credit-card fa-lg"></i></button>
+        <button id="topUpBtn" type="submit" class="btn bg-cyan-600 hover:bg-cyan-700 text-white">Top Up with <i class="px-2 fa-solid fa-credit-card fa-lg"></i></button>
       </div>
         </form>
-        
+
         </div>
       </div>
    </div>
@@ -309,19 +310,6 @@
             <div class="message"></div>
           </div>
         </div>
-    <template id="notificationTemplate">
-      <div class="notificationDiv">
-        <div class="upperDiv">
-          <div class="sender">
-            From : <span class="notificationSender"></span>
-          </div>
-          <div class="moneyIcon"></div>
-        </div>
-        <div class="lowerDiv">
-          <div class="message"></div>
-        </div>
-      </div>
-    </template>
   </body>
   <script src="./js/createNotification.js"></script>
   <script src="./js/topUpCredit.js"></script>

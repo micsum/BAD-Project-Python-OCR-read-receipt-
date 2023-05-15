@@ -69,7 +69,7 @@ export class ClaimReceiptItemService {
 
   async getReceiptItems(receiptStringID: string) {
     let result = await this.knex("receipt")
-      .select("id")
+      .select("id", "file_name")
       .where({ receipt_id: receiptStringID });
     if (result === undefined) {
       return { error: "Wrong Information Submitted" };
@@ -77,6 +77,7 @@ export class ClaimReceiptItemService {
       return { error: "Receipt Not Found" };
     }
     let receiptID = result[0].id;
+    let file_name = result[0].file_name;
     result = await this.knex
       .from("receipt_item")
       .select("id", "item_name", "price", "quantity", "item_id")
@@ -107,7 +108,7 @@ export class ClaimReceiptItemService {
       }
       item["claimerList"] = claimerList;
     }
-    return { receiptItems };
+    return { receiptItems, file_name };
   }
 
   async claimReceiptItems(
@@ -187,7 +188,7 @@ export class ClaimReceiptItemService {
       to: receiptHost,
       receipt_id: receiptID,
       payment: false,
-      information: `Updated Claim : ${"\n"}${payerUsername} has claimed ${itemList} with a total of ${itemTotalPrice}`,
+      information: `Updated Claim : ${"\n"}${payerUsername} has claimed ${itemList} with a total of $${itemTotalPrice}`,
     });
     return {};
   }

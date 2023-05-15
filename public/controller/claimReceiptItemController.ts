@@ -75,6 +75,7 @@ export class ClaimReceiptItemController extends CheckReq {
       }
 
       let itemInfoList = itemInfoListResult.receiptItems;
+      let file_name = itemInfoListResult.file_name;
       const tempClaimMap = new Map();
       for (let tempClaim of temporarySelections) {
         if (tempClaim.user_id === userID) {
@@ -101,7 +102,7 @@ export class ClaimReceiptItemController extends CheckReq {
           });
         }
       }
-      res.json({ itemInfoList });
+      res.json({ itemInfoList, file_name });
       return;
     } catch (error) {
       console.log(error);
