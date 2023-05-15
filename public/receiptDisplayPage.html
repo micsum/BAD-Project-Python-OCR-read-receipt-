@@ -127,7 +127,7 @@
     </div>
 
     <div class="mt-5 flex displayDiv flex-col items-center justify-center">
-      <div class="headingItem mt-1 align-items items-center">
+      <div class="headingItem mt-1 align-items items-center mb-4 text-2xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl light:text-dark"><span class="underline underline-offset-3 decoration-8 decoration-blue-400 light:decoration-blue-600">
         <h4>Receipt Items</h4>
       </div>
 
@@ -139,24 +139,26 @@
 
     <!--<div id="receipt" class="displayDiv"></div>-->
     <br />
-    <div class="title" id="claimed">Claimed Items</div>
-    <div id="claimedItems" class="displayDiv"></div>
-    <div id="footer">
-      <button id="confirmClaim">Confirm Selected Items</button>
+    <mark class="title mx-3 px-2 text-2xl text-white bg-blue-600 rounded dark:bg-blue-500" id="claimed">Claimed Items</mark>
+    <div id="claimedItems" class="displayDiv mx-16 grid grid-cols-1 sm:grid-cols-4 receiptItemDiv border-t-0"></div>
+    <div id="footer" class="flex justify-center items-center mb-2 mx-2">
+      <button id="confirmClaim" class="mt-3 btn bg-blue-300 hover:bg-blue-400">Confirm</button>
     </div>
 
     <template id="receiptItem">
-      <div class="displayDiv">
-        <div class="grid grid-cols-1 sm:grid-cols-4 receiptItemDiv">
+      <div class="displayDiv border-t-0 mb-2">
+        <div class="grid grid-cols-1 sm:grid-cols-4 receiptItemDiv border-t-0">
           <div
-            class="flex flex-col mt-3 border-t-2 border-r-2 border-l-2 border-b-2 border-gray-300 sm:border-b-2 sm:border-r-2 sm:border-l-2 sm:border-t-2 sm:border-gray-300 items-center p-8 sm:px-4 sm:h-full sm:justify-center"
+            class="flex flex-col mt-3 border-t-2 border-r-2 border-l-2 border-b-2 border-gray-500 sm:border-b-2 sm:border-r-2 sm:border-l-2 sm:border-t-2 sm:border-gray-500 items-center p-8 sm:px-4 sm:h-full sm:justify-center"
           >
             <p
-              class="text-sm font-bold text-[#0ed3cf] rounded-full"
+              class="text-sm font-bold text-[#288BA8] rounded-full"
               id="itemName"
             ></p>
           </div>
-          <div class="flex flex-col sm:border-l col-span-3 border">
+          <div
+            class="flex flex-col sm:border-2 col-span-3 border border-gray-700"
+          >
             <div class="flex flex-col space-y-4 p-6 text-gray-600">
               <div class="flex flex-row text-sm">
                 <span class="mr-3">
@@ -229,13 +231,13 @@
               </div>
             </div>
             <div
-              class="w-full grid border border-gray-200 divide-x text-[#0ed3cf] bg-gray-50 dark:bg-transparent py-3"
+              class="w-full grid border border-gray-500 divide-x text-[#0ed3cf] bg-gray-50 dark:bg-transparent py-3"
             >
               <div
-                class="w-full space-between controlsDiv flex items-center justify-center border-gray-200"
+                class="w-full space-between controlsDiv flex items-center justify-center border-gray-500"
               >
                 <button
-                  class="claimButton flex items-center justify-center mx-2"
+                  class="claimButton btn flex items-center justify-center mx-2 text-dark-200 bg-green-100 hover:bg-green-300 rounded-full"
                 ></button>
               </div>
             </div>
