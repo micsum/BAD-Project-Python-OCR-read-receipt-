@@ -57,3 +57,18 @@ updateForm.addEventListener("submit", async function (event) {
 returnButton.addEventListener("click", () => {
   window.location.href = "./homepage.html";
 });
+
+logOutBtn.addEventListener("click", async (event) => {
+  event.preventDefault();
+  const response = await fetch("/logout", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      success: "logout",
+    }),
+  });
+  let logout = await response.json();
+  if (logout.success) {
+    window.location.href = "./";
+  }
+});

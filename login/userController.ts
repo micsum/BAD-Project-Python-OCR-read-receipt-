@@ -285,4 +285,15 @@ export class UserController extends CheckReq implements ObjectAny {
       return;
     }
   };
+
+  logout = async (req: Request, res: Response) => {
+    console.log("logout");
+    req.session.destroy((err) => {
+      if (err) {
+        console.log(err);
+      }
+    });
+    res.json({ success: "logout" });
+    console.log("destroy:", req.session);
+  };
 }
