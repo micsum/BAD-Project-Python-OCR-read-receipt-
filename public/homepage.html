@@ -121,9 +121,9 @@
         </button>
       </div>
     </div>
-    <div class="flex items-center justify-center" id="notificationDisplayDiv">
+    <div class="flex items-center justify-center">
       <div
-        class="mt-3 w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 light:bg-gray-800 light:border-gray-700"
+        class="mt-3 mx-3 w-full max-w-md p-4 bg-white border border-gray-200 rounded-lg shadow sm:p-8 light:bg-gray-800 light:border-gray-700"
       >
         <div class="flex items-center justify-between mb-4">
           <h5
@@ -131,19 +131,20 @@
           >
             Latest History
           </h5>
-          <a
+          <!--<a
             href="./hostReceiptAllHistory.html"
             class="text-sm font-medium text-blue-600 hover:underline light:text-blue-500"
           >
             View all
-          </a>
+          </a>-->
         </div>
-        <div class="flow-root overflow-y-contain">
+        <div class="flow-root">
           <ul
             role="list"
-            class="divide-y divide-gray-200 light:divide-gray-700"
+            class="divide-y divide-gray-200 light:divide-gray-700 overflow-y-auto"
+            id="notificationDisplayDiv"
           >
-            <li class="py-3 sm:py-4">
+            <!--<li class="py-3 sm:py-4">
               <div class="flex items-center space-x-4">
                 <div class="flex-1 min-w-0">
                   <p
@@ -275,7 +276,7 @@
                   $367
                 </div>
               </div>
-            </li>
+            </li>-->
           </ul>
         </div>
       </div>
@@ -459,10 +460,33 @@
           <div class="moneyIcon"></div>
         </div>
         <div class="lowerDiv">
-          <div class="message"></div>
+          <div class="message cursor-pointer border-blue-500"></div>
         </div>
       </div>
     </template>
+    <!--<template id="notificationTemplate2">
+      <li class="py-3 sm:py-4 notificationDiv2">
+        <div class="flex items-center space-x-4">
+          <div class="flex-1 min-w-0">
+            <p
+              class="text-sm font-medium text-gray-900 truncate light:text-white receiptID"
+            >
+              Receipt #id
+            </p>
+            <p
+              class="text-sm text-gray-500 truncate light:text-gray-400 createdDate"
+            >
+              date
+            </p>
+          </div>
+          <div
+            class="inline-flex items-center text-base font-semibold text-gray-900 light:text-white total"
+          >
+            $320
+          </div>
+        </div>
+      </li>
+    </template>-->
   </body>
   <script src="//cdn.jsdelivr.net/npm/sweetalert2@10"></script>
   <script src="/socket.io/socket.io.js"></script>

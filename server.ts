@@ -15,6 +15,8 @@ import { DisplayController } from "./public/controller/displayController";
 import { DisplayService } from "./public/service/displayService";
 import { ClaimReceiptItemController } from "./public/controller/claimReceiptItemController";
 import { ClaimReceiptItemService } from "./public/service/claimReceiptItemService";
+import { TopUpController, stripe } from "./public/controller/topUpController";
+import { TopUpService } from "./public/service/topUpService";
 
 const app = express();
 let server = http.createServer(app);
@@ -31,6 +33,8 @@ const claimReceiptItemController = new ClaimReceiptItemController(
   claimReceiptItemService,
   io
 );
+const topUpService = new TopUpService(knex);
+const topUpController = new TopUpController(stripe, topUpService);
 
 app.use("/uploads", express.static("uploads"));
 app.use(express.json());
@@ -41,7 +45,7 @@ app.use(userController.router);
 app.use(hasLogin, receiptController.router);
 app.use(hasLogin, displayController.router);
 app.use(hasLogin, claimReceiptItemController.router);
-
+app.use(hasLogin, topUpController.router);
 app.use(express.static("public"));
 createSocketServer();
 

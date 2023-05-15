@@ -44,13 +44,30 @@ export class DisplayService {
   async getNotifications(userID: number, sentFromUser: Boolean) {
     let query = this.knex("notification")
       .innerJoin("receipt", "notification.receipt_id", "receipt.id")
+      .innerJoin(
+        "receipt_item",
+        "notification.receipt_id",
+        "receipt_item.receipt_id"
+      )
       .select(
         "notification.from as notificationSender",
         "notification.to",
         "notification.payment",
         "receipt.receipt_id as receiptStringID",
         "receipt.confirm_selection",
-        "notification.information"
+        "receipt.created_at",
+        "notification.information",
+        this.knex.raw("SUM(receipt_item.price) as total")
+      )
+      .groupBy(
+        "notification.from",
+        "notification.to",
+        "notification.payment",
+        "receipt.receipt_id",
+        "receipt.confirm_selection",
+        "receipt.created_at",
+        "notification.information",
+        "notification.id"
       );
 
     query = sentFromUser

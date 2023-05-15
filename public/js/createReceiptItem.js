@@ -69,7 +69,8 @@ function createItem(
 
   if (claim) {
     let claimUserText = document.createElement("span");
-    let claimUserDiv = document.createElement("div");
+    let claimUserDiv = document.createElement("span");
+    claimUserDiv.setAttribute("class", "font-semibold mr-2 text-xs uppercase");
     claimedUserName = formatClaimedUserNameList(claimedUserName);
     claimUserText.textContent = claimedUserName;
     claimUserText.setAttribute("id", `claimedUser${item_id}`);
