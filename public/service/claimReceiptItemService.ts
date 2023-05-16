@@ -165,16 +165,16 @@ export class ClaimReceiptItemService {
     }
     await this.knex("item_payer").insert(newItemsInfo);
 
-    let receiptItemList = await this.knex("receipt")
-      .innerJoin("receipt_item", "receipt_item.receipt_id", "=", "receipt.id")
+    let receiptItemList = await this.knex("receipt_item")
+      //.innerJoin("receipt_item", "receipt_item.receipt_id", "=", "receipt.id")
       .select(
-        "receipt_item.item_id as itemStringID",
-        "receipt_item.receipt_id as receiptID",
-        "receipt_item.item_name as itemName",
-        "receipt_item.price as itemPrice"
+        "receipt_id as receiptID",
+        "item_id as itemStringID",
+        "item_name as itemName",
+        "price as itemPrice"
       )
       //.where({ "receipt.receipt_id": receiptStringID })
-      .whereIn("receipt_item.item_id", claimItemStringIDList);
+      .whereIn("item_id", claimItemStringIDList);
 
     let itemStringIDNamePriceMap: Map<
       string,
@@ -214,13 +214,11 @@ export class ClaimReceiptItemService {
     }
 
     for (let item of itemNameList) {
-      console.log(item);
       let itemQuantity = itemNameCountObject[item];
       itemList =
         itemList.length === 0
           ? `${item} x${itemQuantity}`
           : `${itemList}, ${item} x${itemQuantity}`;
-      console.log(itemList);
     }
 
     await this.knex("notification").insert({
@@ -277,8 +275,8 @@ export class ClaimReceiptItemService {
 
       let information = String(informationResult[0].information);
       console.log(`host Information : ${information}`);
-      let informationSplit = information.split(",");
-      informationSplit = information[information.length - 1].split(" ");
+      let informationSplit = information.split(" ");
+      information = informationSplit[informationSplit.length - 1];
       let claimPrice: number = parseFloat(information.replace("$", ""));
       console.log(`claimPrice : ${claimPrice}`);
       message += ` Price : ${claimPrice}`;

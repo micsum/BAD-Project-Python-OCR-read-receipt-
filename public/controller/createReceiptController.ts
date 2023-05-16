@@ -55,41 +55,45 @@ export class ReceiptController {
         : imageMaybeArray;
       let filename = image?.newFilename;
       let filepath = path.join(uploadDir + "/" + filename);
-      let toPython = await fetch("http://127.0.0.1:8100/readReceipt/", {
-        method: "POST",
-        credentials: "omit",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ filepath: filepath }),
-      });
-      let response = await toPython.json();
+      try {
+        let toPython = await fetch("http://127.0.0.1:8100/readReceipt/", {
+          method: "POST",
+          credentials: "omit",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ filepath: filepath }),
+        });
+        let response = await toPython.json();
 
-      let receipt_id = await this.receiptService.createReceipt(
-        filename,
-        userID,
-        transaction_date,
-        receiptTypeText
-      );
+        let receipt_id = await this.receiptService.createReceipt(
+          filename,
+          userID,
+          transaction_date,
+          receiptTypeText
+        );
+        this.receiptMap.set(userID, {
+          receipt_id: receipt_id,
+          data: response.data,
+        });
+        console.log(this.receiptMap);
+        let responseData = response.data;
+        console.log(response.data); //fetch data from python easyocr
 
-      this.receiptMap.set(userID, {
-        receipt_id: receipt_id,
-        data: response.data,
-      });
-      console.log(this.receiptMap);
-      let responseData = response.data;
-      console.log(response.data); //fetch data from python easyocr
-
-      //console.log("filename", filename);
-      if (responseData === "undefined") {
-        res.json({ success: true, error: "receipt content fail to load" });
-      } else if (response.error) {
-        res.json({ error: "Server Error" });
-      } else {
-        res.json({ success: true, data: responseData, filepath: filepath });
+        //console.log("filename", filename);
+        if (responseData === "undefined") {
+          res.json({ success: true, error: "receipt content fail to load" });
+        } else if (response.error) {
+          res.json({ error: "Server Error" });
+        } else {
+          res.json({ success: true, data: responseData, filepath: filepath });
+        }
+        //console.log(path.join(uploadDir + "/" + filename)); test path name and send to python server
+        //this.receiptService.createReceipt(filename, req.session.user.userID); update DB immediately after scan?
+      } catch (error) {
+        console.log(error);
+        res.json({ error: "Python Server Error" });
       }
-      //console.log(path.join(uploadDir + "/" + filename)); test path name and send to python server
-      //this.receiptService.createReceipt(filename, req.session.user.userID); update DB immediately after scan?
     });
   };
 
