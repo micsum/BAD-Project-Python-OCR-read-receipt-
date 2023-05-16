@@ -94,13 +94,12 @@
       flex-direction: column;
       align-items: center;
     }
-
-    
-
   </style>
   <body>
     <div class="pageContainer">
-    <div class="mt-5 flex justify-center items-center w-full max-md:mx-7 md:mx-24 max-sm:mx-7 sm:mx-24 max-lg:mx-32 lg:mx-32 xl:mx-44 2xl:mx-48">
+      <div
+        class="mt-5 flex justify-center items-center w-full max-md:mx-7 md:mx-24 max-sm:mx-7 sm:mx-24 max-lg:mx-32 lg:mx-32 xl:mx-44 2xl:mx-48"
+      >
         <ol class="w-full flex items-center justify-center">
           <li
             class="flex w-full items-center text-blue-600 light:text-blue-500 after:content-[''] after:w-full after:h-1 after:border-b after:border-blue-100 after:border-4 after:inline-block light:after:border-blue-800"
@@ -156,54 +155,57 @@
           <th class="actionHeader">Action</th>
         </thead>
       </table>
-    </div>-->    
-      <div class="body flex flex-col lg:items-center lg:justify-center">
-        <div class="flex justify-center items-center mt-2">
+    </div>-->
+    <div class="body flex flex-col lg:items-center lg:justify-center">
+      <div class="flex justify-center items-center mt-2">
         <header class="px-5 py-4 border-b border-gray-100">
           <div class="font-semibold text-gray-800">Create Receipts</div>
-      </header>
-      View Receipt<i
+        </header>
+        <button
           id="viewImage"
-          class="mx-3 fa-solid fa-receipt fa-xl cursor-pointer"
-          style="color: #14d7b0"
-        ></i>
+          class="btn bg-green-100 hover:bg-green-200 rounded sm:mx-7 p-1 mx-1"
+          style="color: #1fc2a2c9"
+        >
+          View Receipt<i
+            class="mx-1 fa-solid fa-receipt fa-xl cursor-pointer"
+            style="color: #14d7b0"
+          ></i>
+        </button>
       </div>
       <div class="overflow-x-auto p-3 w-max">
         <table class="table-auto w-max lg:ml-24 md:ml-20 sm:ml-16">
           <thead class="lg:w-max text-xs font-semibold uppercase text-gray-400">
             <tr>
               <th class="p-2">
-                  <div class="font-semibold text-center">Items</div>
+                <div class="font-semibold text-center">Items</div>
               </th>
               <th class="p-2">
-                  <div class="font-semibold text-center">Quantity</div>
+                <div class="font-semibold text-center">Quantity</div>
               </th>
               <th class="p-2">
-                  <div class="font-semibold text-center">Unit Price</div>
+                <div class="font-semibold text-center">Unit Price</div>
               </th>
               <th class="p-2">
-                <div class="font-semibold text-center"><i class="fa-solid fa-dollar-sign" style="color: #43add0"></i>Subtotal</div>
-            </th>
-              <th class="p-2">
-                  <div class="font-semibold text-center">Action</div>
+                <div class="font-semibold text-center">
+                  <i class="fa-solid fa-dollar-sign" style="color: #43add0"></i
+                  >Subtotal
+                </div>
               </th>
-          </tr>
+              <th class="p-2">
+                <div class="font-semibold text-center">Action</div>
+              </th>
+            </tr>
           </thead>
-          <tbody id="tbody" class="text-sm divide-y divide-gray-100" >
-          </tbody>
+          <tbody id="tbody" class="text-sm divide-y divide-gray-100"></tbody>
         </table>
       </div>
-      
-  
 
+      <div id="itemList"></div>
+      <button id="addItem" class="mr-96">
+        <i class="fa-solid fa-circle-plus fa-lg"></i>
+      </button>
+    </div>
 
-
-    <div id="itemList"></div> 
-    <button id="addItem" class="mr-96">
-      <i class="fa-solid fa-circle-plus fa-lg"></i>
-    </button>
-  </div>
-   
     <div class="totalFooter flex flex-col items-center justify-center">
       <div class="calculateDiv flex items-center justify-center mb-3">
         <label for="discountValue" class="ml-0">Discount:</label>
@@ -217,23 +219,41 @@
           id="discountInput"
           class="mx-1 btn bg-gray-200 hover:bg-gray-400 focus:ring-4 focus:outline-none focus:ring-gray-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center mr-2 dark:border-gray-500 light:text-blue-500 light:hover:text-white light:focus:ring-gray-800 light:hover:bg-gray-500"
         >
-          <i class="mx-1 fa-solid fa-calculator fa-lg" style="color: #6290df"></i>
+          <i
+            class="mx-1 fa-solid fa-calculator fa-lg"
+            style="color: #6290df"
+          ></i>
           <span class="hidden md:inline-block">Apply</span>
         </button>
       </div>
       <div class="discountDiv flex items-center justify-center mb-3">
-        <label for="scannedDiscount" class="text-center">Scanned Discount:</label>
-        <input type="text" id="scannedDiscount" class="text-center rounded mx-1" disabled />
+        <label for="scannedDiscount" class="text-center"
+          >Scanned Discount:</label
+        >
+        <input
+          type="text"
+          id="scannedDiscount"
+          class="text-center rounded mx-1"
+          disabled
+        />
       </div>
       <div class="totalDiv flex items-center justify-center mb-3">
         <label for="total" class="mr-2">Total:</label>
-        <input type="text" id="total" class="text-center rounded mx-1" disabled />
+        <input
+          type="text"
+          id="total"
+          class="text-center rounded mx-1"
+          disabled
+        />
       </div>
       <button
         id="receiptBtn"
         class="mt-2 mb-2 text-blue-700 border border-blue-700 hover:bg-blue-700 hover:text-white focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm p-2.5 text-center inline-flex items-center dark:border-blue-500 dark:text-blue-500 dark:hover:text-white dark:focus:ring-blue-800 dark:hover:bg-blue-500"
       >
-        <i class="mx-1 fa-solid fa-address-card fa-2xl" style="color: #80aad0"></i>
+        <i
+          class="mx-1 fa-solid fa-address-card fa-2xl"
+          style="color: #80aad0"
+        ></i>
         <span class="hidden md:inline-block">Add Payer</span>
       </button>
     </div>
@@ -242,34 +262,58 @@
       <tr class="itemDiv grid-row w-max">
         <td class="p-2">
           <div class="flex items-center">
-            <input type="text" class="itemName resize-none w-36 text-sm rounded font-medium text-gray-800"/>
-          </div> </td>
+            <input
+              type="text"
+              class="itemName resize-none w-36 text-sm rounded font-medium text-gray-800"
+            />
+          </div>
+        </td>
         <td class="p-2 flex justify-center items-center">
           <div class="flex items-center">
-            <input type="text" class="quantity resize-none text-sm w-12 rounded text-center">
-          </div></td>
-        <td class="p-2">
-          <div class="flex items-center">
-            <input type="text" class="unitPrice resize-none text-sm w-16 rounded text-center font-medium text-green-500" disabled>
-          </div></td>
-        <td class="p-2">    
-          <div class="flex items-center">
-          <input type="text" class="subtotal resize-none text-sm w-16 rounded text-center font-medium text-blue-400">
-      </div></td>
-        <td class="p-2">
-            <div class="flex justify-center">
-                <button class="delete" value="Delete">
-                    <svg class="w-8 h-8 text-red-400 hover:text-red-600 rounded-full hover:bg-gray-100 p-1"
-                        fill="none" stroke="currentColor" viewBox="0 0 24 24"
-                        xmlns="http://www.w3.org/2000/svg">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
-                        </path>
-                    </svg>
-                </button>
-            </div>
+            <input
+              type="text"
+              class="quantity resize-none text-sm w-12 rounded text-center"
+            />
+          </div>
         </td>
-    </tr>
+        <td class="p-2">
+          <div class="flex items-center">
+            <input
+              type="text"
+              class="unitPrice resize-none text-sm w-16 rounded text-center font-medium text-green-800"
+              disabled
+            />
+          </div>
+        </td>
+        <td class="p-2">
+          <div class="flex items-center">
+            <input
+              type="text"
+              class="subtotal resize-none text-sm w-16 rounded text-center font-medium text-blue-400"
+            />
+          </div>
+        </td>
+        <td class="p-2">
+          <div class="flex justify-center">
+            <button class="delete" value="Delete">
+              <svg
+                class="w-8 h-8 text-red-400 hover:text-red-600 rounded-full hover:bg-gray-100 p-1"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </td>
+      </tr>
     </template>
     <!--<template id="itemListTemplate">
       <tbody class="itemDiv">
@@ -288,7 +332,6 @@
         </tr>
       </tbody>
     </template>-->
-    
   </body>
   <script src="./js/receiptSubmit.js"></script>
   <script src="./js/receiptItemDisplay.js"></script>
