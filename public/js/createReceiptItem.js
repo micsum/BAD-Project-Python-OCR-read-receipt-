@@ -74,6 +74,7 @@ function createItem(
     claimedUserName = formatClaimedUserNameList(claimedUserName);
     claimUserText.textContent = claimedUserName;
     claimUserText.setAttribute("id", `claimedUser${item_id}`);
+    claimUserText.setAttribute("class", "underline text-lg");
     claimUserDiv.textContent = "Claimed by : ";
     claimUserDiv.appendChild(claimUserText);
     node.querySelector(".itemDiv").appendChild(claimUserDiv);

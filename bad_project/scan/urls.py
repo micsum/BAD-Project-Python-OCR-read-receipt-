@@ -21,7 +21,8 @@ def readReceipt(request: HttpRequest):
         response_data = {"data": itemText}
         return JsonResponse(response_data, status=200)
     else:
-        return JsonResponse("error",status=404)
+        error_msg ={"error": "sever error"}
+        return JsonResponse(error_msg, status=500)
 
 
 urlpatterns = [

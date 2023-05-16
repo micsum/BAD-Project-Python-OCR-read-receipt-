@@ -28,10 +28,10 @@ window.addEventListener("load", async () => {
 //  [[""], ["-$56.50"]],
 //  [["總計"], ["$174.50"]],
 //];
-
+let total = document.querySelector("#total")
 let receiptBtn = document.querySelector("#receiptBtn");
 receiptBtn.addEventListener("click", () => {
-  Swal.fire({
+  if(total.value !== "" || total.value !== "undefined"){ Swal.fire({
     title: "Confirm to create receipt?",
     icon: "question",
     confirmButtonText: "Confirm",
@@ -61,7 +61,7 @@ receiptBtn.addEventListener("click", () => {
         body: JSON.stringify({ itemInfoList: itemJson }),
       });
       let result = await res.json();
-      if (result.error) {
+      if (result.error){
         Swal.fire({
           icon: "error",
           title: "Fail to create receipt.",
@@ -71,5 +71,12 @@ receiptBtn.addEventListener("click", () => {
       window.location.href = "./addPayerList.html";
       localStorage.removeItem("imagepath");
     },
-  });
+  });}
+  else {
+    Swal.fire({
+      icon:"error",
+      title:"No information"
+    })
+  }
+ 
 });

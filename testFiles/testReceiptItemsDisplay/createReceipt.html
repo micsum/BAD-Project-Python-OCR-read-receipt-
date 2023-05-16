@@ -5,6 +5,46 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create Receipt</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.6.5/flowbite.min.js"></script>
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/tw-elements/dist/css/tw-elements.min.css"
+    />
+    <script src="https://cdn.tailwindcss.com/3.3.0"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tw-elements/dist/js/tw-elements.umd.min.js"></script>
+
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          fontFamily: {
+            sans: ["Roboto", "sans-serif"],
+            body: ["Roboto", "sans-serif"],
+            mono: ["ui-monospace", "monospace"],
+          },
+        },
+        corePlugins: {
+          preflight: false,
+        },
+      };
+    </script>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography,aspect-ratio,line-clamp"></script>
+
+    <style type="text/tailwindcss">
+      @layer utilities {
+        .content-auto {
+          content-visibility: auto;
+        }
+      }
+    </style>
     <script
       src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert2/11.7.5/sweetalert2.all.js"
       integrity="sha512-AINSNy+d2WG9ts1uJvi8LZS42S8DT52ceWey5shLQ9ArCmIFVi84nXNrvWyJ6bJ+qIb1MnXR46+A4ic/AUcizQ=="
@@ -34,10 +74,6 @@
       integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw=="
       crossorigin="anonymous"
       referrerpolicy="no-referrer"
-    />
-    <link
-      href="https://unpkg.com/tabulator-tables/dist/css/tabulator.min.css"
-      rel="stylesheet"
     />
   </head>
   <style>
@@ -88,7 +124,7 @@
       <div class="subTotalHeader">
         <i class="fa-solid fa-dollar-sign" style="color: #43add0"></i>Subtotal
       </div>
-      <div class="deleteHeader">Delete</div>
+      <div class="actionHeader">Action</div>
     </div>
     <div id="templateList"></div>
     <div class="totalFooter">
@@ -103,41 +139,145 @@
       <label for="attachment">Uploaded Receipt</label>
     </div>
     <div id="viewImage"></div>
+ 
+    <section class="antialiased shadow text-gray-600 h-screen px-4" x-data="app">
+      <div class="flex flex-col justify-center h-full">
+          <!-- Table -->
+          <div class="w-full max-w-2xl mx-auto bg-white shadow-lg rounded-sm border border-gray-200">
+              <header class="px-5 py-4 border-b border-gray-100">
+                  <div class="font-semibold text-gray-800">Create Receipts</div>
+              </header>
+  
+              <div class="overflow-x-auto p-3">
+                  <table class="table-auto w-full">
+                      <thead class="text-xs font-semibold uppercase text-gray-400 bg-gray-50">
+                          <tr>
+                              <th class="p-2">
+                                  <div class="font-semibold text-center">Items</div>
+                              </th>
+                              <th class="p-2">
+                                  <div class="font-semibold text-center">Quantity</div>
+                              </th>
+                              <th class="p-2">
+                                  <div class="font-semibold text-center">Unit Price</div>
+                              </th>
+                              <th class="p-2">
+                                <div class="font-semibold text-center"><i class="fa-solid fa-dollar-sign" style="color: #43add0"></i>Subtotal</div>
+                            </th>
+                              <th class="p-2">
+                                  <div class="font-semibold text-center">Action</div>
+                              </th>
+                          </tr>
+                      </thead>
+  
+                      <tbody class="text-sm divide-y divide-gray-100">
+                          <!-- record 1 -->
+                          <tr>
+                              <td class="p-2">
+                                  <div class="font-medium text-gray-800">
+                                      Samsung Galaxy Note 4
+                                  </div>
+                              </td>
+                              <td class="p-2">
+                                  <div class="text-center">1</div>
+                              </td>
+                              <td class="p-2">
+                                  <div class="text-center font-medium text-green-500">
+                                      2,890.66
+                                  </div>
+                              </td>
+                              <td class="p-2">
+                                <div class="text-center font-medium text-blue-400">
+                                    2,890.66
+                                </div>
+                            </td>
+                              <td class="p-2">
+                                  <div class="flex justify-center">
+                                      <button>
+                                          <svg class="w-8 h-8 text-red-400 hover:text-red-600 rounded-full hover:bg-gray-100 p-1"
+                                              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                              xmlns="http://www.w3.org/2000/svg">
+                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                              </path>
+                                          </svg>
+                                      </button>
+                                  </div>
+                              </td>
+                          </tr>
+  
+                          <!-- record 2 -->
+                          <tr>
+                              <td class="p-2">
+                                  <div>
+                                      <div class="font-medium text-gray-800">Logitech Keyboard</div>
+                                  </div>
+                              </td>
+                              <td class="p-2">
+                                  <div class="text-center">1</div>
+                              </td>
+                              <td class="p-2">
+                                  <div class="text-center font-medium text-green-500">
+                                      120.50
+                                  </div>
+                              </td>
+                              <td class="p-2">
+                                <div class="text-center font-medium text-blue-400">
+                                    120.50
+                                </div>
+                            </td>
+                              <td class="p-2">
+                                  <div class="flex justify-center">
+                                      <button>
+                                          <svg class="w-8 h-8 text-red-400 hover:text-red-600 rounded-full hover:bg-gray-100 p-1"
+                                              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                              xmlns="http://www.w3.org/2000/svg">
+                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                              </path>
+                                          </svg>
+                                      </button>
+                                  </div>
+                              </td>
+                          </tr>
+  
+                          <!-- record 3 -->
+                          <tr>
+                              <td class="p-2">
+                                  <div>
+                                      <div class="font-medium text-gray-800">Earphone</div>
+                                  </div>
+                              </td>
+                              <td class="p-2">
+                                  <div class="text-center">1</div>
+                              </td>
+                              <td class="p-2">
+                                  <div class="text-center font-medium text-green-500">15.00</div>
+                              </td>
+                              <td class="p-2">
+                                <div class="text-center font-medium text-blue-400">15.00</div>
+                            </td>
+                              <td class="p-2">
+                                  <div class="flex justify-center">
+                                      <button>
+                                          <svg class="w-8 h-8 text-red-400 hover:text-red-600 rounded-full hover:bg-gray-100 p-1"
+                                              fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                              xmlns="http://www.w3.org/2000/svg">
+                                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
+                                              </path>
+                                          </svg>
+                                      </button>
+                                  </div>
+                              </td>
+                          </tr>
+                      </tbody>
+                  </table>
+              </div>
+          </div>
+      </div>
+  </section>
 
-    <div class="tableWrapper">
-      <table class="table">
-        <thead>
-          <tr class="headerRow">
-            <th class="itemHeader">ITEMS</th>
-            <th class="quantityHeader">QUANTITY</th>
-            <th class="unitPriceHeader">UNIT PRICE</th>
-            <th class="subTotalHeader">SUBTOTAL</th>
-            <th class="deleteHeader">DELETE</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr class="dataRow">
-            <td class="itemName">Item 1</td>
-            <td class="quantity">1</td>
-            <td class="unitPrice">$10.99</td>
-            <td class="subTotal">$10.99</td>
-            <td class="delete">
-              <button class="deleteButton">Delete</button>
-            </td>
-          </tr>
-          <tr class="dataRow">
-            <td class="itemName">Item 2</td>
-            <td class="quantity">2</td>
-            <td class="unitPrice">$20.99</td>
-            <td class="subTotal">$41.98</td>
-            <td class="delete">
-              <button class="deleteButton">Delete</button>
-            </td>
-          </tr>
-          <!-- add more rows as needed -->
-        </tbody>
-      </table>
-    </div>
     <template id="itemList">
       <div class="itemDiv">
         <input type="text" class="itemName" />
