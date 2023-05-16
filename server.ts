@@ -5,7 +5,7 @@ import path from "path";
 import socketIO from "socket.io";
 import http from "http";
 import { knex } from "./db";
-import { sessionMiddleware, hasLogin, form } from "./helper";
+import { sessionMiddleware, hasLogin } from "./helper";
 import { createSocketServer } from "./createSocketServer";
 import { UserController } from "./login/userController";
 import { UserService } from "./login/userService";
@@ -23,7 +23,7 @@ let server = http.createServer(app);
 export let io = new socketIO.Server(server);
 
 const receiptService = new ReceiptService(knex);
-const receiptController = new ReceiptController(receiptService, form, io);
+const receiptController = new ReceiptController(receiptService, io);
 const userService = new UserService(knex);
 const userController = new UserController(userService);
 const displayService = new DisplayService(knex);

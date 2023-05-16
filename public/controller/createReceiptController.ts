@@ -2,21 +2,18 @@ import { Request, Response, Router, response } from "express";
 import { ReceiptService } from "../service/createReceiptService";
 import IncomingForm from "formidable/Formidable";
 import path from "path";
-import { uploadDir } from "../../helper";
+import { CheckReq, uploadDir } from "../../helper";
 import { ItemInfo } from "../../helper";
 import { Server as socketIO } from "socket.io";
 
-export class ReceiptController {
+export class ReceiptController extends CheckReq {
   router = Router();
   receiptMap: Map<
     number /*userid*/,
     { receipt_id: number; data: [string[], string[]][] }
   >;
-  constructor(
-    private receiptService: ReceiptService,
-    private form: IncomingForm,
-    private io: socketIO
-  ) {
+  constructor(private receiptService: ReceiptService, private io: socketIO) {
+    super();
     this.receiptMap = new Map();
     this.router.post("/uploadReceipt", this.uploadReadReceipt);
     this.router.get("/loadReceiptItems", this.loadReceiptItems);
@@ -38,7 +35,7 @@ export class ReceiptController {
     }
     let userID = req.session.user.userID;
 
-    this.form.parse(req, async (err, fields, files) => {
+    this.uploadForm().parse(req, async (err, fields, files) => {
       if (err) {
         console.error(err);
         res
