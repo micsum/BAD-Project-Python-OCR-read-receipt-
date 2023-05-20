@@ -143,7 +143,7 @@ export class UserController extends CheckReq implements ObjectAny {
 
     let missingString = "information";
     while (missingString !== "") {
-      missingString = super.checkReqBody(req, fields);
+      missingString = this.checkReqBody(req, fields);
       if (missingString !== "") {
         fields.splice(fields.indexOf(missingString), 1);
       }

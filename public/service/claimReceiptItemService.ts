@@ -166,14 +166,12 @@ export class ClaimReceiptItemService {
     await this.knex("item_payer").insert(newItemsInfo);
 
     let receiptItemList = await this.knex("receipt_item")
-      //.innerJoin("receipt_item", "receipt_item.receipt_id", "=", "receipt.id")
       .select(
         "receipt_id as receiptID",
         "item_id as itemStringID",
         "item_name as itemName",
         "price as itemPrice"
       )
-      //.where({ "receipt.receipt_id": receiptStringID })
       .whereIn("item_id", claimItemStringIDList);
 
     let itemStringIDNamePriceMap: Map<
