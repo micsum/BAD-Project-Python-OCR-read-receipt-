@@ -53,7 +53,6 @@ export class UserController extends CheckReq implements ObjectAny {
       res.json({ error: "No Information Submitted" });
       return;
     } else {
-      console.log(req.body);
       let field = this.checkReqBody(req, fields);
       if (field !== "") {
         res.json({ error: `Missing ${field}` });
@@ -102,6 +101,7 @@ export class UserController extends CheckReq implements ObjectAny {
       formObject["payme_link"] = req.body.payMeLink;
       fields.push("payme_link");
     }
+
     try {
       let checkUnique = await this.userService.checkUserInfoUniqueness(
         fields,
