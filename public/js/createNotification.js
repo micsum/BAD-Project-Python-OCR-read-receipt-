@@ -1,7 +1,9 @@
 function displayNotification(notification, destination) {
   let node = notificationTemplate.content.cloneNode(true);
   let notificationDiv = node.querySelector(".notificationDiv");
-  let receiptSender = notification.notificationSender;
+  let notificationSender = notification.notificationSender;
+  let receiptSender = notification.receiptSender;
+
   notificationDiv.setAttribute(
     "id",
     `notification${notification.receiptStringID}`
@@ -13,9 +15,13 @@ function displayNotification(notification, destination) {
     );
     let result = await res.json();
 
-    if (result.receiptStatus == false || receiptSender == userName) {
+    if (
+      receiptSender == userID ||
+      result.receiptStatus == false ||
+      notificationSender == userID
+    ) {
       window.location = `./receiptDisplayPage.html?receiptID=${notification.receiptStringID}`;
-    } else if (result.receiptStatus == true && receiptSender != userName) {
+    } else if (result.receiptStatus == true && notificationSender != userID) {
       Swal.fire({
         icon: "question",
         title: "Please Select Payment Method",
@@ -61,7 +67,7 @@ function displayNotification(notification, destination) {
   let notificationMessage = notification.information;
   let confirmSelection = notification.confirm_selection;
   let payment = notification.payment;
-  if (receiptSender == userID) {
+  if (notificationSender == userID) {
     if (notificationMessage.substring(0, 7) == "Updated") {
       notificationMessage = `You claimed items successfully `;
       icon = "wallet";
@@ -90,7 +96,7 @@ function displayNotification(notification, destination) {
     ".receiptID"
   ).textContent = `(receiptID : ${notification.receiptStringID})`;
 
-  node.querySelector(".notificationSender").textContent = receiptSender;
+  node.querySelector(".notificationSender").textContent = notificationSender;
 
   node.querySelector(".moneyIcon").innerHTML = `<i class="bi bi-${icon}"></i>`;
 

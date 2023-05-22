@@ -324,7 +324,7 @@ export class ClaimReceiptItemService {
     let information = informationResult[0].information;
     information = information.split(",");
     information = information[information.length - 1].split(" ");
-    let claimPrice: number = parseInt(
+    let claimPrice: number = parseFloat(
       information.slice(-1)[0].replace("$", "")
     );
 
@@ -341,9 +341,6 @@ export class ClaimReceiptItemService {
         payerCredit = creditResult[1].credit;
         hostCredit = creditResult[0].credit;
       }
-      console.log(
-        `payerCredit : ${payerCredit}, hostCredit : ${hostCredit}, claimPrice : ${claimPrice}`
-      );
 
       if (payerCredit <= claimPrice) {
         return { error: "Insufficient Credit" };

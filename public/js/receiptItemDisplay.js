@@ -145,17 +145,17 @@ function createItemRow(data = [[""], ["$0.00"]]) {
       //  "class",
       //  "delete cursor-pointer text-white bg-yellow-700 hover:bg-yellow-800 focus:outline-none focus:ring-4 focus:ring-yellow-300 font-medium rounded-full text-sm px-5 py-2.5 text-center mr-2 light:bg-yellow-600 light:hover:bg-yellow-700 light:focus:ring-yellow-900"
       //);
-      deleteButton.innerHTML = `<i class="fa-solid fa-rotate-left fa-xl text-yellow-400 hover:text-yellow-600 rounded-full hover:bg-gray-100 p-1"></i> `
+      deleteButton.innerHTML = `<i class="fa-solid fa-rotate-left fa-xl text-yellow-400 hover:text-yellow-600 rounded-full hover:bg-gray-100 p-1"></i> `;
     } else if (deleteButton.value == "Restore") {
       subtotalInput.disabled = false;
       deleteButton.value = "Delete";
-      deleteButton.innerHTML=`<svg class="w-8 h-8 text-red-400 hover:text-red-600 rounded-full hover:bg-gray-100 p-1"
+      deleteButton.innerHTML = `<svg class="w-8 h-8 text-red-400 hover:text-red-600 rounded-full hover:bg-gray-100 p-1"
       fill="none" stroke="currentColor" viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16">
       </path>
-  </svg>`
+  </svg>`;
     }
     updateTotalPrice();
   });

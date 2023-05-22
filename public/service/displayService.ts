@@ -54,13 +54,14 @@ export class DisplayService {
         "receipt.confirm_selection",
         "receipt.created_at",
         "notification.information",
-        "receipt.id as receiptID"
+        "receipt.id as receiptID",
+        "receipt.from as receiptSender"
       );
 
     query = sentFromUser
       ? query.where({ "notification.from": userID })
       : query.where({ "notification.to": userID });
-    query = query.limit(30).orderBy("notification.id", "desc");
+    query = query.limit(50).orderBy("notification.id", "desc");
 
     let queryResult: ObjectAny[] = await query;
 
