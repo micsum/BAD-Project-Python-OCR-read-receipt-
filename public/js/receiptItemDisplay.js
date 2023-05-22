@@ -53,9 +53,9 @@ function getMaxMinPrice() {
   subtotalList.forEach((elem) => {
     if (!elem.disabled) {
       if (parseInt(elem.value) > maxMin[0]) {
-        maxMin[0] = parseInt(elem.value);
+        maxMin[0] = parseFloat(elem.value).toFixed(2);
       } else if (parseInt(elem.value) < maxMin[1]) {
-        maxMin[1] = parseInt(elem.value);
+        maxMin[1] = parseFloat(elem.value).toFixed(2);
       }
     }
   });
