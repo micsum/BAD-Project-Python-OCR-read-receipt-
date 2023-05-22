@@ -46,14 +46,19 @@ function displayNotification(notification, destination) {
             }),
           });
           let result2 = await res.json();
+          console.log(`result2 : ${result2.hostPayme}`);
           if (result2.error) {
             Swal.fire({
               icon: "error",
               title: "An Error Occurred",
               text: result2.error,
             });
-          } else if (paymentChoice === "PayMe" && result2.hostPayme) {
-            window.open(`https://payme.hsbc/${hostPayme}`);
+          } else if (
+            paymentChoice == "payMe" &&
+            result2.hostPayme != undefined
+          ) {
+            console.log("payme", result2.hostPayme);
+            window.open(`https://payme.hsbc/${result2.hostPayme}`);
           } else {
             Swal.fire({
               icon: "success",

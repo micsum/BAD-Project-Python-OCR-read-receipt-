@@ -329,22 +329,27 @@ export class ClaimReceiptItemService {
     );
 
     let creditResult = await this.knex("user")
-      .select("id", "credit", "payme_link")
+      .select("id", "name", "credit", "payme_link")
       .whereIn("id", [userID, from]);
 
-    if (creditResult[0].payme_link === null || creditResult[1].payme_link) {
+    if (
+      creditResult[0].payme_link === null ||
+      creditResult[1].payme_link === null
+    ) {
       return { error: "You / receiver did not input PayMe account in profile" };
     }
 
-    let payerCredit, hostCredit, hostPayme;
+    let payerCredit, hostCredit, hostPayme, hostName;
     if (creditResult[0].id === userID) {
       payerCredit = creditResult[0].credit;
       hostCredit = creditResult[1].credit;
       hostPayme = creditResult[1].payme_link;
+      hostName = creditResult[1].name;
     } else {
       payerCredit = creditResult[1].credit;
       hostCredit = creditResult[0].credit;
       hostPayme = creditResult[0].payme_link;
+      hostName = creditResult[0].name;
     }
 
     if (creditMode) {
@@ -360,13 +365,22 @@ export class ClaimReceiptItemService {
       }
     }
 
-    await this.knex("notification").insert({
-      from: userID,
-      to: from,
-      payment: true,
-      receipt_id: receiptID,
-      information: `${userName} has paid you $${claimPrice} for a receipt`,
-    });
+    await this.knex("notification").insert([
+      {
+        from: userID,
+        to: from,
+        payment: true,
+        receipt_id: receiptID,
+        information: `${userName} has paid you $${claimPrice} for a receipt`,
+      },
+      {
+        from: userID,
+        to: userID,
+        payment: true,
+        receipt_id: receiptID,
+        information: `You have paid ${hostName} $${claimPrice} for a receipt`,
+      },
+    ]);
     return { hostPayme };
   }
 

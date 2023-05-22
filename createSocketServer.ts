@@ -5,7 +5,6 @@ const userReceiptMap: Map<number, string> = new Map();
 export function createSocketServer() {
   io.on("connection", function (socket) {
     socket.on("joinUserSocketRoom", function ({ userID }) {
-      console.log(`${userID} has joined`);
       socket.join(userID);
     });
 
