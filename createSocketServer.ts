@@ -22,8 +22,6 @@ export function createSocketServer() {
       userReceiptMap.delete(userID);
     });
 
-    socket.on("disconnect", function () {
-      console.log("socket disconnected");
-    });
+    socket.on("disconnect", function () {});
   });
 }
