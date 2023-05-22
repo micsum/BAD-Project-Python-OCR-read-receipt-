@@ -174,12 +174,12 @@
                     >
                   </div>
                 </div>
-                <button
+                <a
                   id="forgotpw"
-                  class="text-sm font-medium text-primary-600 hover:underline light:text-primary-500"
+                  class="cursor-pointer text-sm font-medium text-primary-600 hover:underline light:text-primary-500"
                 >
                   Forgot password?
-                </button>
+                </a>
               </div>
               <button
                 type="submit"
@@ -250,49 +250,48 @@
         // }
       });
 
-      //let forgotPw = document.querySelector("#forgotpw");
-      //forgotPw.addEventListener("click", forgotpwRequest);
-      //
-      //function forgotpwRequest(event) {
-      //  event.preventDefault();
-      //  const { value: email } = Swal.fire({
-      //    title: "Forgot Password?",
-      //    text: "Please enter the email address you'd like your password reset information sent to",
-      //    focusConfirm: false,
-      //    showCloseButton: true,
-      //    showCancelButton: true,
-      //    confirmButtonText: "Request reset link",
-      //    cancelButtonText: "Back To Login",
-      //    popup: "swal2-show",
-      //    backdrop: "swal2-backdrop-show",
-      //    input: "email",
-      //    inputPlaceholder: "Your email address",
-      //    showLoaderOnConfirm: true,
-      //    preConfirm: async (email) => {
-      //      //const emailObject = {};
-      //      //emailObject.email = email;
-      //      //console.log("email", email);
-      //      const res = await fetch("/forgotPw", {
-      //        method: "POST",
-      //        headers: { "Content-Type": "application/json" },
-      //        body: JSON.stringify({ reqEmail: `${email}` }),
-      //      });
-      //      const result = await res.json();
-      //      if (result.error) {
-      //        Swal.fire({
-      //          icon: "error",
-      //          title: "Error!",
-      //          text: "Invalid Email. Please try again.",
-      //        });
-      //      }
-      //      //console.log("error", result.error);
-      //      //console.log("res", result.emailStatus);
-      //      else if (result.emailStatus) {
-      //        Swal.fire({ text: `Reset password link sent to ${email}` });
-      //      }
-      //    },
-      //  });
-      //}
+      forgotpw.addEventListener("click", forgotpwRequest);
+
+      function forgotpwRequest(event) {
+        event.preventDefault();
+        const { value: email } = Swal.fire({
+          title: "Forgot Password?",
+          text: "Please enter the email address you'd like your password reset information sent to",
+          focusConfirm: false,
+          showCloseButton: true,
+          showCancelButton: true,
+          confirmButtonText: "Request reset link",
+          cancelButtonText: "Back To Login",
+          popup: "swal2-show",
+          backdrop: "swal2-backdrop-show",
+          input: "email",
+          inputPlaceholder: "Your email address",
+          showLoaderOnConfirm: true,
+          preConfirm: async (email) => {
+            //const emailObject = {};
+            //emailObject.email = email;
+            //console.log("email", email);
+            const res = await fetch("/forgotPw", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ email: `${email}` }),
+            });
+            const result = await res.json();
+            if (result.error) {
+              Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: "Invalid Email. Please try again.",
+              });
+            }
+            //console.log("error", result.error);
+            //console.log("res", result.emailStatus);
+            else if (result.success) {
+              Swal.fire({ text: `Reset password link sent to ${email}` });
+            }
+          },
+        });
+      }
     </script>
   </body>
 </html>

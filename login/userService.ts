@@ -60,10 +60,16 @@ export class UserService implements ObjectAny {
   }
 
   async checkEmailExistence(email: string) {
-    return await this.knex("user").select("id").where({ email: email });
+    return await this.knex("user").select("id", "name").where({ email: email });
   }
 
   async updateUserInfo(userID: number, updatedInfo: ObjectAny) {
     await this.knex("user").update(updatedInfo).where({ id: userID });
+  }
+
+  async updateUserPw(newHashPassword: string, email: string) {
+    await this.knex("user")
+      .where("email", email)
+      .update("password", newHashPassword);
   }
 }

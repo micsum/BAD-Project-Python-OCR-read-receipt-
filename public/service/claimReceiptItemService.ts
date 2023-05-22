@@ -256,10 +256,10 @@ export class ClaimReceiptItemService {
       .where({ id: userID });
 
     if (paymentMethod.payme_link !== "") {
-      messageInformation += ` PayMeLink : ${paymentMethod.payme_link}`;
+      messageInformation += ` PayMe Name : ${paymentMethod.payme_link} /`;
     }
     if (paymentMethod.fps_id !== "") {
-      messageInformation += ` FPS-id : ${paymentMethod.fps_id}`;
+      messageInformation += ` FPS-id : ${paymentMethod.fps_id},`;
     }
 
     let notifications: Notification[] = [];

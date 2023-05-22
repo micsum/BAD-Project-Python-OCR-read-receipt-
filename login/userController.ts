@@ -1,10 +1,9 @@
-import { Request, Response, Router } from "express";
+import { Request, Response, Router, NextFunction } from "express";
 import * as bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { UserService } from "./userService";
 import { CheckReq, ObjectAny } from "../helper";
-import nodemailer from "nodemailer";
-import Mailgen from "mailgen";
+import { forgotPwEmail } from "../sendEmail";
 
 export class UserController extends CheckReq implements ObjectAny {
   router = Router();
@@ -16,6 +15,9 @@ export class UserController extends CheckReq implements ObjectAny {
     this.router.post("/register", this.userRegister);
     this.router.put("/updateProfile", this.updateProfileInformation);
     this.router.post("/logout", this.logout);
+    this.router.post("/forgotPw", this.forgotPassword);
+    this.router.get("/forgotpw/:id/:token", this.authenticate);
+    this.router.post("/resetpw", this.resetPw);
   }
 
   private async hashPassword(plainPassword: string) {
@@ -211,78 +213,26 @@ export class UserController extends CheckReq implements ObjectAny {
       });
       return;
     }
-
     let requestedEmail = req.body.email;
 
     try {
       let result = await this.userService.checkEmailExistence(requestedEmail);
       let userID = result[0].id;
+      let userName = result[0].name;
       if (userID === undefined) {
         res.json({ error: "This User was not Registered" });
         return;
       }
       const payload = {
         email: requestedEmail,
-        userID: userID,
+        id: userID,
       };
       const token = jwt.sign(payload, this.JWT_SECRET, { expiresIn: "15m" });
       const link = `http://localhost:8105/forgotpw/${userID}/${token}`;
       //TODO
 
-      let senderEmail = "cpky216@gmail.com";
-
-      let transporter = nodemailer.createTransport({
-        service: "gmail",
-        secure: false,
-        auth: {
-          user: "cpky216@gmail.com",
-          pass: "qlefhklcekgupfif",
-        },
-      });
-
-      async function forgotPwEmail(
-        email: string,
-        userName: string,
-        link: string
-      ) {
-        //send forgot password email to update
-        let mailGenerator = new Mailgen({
-          theme: "default",
-          product: {
-            name: "KEUNG TWO INC.",
-            link: "https://mailgen.js/",
-            copyright: "Copyright © 2023 KEUNG TWO INC. All rights reserved.",
-          },
-        });
-        let emailMessage = {
-          body: {
-            name: `${userName}`,
-            signature: "Sincerely",
-            intro:
-              "You have received this email because a password reset request for your account was received.",
-            action: {
-              instructions: "Click the button below to reset your password:",
-              button: {
-                color: "#DC4D2F",
-                text: "Reset Your Password",
-                link: link,
-              },
-            },
-            outro:
-              "If you did not request a password reset, please contact the admin.",
-          },
-        };
-        let mail = mailGenerator.generate(emailMessage);
-        let message = await transporter.sendMail({
-          from: senderEmail, //from here set the main sender email
-          to: email, //receiver email from body - body email
-          subject: "Password Reset",
-          //text: "testingemail",
-          html: mail, //mail message need refer to formdata info
-        });
-        console.log("reset password message sent:", message.messageId);
-      }
-      res.json({});
+      await forgotPwEmail(requestedEmail, userName, link);
+      res.json({ success: "true" });
       return;
     } catch (error) {
       console.log(error);
@@ -300,5 +250,74 @@ export class UserController extends CheckReq implements ObjectAny {
     });
     res.json({ success: "logout" });
     console.log("destroy:", req.session);
+  };
+
+  authenticate = (req: Request, res: Response) => {
+    try {
+      const { id, token } = req.params;
+      //console.log("token", token);
+      //console.log("id", id);
+      let decoded = jwt.verify(token, this.JWT_SECRET) as {
+        id: string;
+        email: string;
+      };
+
+      console.log("decodedId", decoded.id);
+      console.log("decodedEmail", decoded.email);
+
+      if (id != decoded.id) {
+        res.json({ error: "Invalid id" });
+        return;
+      }
+
+      // console.log("middleware next ed");
+
+      //@ts-ignore
+      // const payload = jwt.verify(token, secret);
+      res.sendFile(
+        "/Users/mic/Desktop/Tecky/BAD/BAD-Project/public/resetpw.html"
+      );
+    } catch (error) {
+      console.error(error);
+      res.send(error);
+    }
+  };
+
+  resetPw = async (req: Request, res: Response) => {
+    const { email, password, password2, jwtUrl } = req.body;
+    let decoded = jwt.verify(jwtUrl, this.JWT_SECRET) as {
+      id: string;
+      email: string;
+    };
+
+    if (decoded.email != email) {
+      res.json({ error: "Invalid Email" });
+      return;
+    }
+    if (password != password2) {
+      res.json({
+        error: "Both passwords are not identical. Please correct.",
+      });
+      return;
+    }
+
+    if (password.length < 8) {
+      res.json({
+        error: "Please input the password with 8 characters",
+      });
+      return;
+    }
+    try {
+      if (password === password2) {
+        let newHashPassword = await this.hashPassword(password2);
+        await this.userService.updateUserPw(newHashPassword, email);
+      }
+      res.json({});
+      return;
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "server error" });
+      return;
+    }
   };
 }

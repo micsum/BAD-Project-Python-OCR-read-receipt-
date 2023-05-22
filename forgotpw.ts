@@ -1,6 +1,6 @@
 import express, { Router } from "express";
-import { client } from "./db";
-//import { comparePassword, hashPassword } from "./hash";
+//import { client } from "./db";
+import { comparePassword, hashPassword } from "./hash";
 import { forgotPwEmail } from "./sendEmail";
 import jwt from "jsonwebtoken";
 import { hashPassword } from "./hash";
