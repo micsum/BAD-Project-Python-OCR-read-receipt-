@@ -46,6 +46,8 @@ function displayNotification(notification, destination) {
               title: "An Error Occurred",
               text: result2.error,
             });
+          } else if (paymentChoice === "PayMe" && result2.hostPayme) {
+            window.open(`https://payme.hsbc/${hostPayme}`);
           } else {
             Swal.fire({
               icon: "success",

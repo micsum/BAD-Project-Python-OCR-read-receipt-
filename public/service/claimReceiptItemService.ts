@@ -328,23 +328,26 @@ export class ClaimReceiptItemService {
       information.slice(-1)[0].replace("$", "")
     );
 
+    let creditResult = await this.knex("user")
+      .select("id", "credit", "payme_link")
+      .whereIn("id", [userID, from]);
+
+    if (creditResult[0].payme_link === null || creditResult[1].payme_link) {
+      return { error: "You / receiver did not input PayMe account in profile" };
+    }
+
+    let payerCredit, hostCredit, hostPayme;
+    if (creditResult[0].id === userID) {
+      payerCredit = creditResult[0].credit;
+      hostCredit = creditResult[1].credit;
+      hostPayme = creditResult[1].payme_link;
+    } else {
+      payerCredit = creditResult[1].credit;
+      hostCredit = creditResult[0].credit;
+      hostPayme = creditResult[0].payme_link;
+    }
+
     if (creditMode) {
-      let creditResult = await this.knex("user")
-        .select("id", "credit")
-        .whereIn(" id", [userID, from]);
-
-      let payerCredit, hostCredit;
-      if (creditResult[0].id === userID) {
-        payerCredit = creditResult[0].credit;
-        hostCredit = creditResult[1].credit;
-      } else {
-        payerCredit = creditResult[1].credit;
-        hostCredit = creditResult[0].credit;
-      }
-      console.log(
-        `payerCredit : ${payerCredit}, hostCredit : ${hostCredit}, claimPrice : ${claimPrice}`
-      );
-
       if (payerCredit <= claimPrice) {
         return { error: "Insufficient Credit" };
       } else {
@@ -355,7 +358,6 @@ export class ClaimReceiptItemService {
           .update({ credit: hostCredit + claimPrice })
           .where({ id: from });
       }
-      return {};
     }
 
     await this.knex("notification").insert({
@@ -365,7 +367,7 @@ export class ClaimReceiptItemService {
       receipt_id: receiptID,
       information: `${userName} has paid you $${claimPrice} for a receipt`,
     });
-    return {};
+    return { hostPayme };
   }
 
   async hostAcceptAllPayment(receiptStringID: string) {
