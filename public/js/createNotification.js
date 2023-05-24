@@ -58,7 +58,7 @@ function displayNotification(notification, destination) {
             result2.hostPayme != undefined
           ) {
             console.log("payme", result2.hostPayme);
-            window.open(`https://payme.hsbc/${result2.hostPayme}`);
+            window.location.replace(`https://payme.hsbc/${result2.hostPayme}`);
           } else {
             Swal.fire({
               icon: "success",
