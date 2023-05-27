@@ -1,4 +1,5 @@
 import Stripe from "stripe";
+import bodyParser from "body-parser";
 import { Request, Response, Router, response } from "express";
 import express from "express";
 import { TopUpService } from "../service/topUpService";
@@ -23,7 +24,7 @@ export class TopUpController {
     this.router.post("/create-checkout-session", this.topUpCredit);
     this.router.post(
       "/webhook",
-      express.raw({ type: "application/json" }),
+      bodyParser.raw({ type: "application/json" }),
       this.updateDbCredit
     );
   }
@@ -55,7 +56,7 @@ export class TopUpController {
           },
         ],
         mode: "payment",
-        success_url: "http://localhost:8105/wallet.html",
+        success_url: "http://localhost:8105/top-up-success/:sessionId",
         cancel_url: "http://localhost:8105/wallet.html",
       });
       //const checkoutUrl = `https://checkout.stripe.com/pay/${sessionId}`
@@ -68,39 +69,43 @@ export class TopUpController {
   };
 
   updateDbCredit = async (req: Request, res: Response) => {
-    const event = req.body;
-    try {
-      if (
-        req.session === undefined ||
-        req.session.user === undefined ||
-        req.session.user.userID === undefined
-      ) {
-        res.status(401).json({ error: "User Not Found" });
-        return;
-      }
-      let userID = req.session.user.userID;
-      const sig = req.headers["stripe-signature"];
-      const endpointSecret =
-        "whsec_2a1a0881f42e6b2d6cf346cc74287921a484e075753bb37220139839a45bffbe";
+    let event: Stripe.Event | undefined;
+    const sig = req.headers["stripe-signature"];
+    const endpointSecret =
+      "whsec_2a1a0881f42e6b2d6cf346cc74287921a484e075753bb37220139839a45bffbe";
+    if (
+      req.session === undefined ||
+      req.session.user === undefined ||
+      req.session.user.userID === undefined
+    ) {
+      res.status(401).json({ error: "User Not Found" });
+      return;
+    }
 
-      const verifiedEvent = this.stripe.webhooks.constructEvent(
+    let userID = req.session.user.userID;
+    try {
+      event = this.stripe.webhooks.constructEvent(
         req.body,
         //@ts-ignore
         sig,
         endpointSecret
       );
-      if (verifiedEvent.type === "payment_intent.succeeded") {
-        const paymentIntent = verifiedEvent.data.object;
-        //@ts-ignore
-        const amount = paymentIntent.amount / 100;
-        await this.topUpService.updateCredit(userID, amount);
-        res.json({ success: true });
-      } else {
-        res.json({ success: false });
-      }
     } catch (err) {
       console.error(err);
       res.status(500).json({ error: "Server Error" });
+    }
+
+    switch (event?.type) {
+      case "payment_intent.succeeded":
+        console.log("event loaded");
+        const paymentIntent = event.data.object;
+        //@ts-ignore
+        const amount = paymentIntent.amount_total / 100;
+        await this.topUpService.updateCredit(userID, amount);
+        res.json({ success: true });
+
+      case "payment_intent.payment_failed":
+        res.json({ error: "error of top-up in db credit" });
     }
   };
 }
