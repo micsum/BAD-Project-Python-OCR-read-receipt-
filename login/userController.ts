@@ -4,6 +4,11 @@ import jwt from "jsonwebtoken";
 import { UserService } from "./userService";
 import { CheckReq, ObjectAny } from "../helper";
 import { forgotPwEmail } from "../sendEmail";
+import path from "path"
+import dotenv from "dotenv"
+
+dotenv.config();
+
 
 export class UserController extends CheckReq implements ObjectAny {
   router = Router();
@@ -227,8 +232,9 @@ export class UserController extends CheckReq implements ObjectAny {
         email: requestedEmail,
         id: userID,
       };
+      const url = process.env.URL
       const token = jwt.sign(payload, this.JWT_SECRET, { expiresIn: "15m" });
-      const link = `http://localhost:8105/forgotpw/${userID}/${token}`;
+      const link = `${url}/forgotpw/${userID}/${token}`;
       //TODO
 
       await forgotPwEmail(requestedEmail, userName, link);
@@ -252,7 +258,7 @@ export class UserController extends CheckReq implements ObjectAny {
     console.log("destroy:", req.session);
   };
 
-  authenticate = (req: Request, res: Response) => {
+   authenticate = (req: Request, res: Response) => {
     try {
       const { id, token } = req.params;
       //console.log("token", token);
@@ -274,9 +280,8 @@ export class UserController extends CheckReq implements ObjectAny {
 
       //@ts-ignore
       // const payload = jwt.verify(token, secret);
-      res.sendFile(
-        "/Users/mic/Desktop/Tecky/BAD/BAD-Project/public/resetpw.html"
-      );
+      res.sendFile(path.resolve("resetpw", "resetpw.html"))
+
     } catch (error) {
       console.error(error);
       res.send(error);

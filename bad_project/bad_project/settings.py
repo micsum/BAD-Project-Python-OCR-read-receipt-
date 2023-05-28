@@ -59,6 +59,10 @@ MIDDLEWARE = [
 CORS_ALLOW_CREDENTIALS = True
 
 CORS_ALLOWED_ORIGINS = [
+    "https://fastdpay.online",
+    "http://fastdpay.online",
+    "https://www.fastdpay.online",
+    "http://www.fastdpay.online",
     "http://localhost:8105",
     "http://127.0.0.1:8105",
     "http://192.168.80.93:8105",

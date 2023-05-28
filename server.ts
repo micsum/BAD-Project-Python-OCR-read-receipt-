@@ -48,6 +48,8 @@ app.use(hasLogin, displayController.router);
 app.use(hasLogin, claimReceiptItemController.router);
 app.use(hasLogin, topUpController.router);
 app.use(hasLogin, express.static("public"));
+app.use(userController.authenticate, express.static("resetpw"))
+
 createSocketServer();
 
 app.use((req, res) => {

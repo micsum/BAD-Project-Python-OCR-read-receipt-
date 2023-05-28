@@ -4,3 +4,6 @@ package-lock.json
 .venv
 .pyenv
 uploads
+ngrok.exe
+stripe.exe
+git.zip
