@@ -296,7 +296,7 @@ export class UserController extends CheckReq implements ObjectAny {
   };
 
   resetPw = async (req: Request, res: Response) => {
-    const { email, password, password2, jwtUrl } = req.body;
+    let { email, password, password2, jwtUrl } = req.body;
     let decoded = jwt.verify(jwtUrl, this.JWT_SECRET) as {
       id: string;
       email: string;
@@ -311,6 +311,14 @@ export class UserController extends CheckReq implements ObjectAny {
         error: "Both passwords are not identical. Please correct.",
       });
       return;
+    }
+
+    let dummyPasswordString = password;
+    password = "";
+    for (let char of dummyPasswordString) {
+      if (char !== " ") {
+        password += char;
+      }
     }
 
     if (password.length < 8) {
