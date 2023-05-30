@@ -1,8 +1,8 @@
 import Stripe from "stripe";
-import EndpointSecret from "stripe"
+import EndpointSecret from "stripe";
 import express, { Request, Response, Router } from "express";
 import { TopUpService } from "../service/topUpService";
-import dotenv from "dotenv"
+import dotenv from "dotenv";
 
 export const stripe = new Stripe(
   "sk_test_51N7XVOJtmaIoojFvEOT4CB6RyKs1DBnF8bh037Sw1j0bHecQORH5NdMRaunIGIf2OoWybWfQq2LgPkIuxGVK9ABW00tkkzwOON",
@@ -12,8 +12,7 @@ export const stripe = new Stripe(
 );
 
 dotenv.config();
-const url = process.env.URL
-
+const domain = process.env.Domain;
 //type line_items=[{
 //name:String,
 //amount:number,
@@ -25,7 +24,7 @@ export class TopUpController {
   router = Router();
   constructor(private stripe: Stripe, private topUpService: TopUpService) {
     this.router.post("/create-checkout-session", this.topUpCredit);
-    this.router.post("/webhook",this.updateDbCredit);
+    this.router.post("/webhook", this.updateDbCredit);
   }
 
   topUpCredit = async (req: Request, res: Response) => {
@@ -55,8 +54,8 @@ export class TopUpController {
           },
         ],
         mode: "payment",
-        success_url: `${url}/wallet.html`,
-        cancel_url: `${url}/wallet.html`,
+        success_url: `${domain}/wallet.html`,
+        cancel_url: `${domain}/wallet.html`,
       });
       //const checkoutUrl = `https://checkout.stripe.com/pay/${sessionId}`
       //@ts-ignore
@@ -78,21 +77,20 @@ export class TopUpController {
     }
 
     let userID = req.session.user.userID;
-    let event:Stripe.Event|undefined
-    const endpointSecret = "whsec_kLep7ta2cH7gRzfClZcURzFWuzcLUXh2"
-    const signature:any = req.headers['stripe-signature'];
+    let event: Stripe.Event | undefined;
+    const endpointSecret = "whsec_kLep7ta2cH7gRzfClZcURzFWuzcLUXh2";
+    const signature: any = req.headers["stripe-signature"];
     try {
       event = this.stripe.webhooks.constructEvent(
         req.body,
         signature,
         endpointSecret
       );
-      console.log("event test")
-    } catch (err:any) {
-      console.log(`webhook signature verification failed`,err.message)
+      console.log("event test");
+    } catch (err: any) {
+      console.log(`webhook signature verification failed`, err.message);
       res.status(400).send(`Webhook Error: ${err.message}`);
     }
-  
 
     switch (event?.type) {
       case "payment_intent.succeeded":
@@ -107,8 +105,8 @@ export class TopUpController {
         res.json({ error: "error of top-up in db credit" });
         break;
       default:
-        console.log(`unhandled event type ${event?.type}`)
+        console.log(`unhandled event type ${event?.type}`);
     }
-    res.status(200).json({received:true})
+    res.status(200).json({ received: true });
   };
 }

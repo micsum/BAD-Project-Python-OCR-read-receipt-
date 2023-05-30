@@ -240,9 +240,11 @@ export class UserController extends CheckReq implements ObjectAny {
         email: requestedEmail,
         id: userID,
       };
-      const url = process.env.url;
+      const domain = process.env.Domain;
+      console.log("domain", domain);
+
       const token = jwt.sign(payload, this.JWT_SECRET, { expiresIn: "15m" });
-      const link = `${url}/forgotpw/${userID}/${token}`;
+      const link = `${domain}/forgotpw/${userID}/${token}`;
       //TODO
 
       await forgotPwEmail(requestedEmail, userName, link);
