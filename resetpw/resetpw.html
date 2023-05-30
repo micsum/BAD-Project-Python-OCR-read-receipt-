@@ -210,7 +210,11 @@
         icon: "success",
         title: "Reset Password",
         text: "Password has been reset.",
-      }).then((window.location.href = "/"));
+        confirmButtonText: "Back To Login",
+        preConfirm: () => {
+          window.location.href = "/";
+        },
+      });
     });
   </script>
 </html>
