@@ -4,11 +4,10 @@ import jwt from "jsonwebtoken";
 import { UserService } from "./userService";
 import { CheckReq, ObjectAny } from "../helper";
 import { forgotPwEmail } from "../sendEmail";
-import path from "path"
-import dotenv from "dotenv"
+import path from "path";
+import dotenv from "dotenv";
 
 dotenv.config();
-
 
 export class UserController extends CheckReq implements ObjectAny {
   router = Router();
@@ -82,6 +81,15 @@ export class UserController extends CheckReq implements ObjectAny {
         return;
       }
     }
+
+    let dummyPasswordString = userPassword;
+    userPassword = "";
+    for (let char of dummyPasswordString) {
+      if (char !== " ") {
+        userPassword += char;
+      }
+    }
+
     if (userPassword.length < 8 || userPassword.length > 15) {
       res.json({ error: "Password must have 8 ~ 15 characters" });
       return;
@@ -232,7 +240,7 @@ export class UserController extends CheckReq implements ObjectAny {
         email: requestedEmail,
         id: userID,
       };
-      const url = process.env.URL
+      const url = process.env.URL;
       const token = jwt.sign(payload, this.JWT_SECRET, { expiresIn: "15m" });
       const link = `${url}/forgotpw/${userID}/${token}`;
       //TODO
@@ -258,7 +266,7 @@ export class UserController extends CheckReq implements ObjectAny {
     console.log("destroy:", req.session);
   };
 
-   authenticate = (req: Request, res: Response) => {
+  authenticate = (req: Request, res: Response) => {
     try {
       const { id, token } = req.params;
       //console.log("token", token);
@@ -280,8 +288,7 @@ export class UserController extends CheckReq implements ObjectAny {
 
       //@ts-ignore
       // const payload = jwt.verify(token, secret);
-      res.sendFile(path.resolve("resetpw", "resetpw.html"))
-
+      res.sendFile(path.resolve("resetpw", "resetpw.html"));
     } catch (error) {
       console.error(error);
       res.send(error);
@@ -289,7 +296,7 @@ export class UserController extends CheckReq implements ObjectAny {
   };
 
   resetPw = async (req: Request, res: Response) => {
-    const { email, password, password2, jwtUrl } = req.body;
+    let { email, password, password2, jwtUrl } = req.body;
     let decoded = jwt.verify(jwtUrl, this.JWT_SECRET) as {
       id: string;
       email: string;
@@ -304,6 +311,14 @@ export class UserController extends CheckReq implements ObjectAny {
         error: "Both passwords are not identical. Please correct.",
       });
       return;
+    }
+
+    let dummyPasswordString = password;
+    password = "";
+    for (let char of dummyPasswordString) {
+      if (char !== " ") {
+        password += char;
+      }
     }
 
     if (password.length < 8) {
