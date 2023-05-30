@@ -50,6 +50,7 @@ form.addEventListener("submit", async function (event) {
       title: "An Error Occurred",
       text: result.error,
     });
+    return;
   }
   Swal.fire({
     icon: "success",
