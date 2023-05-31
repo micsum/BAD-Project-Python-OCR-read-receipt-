@@ -9,6 +9,14 @@ let newPhoneNumber = document.getElementById("phoneNumber");
 let newEmail = document.getElementById("email");
 let newPayMeLink = document.getElementById("payMeLink");
 let newFPSID = document.getElementById("fpsID");
+let payMeInfo = document.getElementById("payMeInfo");
+
+payMeInfo.addEventListener("click", () => {
+  Swal.fire({
+    text: "hihi",
+    icon: "info",
+  });
+});
 
 returnButton.addEventListener("click", (event) => {
   event.preventDefault();
