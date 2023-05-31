@@ -9,12 +9,14 @@ let newPhoneNumber = document.getElementById("phoneNumber");
 let newEmail = document.getElementById("email");
 let newPayMeLink = document.getElementById("payMeLink");
 let newFPSID = document.getElementById("fpsID");
-let payMeInfo = document.getElementById("payMeInfo");
+let paymeInfo = document.getElementById("paymeInfo");
 
-payMeInfo.addEventListener("click", () => {
+paymeInfo.addEventListener("click", () => {
   Swal.fire({
-    text: "hihi",
-    icon: "info",
+    title: "payme.hsbc/your_PayMe_name",
+    text: `Set the PayMe name to receive money easily \u{1F911}`,
+    imageUrl:
+      "https://flyformiles.hk/wp-content/uploads/2020/03/Screen-Shot-2020-03-11-at-12.35.20-AM-1.png",
   });
 });
 

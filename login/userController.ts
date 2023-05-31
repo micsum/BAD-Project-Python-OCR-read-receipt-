@@ -108,13 +108,13 @@ export class UserController extends CheckReq implements ObjectAny {
     formObject["phone_number"] = userPhoneNumber;
     formObject["email"] = userEmail;
 
-    if (req.body.fpsLink !== undefined || req.body.fpsLink !== "") {
+    if (req.body.fpsLink !== "") {
       formObject["fps_id"] = req.body.fpsLink;
       fields.push("fps_id");
     } else {
       formObject["fps_id"] = null;
     }
-    if (req.body.payMeLink !== undefined || req.body.payMeLink !== "") {
+    if (req.body.payMeLink !== "") {
       formObject["payme_link"] = req.body.payMeLink;
       fields.push("payme_link");
     } else {
