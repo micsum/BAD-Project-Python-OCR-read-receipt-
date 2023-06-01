@@ -13,7 +13,7 @@ export class UserService implements ObjectAny {
     return isMatched;
   }
   async checkUserInfoUniqueness(fieldNames: string[], fields: ObjectAny) {
-    let query = this.knex("user").select("id").where({ id: -1 });
+    let query = this.knex("user").select("*").where({ id: -1 });
     for (let field of fieldNames) {
       let fieldObject: ObjectAny = {};
       fieldObject[field] = fields[field];
