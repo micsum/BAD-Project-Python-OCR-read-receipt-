@@ -53,7 +53,7 @@ export class ReceiptController extends CheckReq {
       let filename = image?.newFilename;
       let filepath = path.join(uploadDir + "/" + filename);
       try {
-        let toPython = await fetch("localhost:8100/readReceipt/", {
+        let toPython = await fetch("http://localhost:8100/readReceipt/", {
           method: "POST",
           credentials: "omit",
           headers: {
