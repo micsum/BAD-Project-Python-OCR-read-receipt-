@@ -6,7 +6,7 @@
   "scripts": {
     "start": "ts-node-dev server.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc-p ."
+    "build": "tsc -p ."
   },
   "repository": {
     "type": "git",
