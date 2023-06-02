@@ -397,7 +397,7 @@
         didOpen: async () => {
           Swal.showLoading();
           const res = await fetch("/uploadReceipt", {
-            timeout: 40000,
+            timeout: 60000,
             method: "POST",
             body: attachData,
           });
