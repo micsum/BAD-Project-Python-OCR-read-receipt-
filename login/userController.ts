@@ -215,6 +215,7 @@ export class UserController extends CheckReq implements ObjectAny {
   };
 
   forgotPassword = async (req: Request, res: Response) => {
+    console.log(req.body.email);
     if (
       req.body === undefined ||
       req.body.email === undefined ||
