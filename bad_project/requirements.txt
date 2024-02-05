@@ -2,6 +2,6 @@ Django==4.2.9
 djangorestframework==3.14.0
 django-cors-headers==4.3.1
 django-ninja==0.21.0
-opencv-python==4.9.0.80
+opencv-python==4.7.0.72
 easyocr==1.7.1
 pytesseract==0.3.10
