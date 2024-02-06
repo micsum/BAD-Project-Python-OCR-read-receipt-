@@ -80,7 +80,7 @@ def receiptToTextContent(imagePath):
             pytPriceTagList.append(priceTag)
     print(f"pyt Result List : {pytPriceTagList}")
 
-    ocrReader = easyocr.Reader(['ch_tra', 'en'])
+    ocrReader = easyocr.Reader(['ch_tra', 'en'], gpu=True)
     image = cv2.imread(imagePath)
     ocrResultList = ocrReader.readtext(image, detail=0)
 
