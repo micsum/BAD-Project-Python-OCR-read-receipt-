@@ -19,7 +19,7 @@ FastDPay is a web application designed to simplify the process of splitting bill
 ## Tech Stack
 
 - **Frontend**: HTML, Tailwind CSS, JavaScript
-- **Backend**: Python (Django framework)
+- **Backend**: Python (Django framework), Socket.IO
 - **OCR**: Integrated OCR (Tesseract)
 - **Payment Integration**: Stripe API for TopUp (trial)
 - **Database**: PostgreSQL
