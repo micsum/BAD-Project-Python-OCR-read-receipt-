@@ -1,4 +1,4 @@
-# FastDPay - Bill Splitting and Expense Sharing Web Application
+# FastDPay - OCR Scan, Bill Splitting and Expense Sharing Web Application
 
 FastDPay is a web application designed to simplify the process of splitting bills and sharing expenses among friends and family. Whether you're dining out, traveling, or sharing any other expenses, FastDPay makes it easy to track and settle up with others.
 
